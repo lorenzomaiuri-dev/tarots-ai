@@ -30,3 +30,13 @@ export interface ReadingSession {
   seed?: string;
   modelUsed?: string;
 }
+
+export interface HistoryState {
+  readings: ReadingSession[];
+  
+  // Actions
+  addReading: (reading: ReadingSession) => void;
+  updateReadingInterpretation: (id: string, text: string) => void;
+  deleteReading: (id: string) => void;
+  clearHistory: () => void;
+}
