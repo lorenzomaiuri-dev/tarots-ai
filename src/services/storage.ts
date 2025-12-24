@@ -1,40 +1,47 @@
-import { MMKV } from 'react-native-mmkv';
-import { STORAGE_KEYS } from "../constants";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// storage
-export const storage = new MMKV();
-
-// Wrapper to save JSON with typing
 export const StorageService = {
-  getString: (key: string) => storage.getString(key),
-  
-  setString: (key: string, value: string) => storage.set(key, value),
-  
-  getNumber: (key: string) => storage.getNumber(key),
-  
-  setNumber: (key: string, value: number) => storage.set(key, value),
-  
-  getBoolean: (key: string) => storage.getBoolean(key),
-  
-  setBoolean: (key: string, value: boolean) => storage.set(key, value),
-
-  // Helper
-  getItem: <T>(key: string): T | null => {
-    const value = storage.getString(key);
-    if (!value) return null;
+  getString: async (key: string) => {
     try {
-      return JSON.parse(value) as T;
+      return await AsyncStorage.getItem(key);
     } catch (e) {
-      console.error(`Errore parsing storage key: ${key}`, e);
+      console.error('Storage Get Error:', e);
+      return null;
+    }
+  },
+  
+  setString: async (key: string, value: string) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (e) {
+      console.error('Storage Set Error:', e);
+    }
+  },
+
+  // Helper JSON
+  getItem: async <T>(key: string): Promise<T | null> => {
+    try {
+      const value = await AsyncStorage.getItem(key);
+      return value ? JSON.parse(value) : null;
+    } catch (e) {
+      console.error(`Errore parsing key: ${key}`, e);
       return null;
     }
   },
 
-  setItem: (key: string, value: any) => {
-    storage.set(key, JSON.stringify(value));
+  setItem: async (key: string, value: any) => {
+    try {
+      await AsyncStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+      console.error('Storage Set Item Error:', e);
+    }
   },
 
-  delete: (key: string) => storage.delete(key),
+  delete: async (key: string) => {
+    await AsyncStorage.removeItem(key);
+  },
   
-  clearAll: () => storage.clearAll(),
+  clearAll: async () => {
+    await AsyncStorage.clear();
+  },
 };

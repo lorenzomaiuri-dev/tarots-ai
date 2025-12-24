@@ -35,7 +35,7 @@ export const AppNavigator = () => {
       <Stack.Screen 
         name="DeckSelection" 
         component={DeckSelectionScreen} 
-        options={{ title: t('common:deck_selection_title', 'Select a Deck') }} // TODO: LOCALIZATION
+        options={{ title: t('common:deck_selection_title', 'Select a Deck') }}
       />
       <Stack.Screen 
         name="Settings" 

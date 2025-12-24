@@ -4,10 +4,8 @@ import { Deck, DeckInfo } from '../types/deck';
 // TODO: DYNAMIC IMPORT
 
 // RIDER WAITE (Default)
-// @ts-ignore: TODO: CREATE DECK
-import riderWaiteData from '../../data/rider-waite/deck.json'; 
-// @ts-ignore TODO: ADD IMAGES
-import riderWaiteImages from '../../data/rider-waite/images';
+import riderWaiteData from '../data/rider-waite/deck.json'; 
+import riderWaiteImages from '../data/rider-waite/images';
 
 // OTHER DECKS...
 
