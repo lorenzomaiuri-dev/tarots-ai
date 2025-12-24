@@ -38,4 +38,5 @@ export interface HistoryState {
   updateReadingInterpretation: (id: string, text: string) => void;
   deleteReading: (id: string) => void;
   clearHistory: () => void;
+  updateUserNotes: (id: string, notes: string) => void;
 }

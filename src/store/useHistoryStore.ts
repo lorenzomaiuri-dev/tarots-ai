@@ -25,9 +25,16 @@ export const useHistoryStore = create<HistoryState>()(
       deleteReading: (id) =>
         set((state) => ({
           readings: state.readings.filter((r) => r.id !== id),
-        })),
+        })),      
 
       clearHistory: () => set({ readings: [] }),
+
+      updateUserNotes: (id, notes) =>
+        set((state) => ({
+          readings: state.readings.map((r) => 
+            r.id === id ? { ...r, userNotes: notes } : r
+          ),
+      })),
     }),
     {
       name: STORAGE_KEYS.HISTORY,
