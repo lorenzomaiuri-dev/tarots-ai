@@ -1,0 +1,18 @@
+{
+  "one-card": {
+    "name": "Single Card",
+    "description": "Una risposta secca e immediata",
+    "positions": {
+      "0": { "label": "The Response", "description": "The Main Energy" }
+    }
+  },
+  "three-card": {
+    "name": "Past, Present, Future",
+    "description": "Temporal Analysis of the situation",
+    "positions": {
+      "past": { "label": "Past", "description": "Past Influences" },
+      "present": { "label": "Present", "description": "Current Situation" },
+      "future": { "label": "Future", "description": "Possible evolution" }
+    }
+  }
+}

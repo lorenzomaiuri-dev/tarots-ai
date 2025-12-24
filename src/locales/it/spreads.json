@@ -1,0 +1,18 @@
+{
+  "one-card": {
+    "name": "Carta Singola",
+    "description": "Una risposta secca e immediata",
+    "positions": {
+      "0": { "label": "Il responso", "description": "L'energia principale" }
+    }
+  },
+  "three-card": {
+    "name": "Passato, Presente, Futuro",
+    "description": "Analisi temporale della situazione",
+    "positions": {
+      "past": { "label": "Passato", "description": "Influenze passate" },
+      "present": { "label": "Presente", "description": "Situazione attuale" },
+      "future": { "label": "Futuro", "description": "Possibile evoluzione" }
+    }
+  }
+}
