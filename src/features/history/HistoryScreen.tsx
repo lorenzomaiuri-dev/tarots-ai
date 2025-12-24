@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FlatList, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Text, Surface, IconButton, useTheme, Divider } from 'react-native-paper';
+import { Text, Surface, IconButton, useTheme, Divider, Searchbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,6 +14,7 @@ const HistoryScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const [searchQuery, setSearchQuery] = useState('');
   
   const { readings, deleteReading } = useHistoryStore();
 
@@ -31,6 +32,27 @@ const HistoryScreen = () => {
       ]
     );
   };
+
+  const filteredReadings = useMemo(() => {
+  // First sort
+  let result = [...readings].sort((a, b) => b.timestamp - a.timestamp)
+  
+  // Then filter
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    result = result.filter(r => {
+      // Search in Spread Name (need to translate or use ID)
+      const spreadMatch = r.spreadId.includes(q); 
+      // Search in User Notes
+      const notesMatch = r.userNotes?.toLowerCase().includes(q);
+      // Search in AI Text
+      const aiMatch = r.aiInterpretation?.toLowerCase().includes(q);
+      
+      return spreadMatch || notesMatch || aiMatch;
+    });
+  }
+  return result;
+}, [readings, searchQuery]);
 
   const renderItem = ({ item }: { item: ReadingSession }) => {
     // Get the first card image as a thumbnail
@@ -81,6 +103,14 @@ const HistoryScreen = () => {
         {t('common:history', 'History')}
       </Text>
 
+      <Searchbar
+        placeholder={t('common:search', 'Search...')}
+        onChangeText={setSearchQuery}
+        value={searchQuery}
+        style={{ marginBottom: 16, backgroundColor: theme.colors.elevation.level2 }}
+        inputStyle={{ minHeight: 0 }} // Fix for some android sizing issues
+      />
+
       {readings.length === 0 ? (
         <View style={styles.emptyState}>
           <IconButton icon="book-open-blank-variant" size={64} style={{ opacity: 0.3 }} />
@@ -88,7 +118,7 @@ const HistoryScreen = () => {
         </View>
       ) : (
         <FlatList
-          data={sortedReadings}
+          data={filteredReadings}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingBottom: 20 }}
