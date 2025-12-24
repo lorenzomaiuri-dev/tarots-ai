@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Text, Button, useTheme, IconButton } from 'react-native-paper';
+import { Text, Button, useTheme, SegmentedButtons } from 'react-native-paper';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -9,6 +9,7 @@ import { RootStackParamList } from '../../types/navigation';
 import { ScreenContainer } from '../ScreenContainer';
 import { CardFlip } from '../../components/CardFlip';
 import { InterpretationModal } from '../../components/InterpretationModal';
+import { SpreadVisualizer } from '../../components/SpreadVisualizer';
 
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { useHistoryStore } from '../../store/useHistoryStore';
@@ -33,6 +34,7 @@ const ReadingTableScreen = () => {
   // LOCAL STATE
   const [spread, setSpread] = useState<Spread | null>(null);
   const [drawnCards, setDrawnCards] = useState<DrawnCard[]>([]);
+  const [viewMode, setViewMode] = useState('table');
   
   // AI STATE
   const [modalVisible, setModalVisible] = useState(false);
@@ -42,7 +44,7 @@ const ReadingTableScreen = () => {
   useEffect(() => {
     const foundSpread = spreadsData.find(s => s.id === route.params.spreadId);
     if (foundSpread) {
-      setSpread(foundSpread);
+      setSpread(foundSpread as Spread);
     }
   }, [route.params.spreadId]);
 
@@ -51,13 +53,11 @@ const ReadingTableScreen = () => {
     const deck = getDeck(activeDeckId);
     if (!deck) return;
 
-    // Filter deck logic
     let deckToUse = deck;
     if (preferences.onlyMajorArcana) {
       deckToUse = { ...deck, cards: deck.cards.filter(c => c.meta.type === 'major') };
     }
 
-    // Exclude cards already drawn to avoid duplicates in the same spread
     const alreadyDrawnIds = drawnCards.map(d => d.cardId);
     const availableCardsDeck = {
         ...deckToUse,
@@ -65,17 +65,16 @@ const ReadingTableScreen = () => {
     };
 
     if (availableCardsDeck.cards.length === 0) {
-        Alert.alert("Mazzo esaurito!");
+        Alert.alert(t('common:error_deck_empty', "Mazzo esaurito!"));
         return;
     }
 
-    // Draw 1 card
-    const result = drawCards(availableCardsDeck, 1, undefined, preferences.allowReversed);
+    const results = drawCards(availableCardsDeck, 1, undefined, preferences.allowReversed);
     const newCard: DrawnCard = {
-      cardId: result[0].card.id,
+      cardId: results[0].card.id,
       deckId: activeDeckId,
       positionId: slotId,
-      isReversed: result[0].isReversed
+      isReversed: results[0].isReversed
     };
 
     setDrawnCards(prev => [...prev, newCard]);
@@ -88,16 +87,14 @@ const ReadingTableScreen = () => {
     
     if (!result) {
         await interpretReading(activeDeckId, spread, drawnCards);
-        // TODO: Save to history here or after success
     }
   };
 
   // LOGIC: Save & Exit
   const handleSaveAndExit = () => {
-      // Create session object
       const session: ReadingSession = {
-          id: Date.now().toString(), // UUID ideally
-          timestamp: new Date().getUTCMilliseconds(),
+          id: Date.now().toString(),
+          timestamp: Date.now(), // FIXED: .getUTCMilliseconds() only returns 0-999
           spreadId: spread?.id || '',
           deckId: activeDeckId,
           cards: drawnCards,
@@ -113,64 +110,80 @@ const ReadingTableScreen = () => {
   const isReadingComplete = drawnCards.length === spread.slots.length;
 
   return (
-    <ScreenContainer>
+    <ScreenContainer style={{ paddingHorizontal: 0 }}> 
       {/* HEADER */}
       <View style={styles.header}>
         <Text variant="titleLarge" style={styles.title}>
             {t(`spreads:${spread.id}.name`)}
         </Text>
-        <Text variant="bodySmall" style={{opacity: 0.6}}>
-            {drawnCards.length} / {spread.slots.length}
-        </Text>
+        
+        <View style={{ marginTop: 10, width: 200 }}>
+          <SegmentedButtons
+            value={viewMode}
+            onValueChange={setViewMode}
+            buttons={[
+              { value: 'table', label: 'Tavolo', icon: 'view-grid-outline' },
+              { value: 'list', label: 'Lista', icon: 'format-list-bulleted' },
+            ]}
+            density="small"
+          />
+        </View>
       </View>
 
-      {/* TABLE (Slots List) */}
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {spread.slots.map((slot, index) => {
-          const drawn = drawnCards.find(c => c.positionId === slot.id);
-          
-          return (
-            <View key={slot.id} style={styles.slotContainer}>
-               {/* SLOT LABEL */}
-               <Text variant="labelMedium" style={styles.slotLabel}>
-                 {index + 1}. {t(`spreads:${spread.id}.positions.${slot.id}.label`)}
-               </Text>
-               <Text variant="bodySmall" style={styles.slotDesc}>
-                 {t(`spreads:${spread.id}.positions.${slot.id}.description`)}
-               </Text>
+      {/* CONTENT AREA */}
+      <View style={{ flex: 1 }}>
+        {viewMode === 'table' ? (
+              <SpreadVisualizer 
+                  spread={spread}
+                  deckId={activeDeckId}
+                  drawnCards={drawnCards}
+                  onSlotPress={handleDrawCard}
+              />
+          ) : (
+            /* FIXED: Wrapped in a single ScrollView and removed the loose bracket/comment error */
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+              {spread.slots.map((slot, index) => {
+                const drawn = drawnCards.find(c => c.positionId === slot.id);
+                
+                return (
+                  <View key={slot.id} style={styles.slotContainer}>
+                    <Text variant="labelMedium" style={styles.slotLabel}>
+                      {index + 1}. {t(`spreads:${spread.id}.positions.${slot.id}.label`)}
+                    </Text>
+                    <Text variant="bodySmall" style={styles.slotDesc}>
+                      {t(`spreads:${spread.id}.positions.${slot.id}.description`)}
+                    </Text>
 
-               {/* CARD INTERACTION */}
-               <View style={styles.cardWrapper}>
-                 <CardFlip 
-                   deckId={activeDeckId}
-                   cardId={drawn?.cardId || null}
-                   isReversed={drawn?.isReversed}
-                   onFlip={() => !drawn && handleDrawCard(slot.id)}
-                   width={120}
-                   height={200}
-                 />
-                 
-                 {!drawn && (
-                   <View style={styles.tapHint}>
-                      <Text style={{color: 'white', fontSize: 10}}>Tap</Text>
-                   </View>
-                 )}
-               </View>
+                    <View style={styles.cardWrapper}>
+                      <CardFlip 
+                        deckId={activeDeckId}
+                        cardId={drawn?.cardId || null}
+                        isReversed={drawn?.isReversed}
+                        onFlip={() => !drawn && handleDrawCard(slot.id)}
+                        width={120}
+                        height={200}
+                      />
+                      
+                      {!drawn && (
+                        <View style={styles.tapHint}>
+                            <Text style={{color: 'white', fontSize: 10}}>Tap</Text>
+                        </View>
+                      )}
+                    </View>
 
-               {/* REVEALED CARD NAME */}
-               {drawn && (
-                  <Text style={styles.cardName}>
-                    {t(`decks:${activeDeckId}.cards.${drawn.cardId}.name`)}
-                  </Text>
-               )}
-            </View>
-          );
-        })}
-
-        {/* ACTIONS */}
-        <View style={styles.footerSpace} />
-      </ScrollView>
-
+                    {drawn && (
+                        <Text style={styles.cardName}>
+                          {t(`decks:${activeDeckId}.cards.${drawn.cardId}.name`)}
+                        </Text>
+                    )}
+                  </View>
+                );
+              })}
+              <View style={styles.footerSpace} />
+            </ScrollView>
+          )}
+      </View>
+    
       {/* BOTTOM ACTION BAR */}
       {isReadingComplete && (
           <View style={[styles.actionBar, { backgroundColor: theme.colors.elevation.level2 }]}>

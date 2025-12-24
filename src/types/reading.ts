@@ -1,7 +1,6 @@
 export interface SpreadPosition {
   id: string;        // es: "past", "obstacle"
-  // TODO: data for UI (x, y, rotation)
-  // layout?: { x: number; y: number; rotation?: number }; 
+  layout?: { x: number; y: number; rotation?: number }; 
 }
 
 export interface Spread {
