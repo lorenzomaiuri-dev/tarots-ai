@@ -14,3 +14,8 @@ export interface AIResponse {
   text: string;
   raw?: any;
 }
+
+export interface ChatMessage {
+  role: 'system' | 'user';
+  content: string;
+}

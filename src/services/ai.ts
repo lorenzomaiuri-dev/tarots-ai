@@ -1,10 +1,5 @@
-import { AIModelConfig } from '../types/ai';
+import { AIModelConfig, ChatMessage } from '../types/ai';
 import { AI_CONFIG } from "../constants";
-
-interface ChatMessage {
-  role: 'system' | 'user';
-  content: string;
-}
 
 export const generateInterpretation = async (
   messages: ChatMessage[],
