@@ -8,6 +8,7 @@ export type RootStackParamList = {
   MainTabs: { screen: string };
   Home: undefined;
   DeckSelection: undefined;
+  DeckExplorer: undefined;
   ReadingTable: { spreadId: string };
   SpreadSelection: undefined;
   ReadingDetail: { readingId: string };

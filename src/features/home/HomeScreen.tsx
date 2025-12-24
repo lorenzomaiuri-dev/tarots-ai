@@ -116,9 +116,14 @@ const HomeScreen = () => {
         <View style={styles.deckSection}>
           <View style={styles.rowBetween}>
             <Text variant="titleMedium">{t('common:active_deck', 'Active Deck')}</Text>
-            <Button mode="text" onPress={() => navigation.navigate('DeckSelection')}>
-              {t('common:change', 'Change')}
-            </Button>
+            <View style={{flexDirection: 'row'}}>
+              <Button mode="text" onPress={() => navigation.navigate('DeckExplorer')}>
+                {t('common:explore', 'Explore')}
+              </Button>
+              <Button mode="text" onPress={() => navigation.navigate('DeckSelection')}>
+                {t('common:change', 'Change')}
+              </Button>
+            </View>            
           </View>
           <Text variant="bodyLarge" style={{ color: theme.colors.primary }}>
             {t(`decks:${activeDeckId}.name`)}
