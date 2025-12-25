@@ -99,9 +99,16 @@ const HistoryScreen = () => {
 
   return (
     <ScreenContainer>
-      <Text variant="headlineSmall" style={styles.header}>
-        {t('common:history', 'History')}
-      </Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text variant="headlineSmall" style={styles.header}>
+          {t('common:history', 'History')}
+        </Text>
+        <IconButton 
+          icon="chart-bar" 
+          onPress={() => navigation.navigate('Stats')} 
+          mode="contained-tonal"
+        />
+      </View>      
 
       <Searchbar
         placeholder={t('common:search', 'Search...')}

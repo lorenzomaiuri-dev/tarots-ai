@@ -12,5 +12,6 @@ export type RootStackParamList = {
   ReadingTable: { spreadId: string };
   SpreadSelection: undefined;
   ReadingDetail: { readingId: string };
+  Stats: undefined;
   Settings: undefined;
 };

@@ -15,6 +15,7 @@ import SpreadSelectionScreen from '../features/reading/SpreadSelectionScreen';
 import ReadingTableScreen from '../features/reading/ReadingTableScreen';
 import ReadingDetailScreen from '../features/history/ReadingDetailScreen';
 import DeckExplorerScreen from '../features/deck-explorer/DeckExplorerScreen';
+import StatsScreen from '../features/history/StatsScreen';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -115,6 +116,11 @@ export const AppNavigator = () => {
         name="DeckExplorer"
         component={DeckExplorerScreen}
         options={{ title: t('common:deck_explorer_title', 'Deck Explorer') }} 
+      />
+      <Stack.Screen
+        name="Stats"
+        component={StatsScreen}
+        options={{ title: t('common:stats_title', 'Stats') }} 
       />
     </Stack.Navigator>
   );
