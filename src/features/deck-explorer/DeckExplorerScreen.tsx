@@ -15,6 +15,7 @@ import { InterpretationModal } from '../../components/InterpretationModal';
 const question: string = "Analyze the visual symbolism, colors, and archetypal meaning of this specific card in this deck"
 const PAGE_SIZE = 10
 
+// TODO: DYNAMIC
 // Helper for cards grouping
 const groupCards = (cards: Card[], t: any, deckId: string) => {  
   const groups: { title: string; data: Card[] }[] = [

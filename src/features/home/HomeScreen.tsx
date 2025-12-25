@@ -127,7 +127,7 @@ const HomeScreen = () => {
             </View>            
           </View>
           <Text variant="bodyLarge" style={{ color: theme.colors.primary }}>
-            {t(`decks:${activeDeckId}.name`)}
+            {t(`decks:${activeDeckId}.info.name`)}
           </Text>
         </View>
 

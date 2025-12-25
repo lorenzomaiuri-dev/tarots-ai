@@ -31,7 +31,13 @@ i18n
  */
 export const loadDeckTranslations = (deckId: string, lang: string, translationData: any) => {
   if (!i18n.hasResourceBundle(lang, deckId)) {
-    i18n.addResourceBundle(lang, deckId, translationData, true, true);
+    i18n.addResourceBundle(
+    lang, 
+    'decks', 
+    { [deckId]: translationData }, 
+    true, 
+    true
+  );
   }
 };
 

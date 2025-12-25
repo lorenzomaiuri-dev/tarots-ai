@@ -45,10 +45,10 @@ const DeckSelectionScreen = () => {
             {/* Right: Info */}
             <View style={styles.infoContainer}>
               <Text variant="titleMedium" style={{ fontWeight: 'bold' }}>
-                {t(`decks:${item.id}.name`)}
+                {t(`decks:${item.id}.info.name`)}
               </Text>
               <Text variant="bodySmall" style={{ color: theme.colors.secondary }}>
-                {t(`decks:${item.id}.description`)}
+                {t(`decks:${item.id}.info.description`)}
               </Text>
               <Text variant="labelSmall" style={{ marginTop: 8, opacity: 0.6 }}>
                 {item.totalCards} {t('common:cards', 'cards')} • {item.author}
