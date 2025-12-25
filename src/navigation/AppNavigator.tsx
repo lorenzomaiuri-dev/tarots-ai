@@ -1,31 +1,34 @@
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { RootStackParamList, BottomTabParamList } from '../types/navigation';
-import { useTheme } from 'react-native-paper';
-import { Ionicons } from '@expo/vector-icons';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { RootStackParamList, BottomTabParamList } from "../types/navigation";
+import { useTheme } from "react-native-paper";
+import { Ionicons } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
+import { useSettingsStore } from "../store/useSettingsStore";
 
 // Screens
-import HomeScreen from '../features/home/HomeScreen';
-import HistoryScreen from '../features/history/HistoryScreen';
-import SettingsScreen from '../features/settings/SettingsScreen';
-import DeckSelectionScreen from '../features/deck-selection/DeckSelectionScreen';
-import SpreadSelectionScreen from '../features/reading/SpreadSelectionScreen';
-import ReadingTableScreen from '../features/reading/ReadingTableScreen';
-import ReadingDetailScreen from '../features/history/ReadingDetailScreen';
-import DeckExplorerScreen from '../features/deck-explorer/DeckExplorerScreen';
-import StatsScreen from '../features/history/StatsScreen';
+import HomeScreen from "../features/home/HomeScreen";
+import HistoryScreen from "../features/history/HistoryScreen";
+import SettingsScreen from "../features/settings/SettingsScreen";
+import DeckSelectionScreen from "../features/deck-selection/DeckSelectionScreen";
+import SpreadSelectionScreen from "../features/reading/SpreadSelectionScreen";
+import ReadingTableScreen from "../features/reading/ReadingTableScreen";
+import ReadingDetailScreen from "../features/history/ReadingDetailScreen";
+import DeckExplorerScreen from "../features/deck-explorer/DeckExplorerScreen";
+import StatsScreen from "../features/history/StatsScreen";
+import OnboardingScreen from "../features/onboarding/OnboardingScreen";
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export const AppNavigator = () => {  
+export const AppNavigator = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { isOnboardingCompleted } = useSettingsStore();
 
   // 1. The Tab Navigator (Bottom Bar)
-  const MainTabs = () => {  
+  const MainTabs = () => {
     const theme = useTheme();
 
     return (
@@ -34,39 +37,39 @@ export const AppNavigator = () => {
           headerShown: false,
           tabBarStyle: {
             backgroundColor: theme.colors.elevation.level1,
-            borderTopColor: 'rgba(255,255,255,0.1)',
+            borderTopColor: "rgba(255,255,255,0.1)",
           },
           tabBarActiveTintColor: theme.colors.primary,
           tabBarInactiveTintColor: theme.colors.onSurfaceDisabled,
           tabBarIcon: ({ focused, color, size }) => {
             let iconName: any;
 
-            if (route.name === 'HomeTab') {
-              iconName = focused ? 'sparkles' : 'sparkles-outline';
-            } else if (route.name === 'HistoryTab') {
-              iconName = focused ? 'book' : 'book-outline';
-            } else if (route.name === 'SettingsTab') {
-              iconName = focused ? 'settings' : 'settings-outline';
+            if (route.name === "HomeTab") {
+              iconName = focused ? "sparkles" : "sparkles-outline";
+            } else if (route.name === "HistoryTab") {
+              iconName = focused ? "book" : "book-outline";
+            } else if (route.name === "SettingsTab") {
+              iconName = focused ? "settings" : "settings-outline";
             }
 
             return <Ionicons name={iconName} size={size} color={color} />;
           },
         })}
       >
-        <Tab.Screen 
-          name="HomeTab" 
-          component={HomeScreen} 
-          options={{ title: 'Home' }} 
+        <Tab.Screen
+          name="HomeTab"
+          component={HomeScreen}
+          options={{ title: "Home" }}
         />
-        <Tab.Screen 
-          name="HistoryTab" 
-          component={HistoryScreen} 
-          options={{ title: t('common:history_title', 'Journal') }}
+        <Tab.Screen
+          name="HistoryTab"
+          component={HistoryScreen}
+          options={{ title: t("common:history_title", "Journal") }}
         />
-        <Tab.Screen 
-          name="SettingsTab" 
-          component={SettingsScreen} 
-          options={{ title: t('common:settings_title', 'Settings') }} 
+        <Tab.Screen
+          name="SettingsTab"
+          component={SettingsScreen}
+          options={{ title: t("common:settings_title", "Settings") }}
         />
       </Tab.Navigator>
     );
@@ -74,54 +77,68 @@ export const AppNavigator = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="MainTabs"
+      initialRouteName={isOnboardingCompleted ? "MainTabs" : "Onboarding"}
       screenOptions={{
         headerStyle: { backgroundColor: theme.colors.background },
         headerTintColor: theme.colors.onBackground,
-        headerTitleStyle: { fontWeight: '300', fontFamily: 'serif' }, // TODO: USE CONFIG
+        headerTitleStyle: { fontWeight: "300", fontFamily: "serif" }, // TODO: USE CONFIG
         headerShadowVisible: false, // Clean look
         contentStyle: { backgroundColor: theme.colors.background },
-        animation: 'fade_from_bottom',
+        animation: "fade_from_bottom",
       }}
     >
-      {/* The Tabs are the main screen */}
-      <Stack.Screen 
-        name="MainTabs" 
-        component={MainTabs} 
-        options={{ headerShown: false }} 
-      />
+      {!isOnboardingCompleted ? (
+        <Stack.Screen
+          name="Onboarding"
+          component={OnboardingScreen}
+          options={{ headerShown: false }}
+        />
+      ) : (
+        <>
+          {/* The Tabs are the main screen */}
+          <Stack.Screen
+            name="MainTabs"
+            component={MainTabs}
+            options={{ headerShown: false }}
+          />
 
-      {/* Other screens are pushed on top */}
-      <Stack.Screen 
-        name="DeckSelection" 
-        component={DeckSelectionScreen} 
-        options={{ title: t('common:deck_selection_title', 'Select Deck') }} 
-      />
-      <Stack.Screen 
-        name="SpreadSelection" 
-        component={SpreadSelectionScreen} 
-        options={{ title: t('common:new_reading_title', 'New Reading') }} 
-      />
-      <Stack.Screen 
-        name="ReadingTable" 
-        component={ReadingTableScreen} 
-        options={{ title: t('common:reading_title', 'Reading...') }} 
-      />
-      <Stack.Screen 
-        name="ReadingDetail" 
-        component={ReadingDetailScreen} 
-        options={{ title: t('common:reading_detail_title', 'Reading Detail') }} 
-      />
-      <Stack.Screen
-        name="DeckExplorer"
-        component={DeckExplorerScreen}
-        options={{ title: t('common:deck_explorer_title', 'Deck Explorer') }} 
-      />
-      <Stack.Screen
-        name="Stats"
-        component={StatsScreen}
-        options={{ title: t('common:stats_title', 'Stats') }} 
-      />
+          {/* Other screens are pushed on top */}
+          <Stack.Screen
+            name="DeckSelection"
+            component={DeckSelectionScreen}
+            options={{ title: t("common:deck_selection_title", "Select Deck") }}
+          />
+          <Stack.Screen
+            name="SpreadSelection"
+            component={SpreadSelectionScreen}
+            options={{ title: t("common:new_reading_title", "New Reading") }}
+          />
+          <Stack.Screen
+            name="ReadingTable"
+            component={ReadingTableScreen}
+            options={{ title: t("common:reading_title", "Reading...") }}
+          />
+          <Stack.Screen
+            name="ReadingDetail"
+            component={ReadingDetailScreen}
+            options={{
+              title: t("common:reading_detail_title", "Reading Detail"),
+            }}
+          />
+          <Stack.Screen
+            name="DeckExplorer"
+            component={DeckExplorerScreen}
+            options={{
+              title: t("common:deck_explorer_title", "Deck Explorer"),
+            }}
+          />
+          <Stack.Screen
+            name="Stats"
+            component={StatsScreen}
+            options={{ title: t("common:stats_title", "Stats") }}
+          />
+        </>
+      )}
     </Stack.Navigator>
   );
 };

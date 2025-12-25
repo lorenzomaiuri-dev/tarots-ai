@@ -10,6 +10,7 @@ export const useSettingsStore = create<SettingsState>()(
       // --- Default ---
       themeMode: DEFAULTS.THEME,
       activeDeckId: DEFAULTS.ACTIVE_DECK,
+      isOnboardingCompleted: false,
       
       aiConfig: {
         provider: DEFAULTS.PROVIDER,
@@ -26,7 +27,7 @@ export const useSettingsStore = create<SettingsState>()(
 
       // --- Actions ---
       setThemeMode: (mode) => set({ themeMode: mode }),
-      
+      completeOnboarding: () => set({ isOnboardingCompleted: true }),
       setActiveDeckId: (id) => set({ activeDeckId: id }),
       
       setAiConfig: (newConfig) => 

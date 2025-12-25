@@ -14,4 +14,5 @@ export type RootStackParamList = {
   ReadingDetail: { readingId: string };
   Stats: undefined;
   Settings: undefined;
+  Onboarding: undefined;
 };
