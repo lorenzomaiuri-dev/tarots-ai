@@ -81,7 +81,7 @@ const HistoryScreen = () => {
               {t(`spreads:${item.spreadId}.name`)}
             </Text>
             <Text variant="bodySmall" style={{ opacity: 0.6 }}>
-              {t(`decks:${item.deckId}.name`)} • {item.cards.length} cards
+              {t(`decks:${item.deckId}.info.name`)} • {item.cards.length} {t('common:cards', 'cards')}
             </Text>
           </View>
 

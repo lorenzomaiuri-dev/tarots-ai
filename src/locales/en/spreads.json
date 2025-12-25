@@ -2,7 +2,7 @@
   "one-card": {
       "name": "Single Card",
       "positions": {
-        "main": {
+        "1": {
           "label": "The Core Message"
         }
       }
@@ -10,13 +10,13 @@
     "three-card": {
       "name": "Past, Present, Future",
       "positions": {
-        "past": {
+        "1": {
           "label": "Past Influences"
         },
-        "present": {
+        "2": {
           "label": "Current Situation"
         },
-        "future": {
+        "3": {
           "label": "Potential Outcome"
         }
       }
@@ -24,16 +24,16 @@
     "relationship": {
       "name": "Relationship Spread",
       "positions": {
-        "you": {
+        "1": {
           "label": "You / Your Role"
         },
-        "partner": {
+        "2": {
           "label": "Partner / The Other"
         },
-        "dynamic": {
+        "3": {
           "label": "The Connection"
         },
-        "outcome": {
+        "4": {
           "label": "Long-term Potential"
         }
       }
@@ -41,19 +41,19 @@
     "five-card-cross": {
       "name": "Five Card Cross",
       "positions": {
-        "present": {
+        "1": {
           "label": "The Heart of the Matter"
         },
-        "obstacle": {
+        "2": {
           "label": "The Challenge"
         },
-        "advice": {
+        "3": {
           "label": "The Advice"
         },
-        "outcome": {
+        "4": {
           "label": "Final Result"
         },
-        "potential": {
+        "5": {
           "label": "Hidden Potential"
         }
       }
@@ -61,34 +61,34 @@
     "celtic-cross": {
       "name": "Celtic Cross",
       "positions": {
-        "present": {
+        "1": {
           "label": "The Present"
         },
-        "challenge": {
+        "2": {
           "label": "Immediate Challenge"
         },
-        "conscious": {
+        "3": {
           "label": "Conscious Thoughts"
         },
-        "subconscious": {
+        "4": {
           "label": "Subconscious Roots"
         },
-        "past": {
+        "5": {
           "label": "The Past"
         },
-        "future": {
+        "6": {
           "label": "Near Future"
         },
-        "attitude": {
+        "7": {
           "label": "Your Attitude"
         },
-        "environment": {
+        "8": {
           "label": "External Influences"
         },
-        "hopes_fears": {
+        "9": {
           "label": "Hopes and Fears"
         },
-        "outcome": {
+        "10": {
           "label": "Final Outcome"
         }
       }

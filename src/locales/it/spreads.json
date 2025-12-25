@@ -2,7 +2,7 @@
   "one-card": {
     "name": "Carta Singola",
     "positions": {
-      "main": {
+      "1": {
         "label": "Il Messaggio Centrale"
       }
     }
@@ -10,13 +10,13 @@
   "three-card": {
     "name": "Passato, Presente, Futuro",
     "positions": {
-      "past": {
+      "1": {
         "label": "Influenze Passate"
       },
-      "present": {
+      "2": {
         "label": "Situazione Attuale"
       },
-      "future": {
+      "3": {
         "label": "Esito Potenziale"
       }
     }
@@ -24,16 +24,16 @@
   "relationship": {
     "name": "Stesa della Relazione",
     "positions": {
-      "you": {
+      "1": {
         "label": "Tu / Il Tuo Ruolo"
       },
-      "partner": {
+      "2": {
         "label": "Partner / L'Altro"
       },
-      "dynamic": {
+      "3": {
         "label": "Il Legame"
       },
-      "outcome": {
+      "4": {
         "label": "Potenziale a Lungo Termine"
       }
     }
@@ -41,19 +41,19 @@
   "five-card-cross": {
     "name": "Croce a Cinque Carte",
     "positions": {
-      "present": {
+      "1": {
         "label": "Il Cuore della Questione"
       },
-      "obstacle": {
+      "2": {
         "label": "La Sfida"
       },
-      "advice": {
+      "3": {
         "label": "Il Consiglio"
       },
-      "outcome": {
+      "4": {
         "label": "Risultato Finale"
       },
-      "potential": {
+      "5": {
         "label": "Potenziale Nascosto"
       }
     }
@@ -61,34 +61,34 @@
   "celtic-cross": {
     "name": "Croce Celtica",
     "positions": {
-      "present": {
+      "1": {
         "label": "Il Presente"
       },
-      "challenge": {
+      "2": {
         "label": "Sfida Immediata"
       },
-      "conscious": {
+      "3": {
         "label": "Pensieri Consci"
       },
-      "subconscious": {
+      "4": {
         "label": "Radici Subconsce"
       },
-      "past": {
+      "5": {
         "label": "Il Passato"
       },
-      "future": {
+      "6": {
         "label": "Futuro Prossimo"
       },
-      "attitude": {
+      "7": {
         "label": "Il Tuo Atteggiamento"
       },
-      "environment": {
+      "8": {
         "label": "Influenze Esterne"
       },
-      "hopes_fears": {
+      "9": {
         "label": "Speranze e Paure"
       },
-      "outcome": {
+      "10": {
         "label": "Esito Finale"
       }
     }
