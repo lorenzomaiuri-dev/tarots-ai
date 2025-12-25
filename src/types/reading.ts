@@ -1,5 +1,6 @@
 export interface SpreadPosition {
-  id: string;        // es: "past", "obstacle"
+  id: string;        // es: "1", "2"
+  label: string;      // es: "past", "obstacle"
   layout?: { x: number; y: number; rotation?: number }; 
 }
 

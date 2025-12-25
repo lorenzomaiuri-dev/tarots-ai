@@ -80,7 +80,7 @@ export const SpreadVisualizer: React.FC<Props> = ({
                         style={styles.slotLabel}
                         numberOfLines={1}
                     >
-                        {t(`spreads:${spread.id}.positions.${slot.id}.label`)}
+                        {t(`spreads:${spread.id}.positions.${slot.label}.label`)}
                     </Text>
                 )}
 
@@ -104,12 +104,20 @@ export const SpreadVisualizer: React.FC<Props> = ({
                     </View>
                 </TouchableOpacity>
 
-                {/* Optional: Show small badge for number order */}
+                {/* Show small badge for number order */}
                 <View style={[styles.badge, { backgroundColor: theme.colors.primary }]}>
-                    <Text style={{ fontSize: 10, color: theme.colors.onPrimary, fontWeight: 'bold' }}>
-                        {slot.id}
-                    </Text>
-                </View>
+                  <Text 
+                      numberOfLines={1} 
+                      style={{ 
+                          fontSize: 11,
+                          color: theme.colors.onPrimary, 
+                          fontWeight: 'bold',
+                          textAlign: 'center'
+                      }}
+                  >
+                      {slot.id}
+                  </Text>
+              </View>
 
               </View>
             );
@@ -148,13 +156,16 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: 'absolute',
-    bottom: -10,
-    right: -10,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    bottom: -8,
+    right: -8,
+    minWidth: 24,
+    height: 24,
+    borderRadius: 12,
+    paddingHorizontal: 6,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
+    borderWidth: 1.5,
+    borderColor: 'white', 
   }
 });

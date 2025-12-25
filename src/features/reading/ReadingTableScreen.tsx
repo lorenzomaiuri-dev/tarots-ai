@@ -96,7 +96,7 @@ const ReadingTableScreen = () => {
   const handleSaveAndExit = () => {
       const session: ReadingSession = {
           id: Date.now().toString(),
-          timestamp: Date.now(), // FIXED: .getUTCMilliseconds() only returns 0-999
+          timestamp: Date.now(),
           spreadId: spread?.id || '',
           deckId: activeDeckId,
           cards: drawnCards,
@@ -124,8 +124,8 @@ const ReadingTableScreen = () => {
             value={viewMode}
             onValueChange={setViewMode}
             buttons={[
-              { value: 'table', label: 'Tavolo', icon: 'view-grid-outline' },
-              { value: 'list', label: 'Lista', icon: 'format-list-bulleted' },
+              { value: 'table', label: t('common:table', 'Table'), icon: 'view-grid-outline' },
+              { value: 'list', label: t('common:list', 'List'), icon: 'format-list-bulleted' },
             ]}
             density="small"
           />
@@ -142,7 +142,6 @@ const ReadingTableScreen = () => {
                   onSlotPress={handleDrawCard}
               />
           ) : (
-            /* FIXED: Wrapped in a single ScrollView and removed the loose bracket/comment error */
             <ScrollView contentContainerStyle={styles.scrollContent}>
               {spread.slots.map((slot, index) => {
                 const drawn = drawnCards.find(c => c.positionId === slot.id);
@@ -150,10 +149,10 @@ const ReadingTableScreen = () => {
                 return (
                   <View key={slot.id} style={styles.slotContainer}>
                     <Text variant="labelMedium" style={styles.slotLabel}>
-                      {index + 1}. {t(`spreads:${spread.id}.positions.${slot.id}.label`)}
+                      {index + 1}. {t(`spreads:${spread.id}.positions.${slot.label}.label`)}
                     </Text>
                     <Text variant="bodySmall" style={styles.slotDesc}>
-                      {t(`spreads:${spread.id}.positions.${slot.id}.description`)}
+                      {t(`spreads:${spread.id}.positions.${slot.label}.description`)}
                     </Text>
 
                     <View style={styles.cardWrapper}>
@@ -168,7 +167,7 @@ const ReadingTableScreen = () => {
                       
                       {!drawn && (
                         <View style={styles.tapHint}>
-                            <Text style={{color: 'white', fontSize: 10}}>Tap</Text>
+                            <Text style={{color: 'white', fontSize: 10}}>{t('common:tap', 'Tap')}</Text>
                         </View>
                       )}
                     </View>
