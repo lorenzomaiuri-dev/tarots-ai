@@ -21,6 +21,7 @@ export const useSettingsStore = create<SettingsState>()(
         allowReversed: true,
         onlyMajorArcana: false,
         animationEnabled: true,
+        theme: 'system'
       },
 
       // --- Actions ---
@@ -40,7 +41,7 @@ export const useSettingsStore = create<SettingsState>()(
     }),
     {
       name: STORAGE_KEYS.SETTINGS,
-      storage: createJSONStorage(() => zustandStorage), // Use MMKV
+      storage: createJSONStorage(() => zustandStorage), // Use native storage
     }
   )
 );

@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useColorScheme } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -39,10 +40,14 @@ const { LightTheme: NavLightTheme, DarkTheme: NavDarkTheme } = adaptNavigationTh
 });
 
 export default function App() {
-  const { themeMode } = useSettingsStore();
+  const systemColorScheme = useColorScheme();
+  
+  const { preferences } = useSettingsStore();
+  const themeSetting = preferences?.theme || 'system';
+  const isDark = 
+    themeSetting === 'dark' || 
+    (themeSetting === 'system' && systemColorScheme === 'dark');
 
-  // force Dark for the mystical vibe, or respect system
-  const isDark = themeMode === 'dark' || themeMode === 'system'; 
   const paperTheme = isDark ? MysticalDarkTheme : MD3LightTheme;
   const navTheme = isDark ? NavDarkTheme : NavLightTheme;
 

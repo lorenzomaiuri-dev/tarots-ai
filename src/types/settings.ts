@@ -4,6 +4,7 @@ export interface AppPreferences {
   allowReversed: boolean;
   onlyMajorArcana: boolean;
   animationEnabled: boolean;
+  theme: 'light' | 'dark' | 'system';
 }
 
 export interface SettingsState {

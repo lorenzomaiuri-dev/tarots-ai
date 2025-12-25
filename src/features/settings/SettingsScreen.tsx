@@ -9,7 +9,8 @@ import {
   TextInput, 
   Button, 
   Text,
-  useTheme
+  useTheme,
+  RadioButton // Aggiunto per la selezione del tema
 } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { File, Paths } from 'expo-file-system';
@@ -22,6 +23,8 @@ import { useHistoryStore } from '../../store/useHistoryStore';
 
 const SettingsScreen = () => {
   const { t } = useTranslation();
+  const theme = useTheme();  
+  const { preferences, updatePreferences, aiConfig, setAiConfig } = useSettingsStore();
 
   const handleExport = async () => {
     // 1. Prepare data
@@ -103,11 +106,9 @@ const SettingsScreen = () => {
     }
   };
 
-  const theme = useTheme();  
-  const { preferences, updatePreferences, aiConfig, setAiConfig } = useSettingsStore();
-
   // local state for dialog
   const [visible, setVisible] = useState(false);
+  const [themeDialogVisible, setThemeDialogVisible] = useState(false);
   const [tempApiKey, setTempApiKey] = useState('');
   const [tempModelId, setTempModelId] = useState('');
   const [tempBaseUrl, setTempBaseUrl] = useState('');
@@ -132,8 +133,18 @@ const SettingsScreen = () => {
     hideDialog();
   };
 
+  // Helper
+  const getThemeLabel = (value: 'light' | 'dark' | 'system') => {
+    switch (value) {
+      case 'light': return t('common:theme_light', 'Light');
+      case 'dark': return t('common:theme_dark', 'Dark');
+      default: return t('common:theme_system', 'System');
+    }
+  };
+
   return (
     <ScreenContainer>
+      {/* READING */}
       <List.Section>
         <List.Subheader>{t('common:reading', "Reading")}</List.Subheader>
         <List.Item
@@ -159,6 +170,21 @@ const SettingsScreen = () => {
 
       <Divider />
 
+      {/* APPEARANCE */}
+      <List.Section>
+        <List.Subheader>{t('common:appearance', "Appearance")}</List.Subheader>
+        <List.Item
+          title={t('common:theme', "Theme")}
+          description={getThemeLabel(preferences.theme)}
+          left={props => <List.Icon {...props} icon="brightness-6" />}
+          right={props => <List.Icon {...props} icon="chevron-right" />}
+          onPress={() => setThemeDialogVisible(true)}
+        />
+      </List.Section>
+
+      <Divider />
+
+      {/* AI */}
       <List.Section>
         <List.Subheader>{t('common:ai', "AI")}</List.Subheader>
         <List.Item 
@@ -179,6 +205,7 @@ const SettingsScreen = () => {
 
       <Divider />
 
+      {/* DATA & PRIVACY */}
       <List.Section>
         <List.Subheader>{t('common:data_privacy_title', "Data & Privacy")}</List.Subheader>
         <List.Item
@@ -194,6 +221,29 @@ const SettingsScreen = () => {
           onPress={handleImport}
         />
       </List.Section>
+
+      {/* --- DIALOG THEME --- */}
+      <Portal>
+        <Dialog visible={themeDialogVisible} onDismiss={() => setThemeDialogVisible(false)}>
+          <Dialog.Title>{t('common:select_theme', "Select Theme")}</Dialog.Title>
+          <Dialog.Content>
+            <RadioButton.Group 
+              onValueChange={value => {
+                updatePreferences({ theme: value });
+                setThemeDialogVisible(false);
+              }} 
+              value={preferences.theme || 'system'}
+            >
+              <RadioButton.Item label={t('common:theme_system', "System")} value="system" />
+              <RadioButton.Item label={t('common:theme_light', "Light")} value="light" />
+              <RadioButton.Item label={t('common:theme_dark', "Dark")} value="dark" />
+            </RadioButton.Group>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={() => setThemeDialogVisible(false)}>{t('common:cancel', "Cancel")}</Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
 
       {/* --- DIALOG --- */}
       <Portal>
