@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { SectionList, StyleSheet, TouchableOpacity, View, Modal, ScrollView } from 'react-native';
 import { Text, useTheme, Searchbar, Chip, IconButton, Button, Surface } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { InterpretationModal } from '../../components/InterpretationModal';
 
 // TODO: CONST
 const question: string = "Analyze the visual symbolism, colors, and archetypal meaning of this specific card in this deck"
+const PAGE_SIZE = 10
 
 // Helper for cards grouping
 const groupCards = (cards: Card[], t: any, deckId: string) => {  
@@ -35,7 +36,6 @@ const groupCards = (cards: Card[], t: any, deckId: string) => {
   return groups.filter(g => g.data.length > 0);
 };
 
-// TODO: LAZY LOADING
 const DeckExplorerScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -43,6 +43,7 @@ const DeckExplorerScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   // Local
+  const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE)
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   
   // AI
@@ -51,10 +52,18 @@ const DeckExplorerScreen = () => {
 
   const deck = useMemo(() => getDeck(activeDeckId), [activeDeckId]);
 
+  // Reset the limit when searching
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    setDisplayLimit(PAGE_SIZE); 
+  };
+
   const sections = useMemo(() => {
     if (!deck) return [];
+    
     let filtered = deck.cards;
     
+    // 1. Filter by search
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(c => {
@@ -63,8 +72,18 @@ const DeckExplorerScreen = () => {
       });
     }
 
-    return groupCards(filtered, t, activeDeckId);
-  }, [deck, searchQuery, activeDeckId, t]);
+    // 2. SLICE the data for Lazy Loading
+    const paginatedCards = filtered.slice(0, displayLimit);
+
+    // 3. Group only the sliced cards
+    return groupCards(paginatedCards, t, activeDeckId);
+  }, [deck, searchQuery, activeDeckId, t, displayLimit]);
+
+  const loadMore = useCallback(() => {
+    if (deck && displayLimit < deck.cards.length) {
+      setDisplayLimit(prev => prev + PAGE_SIZE);
+    }
+  }, [displayLimit, deck]);
 
   const handleAnalyzeSymbolism = () => {
     if (!selectedCard || !deck) return;
@@ -87,7 +106,7 @@ const DeckExplorerScreen = () => {
     <ScreenContainer>
       <Searchbar
         placeholder={t('common:search_cards', "Search for cards...")}
-        onChangeText={setSearchQuery}
+        onChangeText={handleSearch}
         value={searchQuery}
         style={{ marginBottom: 16, backgroundColor: theme.colors.elevation.level2 }}
       />
@@ -111,6 +130,12 @@ const DeckExplorerScreen = () => {
              </Text>
           </TouchableOpacity>
         )}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5} // Trigger when half-way through the last visible item
+        initialNumToRender={10}     // Reduce initial heavy lifting
+        maxToRenderPerBatch={10}    // Don't overwhelm the bridge
+        windowSize={5}              // Amount of content kept rendered (lower = less memory)
+        removeClippedSubviews={true} // Unmount off-screen components
         stickySectionHeadersEnabled={false}
       />
 
