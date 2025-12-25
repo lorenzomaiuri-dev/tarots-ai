@@ -22,6 +22,14 @@ const DECK_MANIFEST: Record<string, () => DeckBundle> = {
       it: require('../locales/it/decks/rider-waite.json'),
     },
   }),
+  'marseille': () => ({
+    data: require('../data/decks/marseille/deck.json'),
+    images: require('../data/decks/marseille/images').default,
+    translations: {
+      en: require('../locales/en/decks/marseille.json'),
+      it: require('../locales/it/decks/marseille.json'),
+    },
+  }),
   // Add new decks here...
   // 'thoth': () => ({ ... })
 };

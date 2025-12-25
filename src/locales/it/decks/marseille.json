@@ -1,0 +1,320 @@
+{
+  "info": {
+    "name": "Tarocchi di Marsiglia",
+    "description": "Il classico mazzo del XVII secolo, celebre per i suoi colori primari e la sua profondità simbolica. Questo mazzo si concentra su immagini archetipiche e segue l'approccio tradizionale agli arcani minori (pips)."
+  },
+  "cards": {
+    "cups_01": {
+      "name": "Asso di Coppe",
+      "keywords": "Abbondanza emotiva, nuovi inizi, amore, gioia"
+    },
+    "cups_02": {
+      "name": "Due di Coppe",
+      "keywords": "Collaborazione, attrazione, equilibrio, unione"
+    },
+    "cups_03": {
+      "name": "Tre di Coppe",
+      "keywords": "Celebrazione, amicizia, comunità, armonia di gruppo"
+    },
+    "cups_04": {
+      "name": "Quattro di Coppe",
+      "keywords": "Contemplazione, apatia, rivalutazione, interiorità"
+    },
+    "cups_05": {
+      "name": "Cinque di Coppe",
+      "keywords": "Delusione, perdita, rimpianto, focus sul negativo"
+    },
+    "cups_06": {
+      "name": "Sei di Coppe",
+      "keywords": "Nostalgia, ricordi d'infanzia, gentilezza, riunioni"
+    },
+    "cups_07": {
+      "name": "Sette di Coppe",
+      "keywords": "Scelte, illusioni, immaginazione, sogni ad occhi aperti"
+    },
+    "cups_08": {
+      "name": "Otto di Coppe",
+      "keywords": "Abbandono, allontanarsi, ricerca di una verità superiore"
+    },
+    "cups_09": {
+      "name": "Nove di Coppe",
+      "keywords": "Appagamento, soddisfazione, desideri realizzati, gratitudine"
+    },
+    "cups_10": {
+      "name": "Dieci di Coppe",
+      "keywords": "Appagamento emotivo, armonia familiare, felicità duratura"
+    },
+    "cups_11": {
+      "name": "Fante di Coppe",
+      "keywords": "Messaggero, sensibilità, impulso creativo, curiosità"
+    },
+    "cups_12": {
+      "name": "Cavaliere di Coppe",
+      "keywords": "Romanticismo, fascino, immaginazione, inviti"
+    },
+    "cups_13": {
+      "name": "Regina di Coppe",
+      "keywords": "Intuizione, compassione, sicurezza emotiva, nutrimento"
+    },
+    "cups_14": {
+      "name": "Re di Coppe",
+      "keywords": "Controllo emotivo, equilibrio, generosità, saggezza"
+    },
+    "maj_00": {
+      "name": "Il Matto (Le Mat)",
+      "keywords": "Libertà, movimento, l'ignoto, spontaneità"
+    },
+    "maj_01": {
+      "name": "Il Bagatto (Le Bateleur)",
+      "keywords": "Potenziale, iniziativa, abilità, inizio"
+    },
+    "maj_02": {
+      "name": "La Papessa (La Papesse)",
+      "keywords": "Conoscenza nascosta, pazienza, studio, silenzio"
+    },
+    "maj_03": {
+      "name": "L'Imperatrice (L'Impératrice)",
+      "keywords": "Abbondanza, creatività, natura, fertilità"
+    },
+    "maj_04": {
+      "name": "L'Imperatore (L'Empereur)",
+      "keywords": "Stabilità, struttura, autorità, logica"
+    },
+    "maj_05": {
+      "name": "Il Papa (Le Pape)",
+      "keywords": "Guida, tradizione, spiritualità, consiglio"
+    },
+    "maj_06": {
+      "name": "L'Innamorato (L'Amoureux)",
+      "keywords": "Scelta, attrazione, valori, relazioni"
+    },
+    "maj_07": {
+      "name": "Il Carro (Le Chariot)",
+      "keywords": "Determinazione, forza di volontà, vittoria, viaggio"
+    },
+    "maj_08": {
+      "name": "La Giustizia (La Justice)",
+      "keywords": "Equilibrio, legge, chiarezza, causa ed effetto"
+    },
+    "maj_09": {
+      "name": "L'Eremita (L'Ermite)",
+      "keywords": "Introspezione, saggezza, solitudine, progresso lento"
+    },
+    "maj_10": {
+      "name": "La Ruota della Fortuna (La Roue de Fortune)",
+      "keywords": "Cicli, cambiamento, destino, opportunità"
+    },
+    "maj_11": {
+      "name": "La Forza (La Force)",
+      "keywords": "Coraggio, disciplina, potere interiore, controllo"
+    },
+    "maj_12": {
+      "name": "L'Appeso (Le Pendu)",
+      "keywords": "Prospettiva, sacrificio, attesa, lasciar andare"
+    },
+    "maj_13": {
+      "name": "L'Arcano senza Nome (La Morte)",
+      "keywords": "Trasformazione, fine, pulizia del cammino, cambiamento"
+    },
+    "maj_14": {
+      "name": "La Temperanza (Tempérance)",
+      "keywords": "Moderazione, alchimia, pazienza, flusso"
+    },
+    "maj_15": {
+      "name": "Il Diavolo (Le Diable)",
+      "keywords": "Legami, mondo materiale, passione, ombra"
+    },
+    "maj_16": {
+      "name": "La Casa di Dio (La Maison Dieu)",
+      "keywords": "Risveglio improvviso, sconvolgimento, crollo, rilascio"
+    },
+    "maj_17": {
+      "name": "Le Stelle (L'Étoile)",
+      "keywords": "Speranza, ispirazione, rinnovamento, serenità"
+    },
+    "maj_18": {
+      "name": "La Luna (La Lune)",
+      "keywords": "Inconscio, intuizione, ambiguità, sogni"
+    },
+    "maj_19": {
+      "name": "Il Sole (Le Soleil)",
+      "keywords": "Successo, chiarezza, gioia, vitalità"
+    },
+    "maj_20": {
+      "name": "Il Giudizio (Le Jugement)",
+      "keywords": "Rinascita, chiamata all'azione, valutazione, rinnovamento"
+    },
+    "maj_21": {
+      "name": "Il Mondo (Le Monde)",
+      "keywords": "Completamento, integrazione, viaggio, realizzazione"
+    },
+    "pentacles_01": {
+      "name": "Asso di Denari",
+      "keywords": "Prosperità, seme materiale, radicamento, ricchezza"
+    },
+    "pentacles_02": {
+      "name": "Due di Denari",
+      "keywords": "Adattabilità, destrezza, cambiamento, equilibrio"
+    },
+    "pentacles_03": {
+      "name": "Tre di Denari",
+      "keywords": "Collaborazione, artigianato, abilità, lavoro"
+    },
+    "pentacles_04": {
+      "name": "Quattro di Denari",
+      "keywords": "Conservazione, sicurezza, avidità, confini"
+    },
+    "pentacles_05": {
+      "name": "Cinque di Denari",
+      "keywords": "Difficoltà finanziarie, isolamento, preoccupazione, tempi duri"
+    },
+    "pentacles_06": {
+      "name": "Sei di Denari",
+      "keywords": "Generosità, condivisione, carità, reciprocità"
+    },
+    "pentacles_07": {
+      "name": "Sette di Denari",
+      "keywords": "Pazienza, raccolto, valutazione, visione a lungo termine"
+    },
+    "pentacles_08": {
+      "name": "Otto di Denari",
+      "keywords": "Diligenza, maestria, lavoro ripetitivo, focus"
+    },
+    "pentacles_09": {
+      "name": "Nove di Denari",
+      "keywords": "Indipendenza, lusso, autosufficienza, comfort"
+    },
+    "pentacles_10": {
+      "name": "Dieci di Denari",
+      "keywords": "Eredità, lascito, ricchezza, fondamenta familiari"
+    },
+    "pentacles_11": {
+      "name": "Fante di Denari",
+      "keywords": "Studente, praticità, nuova impresa, notizie"
+    },
+    "pentacles_12": {
+      "name": "Cavaliere di Denari",
+      "keywords": "Metodico, affidabile, routine, duro lavoro"
+    },
+    "pentacles_13": {
+      "name": "Regina di Denari",
+      "keywords": "Nutrimento, fertilità, vita domestica, sensualità"
+    },
+    "pentacles_14": {
+      "name": "Re di Denari",
+      "keywords": "Potere finanziario, sicurezza, gestione, successo"
+    },
+    "swords_01": {
+      "name": "Asso di Spade",
+      "keywords": "Chiarezza, potere mentale, svolta, verità"
+    },
+    "swords_02": {
+      "name": "Due di Spade",
+      "keywords": "Stallo, emozioni bloccate, indecisione, pace"
+    },
+    "swords_03": {
+      "name": "Tre di Spade",
+      "keywords": "Dolore, tristezza, separazione, dura verità"
+    },
+    "swords_04": {
+      "name": "Quattro di Spade",
+      "keywords": "Riposo, convalescenza, meditazione, ritiro"
+    },
+    "swords_05": {
+      "name": "Cinque di Spade",
+      "keywords": "Conflitto, tensione, vincere a caro prezzo, sconfitta"
+    },
+    "swords_06": {
+      "name": "Sei di Spade",
+      "keywords": "Transizione, andare avanti, recupero, acque calme"
+    },
+    "swords_07": {
+      "name": "Sette di Spade",
+      "keywords": "Strategia, astuzia, inganno, azione indipendente"
+    },
+    "swords_08": {
+      "name": "Otto di Spade",
+      "keywords": "Restrizione, trappola mentale, isolamento, esitazione"
+    },
+    "swords_09": {
+      "name": "Nove di Spade",
+      "keywords": "Ansia, incubi, eccesso di pensieri, senso di colpa"
+    },
+    "swords_10": {
+      "name": "Dieci di Spade",
+      "keywords": "Punto di rottura, tradimento, fine definitiva, esaurimento"
+    },
+    "swords_11": {
+      "name": "Fante di Spade",
+      "keywords": "Allerta, vigilanza, intelletto, notizie veloci"
+    },
+    "swords_12": {
+      "name": "Cavaliere di Spade",
+      "keywords": "Velocità, assertività, intensità, logica"
+    },
+    "swords_13": {
+      "name": "Regina di Spade",
+      "keywords": "Discernimento, indipendenza, oggettività, lutto"
+    },
+    "swords_14": {
+      "name": "Re di Spade",
+      "keywords": "Potere intellettuale, verità, autorità, strategia"
+    },
+    "wands_01": {
+      "name": "Asso di Bastoni",
+      "keywords": "Scintilla, vitalità, volontà, ispirazione"
+    },
+    "wands_02": {
+      "name": "Due di Bastoni",
+      "keywords": "Pianificazione, visione futura, espansione, potere"
+    },
+    "wands_03": {
+      "name": "Tre di Bastoni",
+      "keywords": "Attesa, commercio, orizzonte, successo iniziale"
+    },
+    "wands_04": {
+      "name": "Quattro di Bastoni",
+      "keywords": "Celebrazione, stabilità, casa, ritorno"
+    },
+    "wands_05": {
+      "name": "Cinque di Bastoni",
+      "keywords": "Competizione, lotta, scontro, sforzo"
+    },
+    "wands_06": {
+      "name": "Sei di Bastoni",
+      "keywords": "Trionfo, riconoscimento pubblico, orgoglio, vittoria"
+    },
+    "wands_07": {
+      "name": "Sette di Bastoni",
+      "keywords": "Difesa, coraggio, persistenza, mantenere la posizione"
+    },
+    "wands_08": {
+      "name": "Otto di Bastoni",
+      "keywords": "Velocità, movimento rapido, comunicazione, fuoco"
+    },
+    "wands_09": {
+      "name": "Nove di Bastoni",
+      "keywords": "Resilienza, ultimo sforzo, protezione, cautela"
+    },
+    "wands_10": {
+      "name": "Dieci di Bastoni",
+      "keywords": "Fardello, responsabilità, carico pesante, completamento"
+    },
+    "wands_11": {
+      "name": "Fante di Bastoni",
+      "keywords": "Scoperta, entusiasmo, nuovo progetto, messaggero"
+    },
+    "wands_12": {
+      "name": "Cavaliere di Bastoni",
+      "keywords": "Avventura, passione, impulsività, viaggio"
+    },
+    "wands_13": {
+      "name": "Regina di Bastoni",
+      "keywords": "Fiducia, calore, socialità, magnetismo"
+    },
+    "wands_14": {
+      "name": "Re di Bastoni",
+      "keywords": "Leadership, visione, onore, forza creativa"
+    }
+  }
+}
