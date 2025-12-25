@@ -53,7 +53,7 @@ const HomeScreen = () => {
   };
 
   return (
-    <ScreenContainer style={styles.container}>
+    <ScreenContainer>
       {/* HEADER */}
       <View style={styles.header}>
         <View>
@@ -169,9 +169,6 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: 16,
-  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
