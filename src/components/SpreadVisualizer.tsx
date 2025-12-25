@@ -1,14 +1,14 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { Text, useTheme } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import { Text, useTheme, Surface } from 'react-native-paper';
 import { CardFlip } from './CardFlip';
 import { Spread, DrawnCard } from '../types/reading';
 import { useTranslation } from 'react-i18next';
 
 // Configuration for visual sizing
-const CARD_WIDTH = 100;
-const CARD_HEIGHT = 160;
-const GUTTER = 20;
+const CARD_WIDTH = 110;
+const CARD_HEIGHT = 185;
+const GUTTER = 25;
 
 interface Props {
   spread: Spread;
@@ -27,7 +27,6 @@ export const SpreadVisualizer: React.FC<Props> = ({
   const { t } = useTranslation();
 
   // 1. Calculate Canvas Size
-  // We need to know the max X and Y to set the container size
   let maxX = 0;
   let maxY = 0;
 
@@ -38,16 +37,21 @@ export const SpreadVisualizer: React.FC<Props> = ({
     }
   });
 
+  // Calculate total canvas dimensions
   const canvasWidth = (maxX + 1) * (CARD_WIDTH + GUTTER) + GUTTER * 2;
-  const canvasHeight = (maxY + 1) * (CARD_HEIGHT + GUTTER) + GUTTER * 2;
+  const canvasHeight = (maxY + 1) * (CARD_HEIGHT + GUTTER) + GUTTER * 4;
 
   return (
     <ScrollView 
       horizontal 
-      contentContainerStyle={{ width: Math.max(canvasWidth, 400) }}
+      contentContainerStyle={{ width: Math.max(canvasWidth, Dimensions.get('window').width) }}
       showsHorizontalScrollIndicator={false}
+      decelerationRate="fast"
     >
-      <ScrollView contentContainerStyle={{ height: Math.max(canvasHeight, 500) }}>
+      <ScrollView 
+        contentContainerStyle={{ height: Math.max(canvasHeight, 600) }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={[styles.tableMat, { width: canvasWidth, height: canvasHeight }]}>
           
           {spread.slots.map((slot, index) => {
@@ -55,56 +59,54 @@ export const SpreadVisualizer: React.FC<Props> = ({
             const drawn = drawnCards.find(c => c.positionId === slot.id);
             
             // Calculate absolute position
-            const top = layout.y * (CARD_HEIGHT + GUTTER) + GUTTER;
+            const top = layout.y * (CARD_HEIGHT + GUTTER) + (GUTTER * 2);
             const left = layout.x * (CARD_WIDTH + GUTTER) + GUTTER;
 
-            // Handle rotation (e.g., Celtic Cross crossing card)
             const rotation = layout.rotation || 0;
             const isRotated = rotation !== 0;
-
-            // Z-Index: ensure crossing cards (usually higher index) are on top
             const zIndex = (layout.zIndex ?? index) + 10;
 
             return (
               <View 
                 key={slot.id} 
-                pointerEvents="box-none" // Allows tapping cards underneath
+                pointerEvents="box-none"
                 style={[
                   styles.slotContainer, 
                   { top, left, width: CARD_WIDTH, height: CARD_HEIGHT, zIndex }
                 ]}
               >
-                {/* 
-                  LABEL POSITIONING:
-                  If the card is rotated (crossing), move the label to the side 
-                  so it doesn't overlap the vertical card's label.
-                */}
-                {(
-                  <View 
-                    pointerEvents="none"
-                    style={[
-                      styles.labelPill, 
-                      { backgroundColor: theme.colors.surfaceVariant },
-                      isRotated ? styles.labelRotated : styles.labelStandard
-                    ]}
+                {/* 1. SLOT LABEL */}
+                <Surface 
+                  elevation={2}
+                  style={[
+                    styles.labelPill, 
+                    isRotated ? styles.labelRotated : styles.labelStandard
+                  ]}
+                >
+                  <Text 
+                    variant="labelSmall" 
+                    style={[styles.labelText, { color: theme.colors.primary }]}
+                    numberOfLines={2}
                   >
-                    <Text 
-                      variant="labelSmall" 
-                      style={{ color: theme.colors.onSurfaceVariant, fontSize: 9, textAlign: 'center' }}
-                      numberOfLines={2}
-                    >
-                      {t(`spreads:${spread.id}.positions.${slot.id}.label`)}
-                    </Text>
-                  </View>
-                )}
+                    {t(`spreads:${spread.id}.positions.${slot.id}.label`).toUpperCase()}
+                  </Text>
+                </Surface>
 
+                {/* 2. CARD AREA */}
                 <TouchableOpacity 
                     onPress={() => onSlotPress(slot.id)}
                     activeOpacity={0.9}
-                    // Rotate the touchable itself so the hitbox matches the visual
-                    style={{ transform: [{ rotate: `${rotation}deg` }] }}
+                    style={[
+                        styles.cardTouchArea,
+                        { transform: [{ rotate: `${rotation}deg` }] }
+                    ]}
                 >
-                    <View style={styles.cardPlaceholder}>
+                    {/* GHOST SLOT */}
+                    {!drawn && (
+                        <View style={[styles.ghostSlot, { borderColor: theme.colors.outlineVariant }]} />
+                    )}
+
+                    <View style={styles.cardShadowWrapper}>
                         <CardFlip
                             deckId={deckId}
                             cardId={drawn?.cardId || null}
@@ -116,25 +118,19 @@ export const SpreadVisualizer: React.FC<Props> = ({
                     </View>
                 </TouchableOpacity>
 
-                {/* 
-                  BADGE POSITIONING:
-                  If rotated, move badge to the top-right instead of bottom-right
-                */}
-                <View 
-                  pointerEvents="none"
+                {/* 3. POSITION BADGE */}
+                <Surface 
+                  elevation={4}
                   style={[
                     styles.badge, 
-                    { 
-                      backgroundColor: theme.colors.primary,
-                      borderColor: theme.colors.surface,
-                    },
-                    isRotated ? { top: -5, right: -5 } : { bottom: -5, right: -5 }
+                    { backgroundColor: theme.colors.elevation.level5 },
+                    isRotated ? { top: -8, right: -8 } : { bottom: -8, right: -8 }
                   ]}
                 >
-                  <Text style={{ fontSize: 10, color: theme.colors.onPrimary, fontWeight: 'bold' }}>
+                  <Text style={[styles.badgeText, { color: theme.colors.primary }]}>
                     {index + 1}
                   </Text>
-                </View>
+                </Surface>
 
               </View>
             );
@@ -154,35 +150,68 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardPlaceholder: {
-    borderRadius: 8,
+  cardTouchArea: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardShadowWrapper: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.58,
+    shadowRadius: 16.00,
+    elevation: 24,
+  },
+  ghostSlot: {
+    position: 'absolute',
+    width: CARD_WIDTH - 4,
+    height: CARD_HEIGHT - 4,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    opacity: 0.3,
   },
   labelPill: {
     position: 'absolute',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    zIndex: 50,
-    elevation: 3,
-    maxWidth: 90,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    zIndex: 100,
+    backgroundColor: 'rgba(20, 20, 20, 0.85)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    minWidth: 60,
+  },
+  labelText: {
+    fontSize: 9, 
+    textAlign: 'center',
+    fontWeight: 'bold',
+    letterSpacing: 1,
+    fontFamily: 'serif',
   },
   labelStandard: {
-    top: -25,
+    top: -30,
     alignSelf: 'center',
   },
   labelRotated: {
-    left: CARD_WIDTH - 20, // Push to the right side
-    top: CARD_HEIGHT / 2 - 10,
+    left: CARD_WIDTH - 15,
+    top: CARD_HEIGHT / 2 - 15,
   },
   badge: {
     position: 'absolute',
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    zIndex: 60,
-    elevation: 4,
+    zIndex: 110,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  badgeText: {
+    fontSize: 11, 
+    fontWeight: '900',
+    fontFamily: 'serif',
   }
 });

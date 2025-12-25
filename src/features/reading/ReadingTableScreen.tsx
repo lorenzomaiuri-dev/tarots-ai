@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Text, Button, useTheme, SegmentedButtons } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Alert, Dimensions } from 'react-native';
+import { Text, Button, useTheme, SegmentedButtons, Surface } from 'react-native-paper';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -22,6 +22,8 @@ import spreadsData from '../../data/spreads.json';
 
 type ReadingTableRouteProp = RouteProp<RootStackParamList, 'ReadingTable'>;
 
+const { width } = Dimensions.get('window');
+
 const ReadingTableScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -29,20 +31,16 @@ const ReadingTableScreen = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<ReadingTableRouteProp>();
 
-  // GLOBAL STATE
   const { activeDeckId, preferences } = useSettingsStore();
   const { addReading } = useHistoryStore();
 
-  // LOCAL STATE
   const [spread, setSpread] = useState<Spread | null>(null);
   const [drawnCards, setDrawnCards] = useState<DrawnCard[]>([]);
   const [viewMode, setViewMode] = useState('table');
   
-  // AI STATE
   const [modalVisible, setModalVisible] = useState(false);
   const { result, isLoading, error, interpretReading } = useInterpretation();
 
-  // INIT
   useEffect(() => {
     const foundSpread = spreadsData.find(s => s.id === route.params.spreadId);
     if (foundSpread) {
@@ -50,7 +48,6 @@ const ReadingTableScreen = () => {
     }
   }, [route.params.spreadId]);
 
-  // LOGIC: Draw a single card for a specific slot
   const handleDrawCard = (slotId: string) => {
     const deck = getDeck(activeDeckId);
     if (!deck) return;
@@ -67,7 +64,7 @@ const ReadingTableScreen = () => {
     };
 
     if (availableCardsDeck.cards.length === 0) {
-        Alert.alert(t('common:error_deck_empty', "Mazzo esaurito!"));
+        Alert.alert(t('common:error_deck_empty', "Empty Deck!"));
         return;
     }
 
@@ -82,17 +79,14 @@ const ReadingTableScreen = () => {
     setDrawnCards(prev => [...prev, newCard]);
   };
 
-  // LOGIC: Interpret
   const handleInterpret = async () => {
     if (!spread) return;
     setModalVisible(true);
-    
     if (!result) {
         await interpretReading(activeDeckId, spread, drawnCards);
     }
   };
 
-  // LOGIC: Save & Exit
   const handleSaveAndExit = () => {
       const session: ReadingSession = {
           id: Date.now().toString(),
@@ -102,7 +96,6 @@ const ReadingTableScreen = () => {
           cards: drawnCards,
           aiInterpretation: result || undefined
       };
-      
       addReading(session);
       navigation.navigate('MainTabs', { screen: 'HomeTab' });
   };
@@ -115,11 +108,11 @@ const ReadingTableScreen = () => {
     <ScreenContainer style={{ paddingHorizontal: 0 }}> 
       {/* HEADER */}
       <View style={styles.header}>
-        <Text variant="titleLarge" style={styles.title}>
+        <Text variant="headlineSmall" style={styles.title}>
             {t(`spreads:${spread.id}.name`)}
         </Text>
         
-        <View style={{ marginTop: 10, width: 200 }}>
+        <View style={{ marginTop: 12, width: 220 }}>
           <SegmentedButtons
             value={viewMode}
             onValueChange={setViewMode}
@@ -142,18 +135,24 @@ const ReadingTableScreen = () => {
                   onSlotPress={handleDrawCard}
               />
           ) : (
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+            <ScrollView 
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
               {spread.slots.map((slot, index) => {
                 const drawn = drawnCards.find(c => c.positionId === slot.id);
                 
                 return (
                   <View key={slot.id} style={styles.slotContainer}>
-                    <Text variant="labelMedium" style={styles.slotLabel}>
-                      {index + 1}. {t(`spreads:${spread.id}.positions.${slot.id}.label`)}
-                    </Text>
-                    <Text variant="bodySmall" style={styles.slotDesc}>
-                      {t(`spreads:${spread.id}.positions.${slot.id}.description`)}
-                    </Text>
+                    {/* ENHANCED TEXT SECTION */}
+                    <Surface style={styles.slotTextCard} elevation={1}>
+                        <Text variant="labelLarge" style={[styles.slotLabel, { color: theme.colors.primary }]}>
+                          {index + 1} — {t(`spreads:${spread.id}.positions.${slot.id}.label`)}
+                        </Text>
+                        <Text variant="bodyMedium" style={styles.slotDesc}>
+                          {t(`spreads:${spread.id}.positions.${slot.id}.description`)}
+                        </Text>
+                    </Surface>
 
                     <View style={styles.cardWrapper}>
                       <CardFlip 
@@ -161,20 +160,21 @@ const ReadingTableScreen = () => {
                         cardId={drawn?.cardId || null}
                         isReversed={drawn?.isReversed}
                         onFlip={() => !drawn && handleDrawCard(slot.id)}
-                        width={120}
-                        height={200}
+                        width={140}
+                        height={230}
                       />
                       
                       {!drawn && (
                         <View style={styles.tapHint}>
-                            <Text style={{color: 'white', fontSize: 10}}>{t('common:tap', 'Tap')}</Text>
+                            <Text style={styles.tapHintText}>{t('common:tap', 'TAP TO DRAW')}</Text>
                         </View>
                       )}
                     </View>
 
                     {drawn && (
-                        <Text style={styles.cardName}>
+                        <Text variant="titleMedium" style={styles.cardName}>
                           {t(`decks:${activeDeckId}.cards.${drawn.cardId}.name`)}
+                          {drawn.isReversed ? ` (${t('common:reversed', 'Reversed')})` : ''}
                         </Text>
                     )}
                   </View>
@@ -192,7 +192,7 @@ const ReadingTableScreen = () => {
                   {t('common:save', 'Save')}
               </Button>
               <Button mode="contained" icon="creation" onPress={handleInterpret} style={{flex: 1}}>
-                  {t('common:ai', 'AI')}
+                  {t('common:ai', 'AI Reading')}
               </Button>
           </View>
       )}
@@ -210,60 +210,94 @@ const ReadingTableScreen = () => {
 
 const styles = StyleSheet.create({
   header: {
-    paddingVertical: 16,
+    paddingVertical: 20,
     alignItems: 'center',
   },
   title: {
       fontWeight: 'bold',
       fontFamily: 'serif',
+      letterSpacing: 1,
   },
   scrollContent: {
-      paddingBottom: 100,
+      paddingBottom: 120,
+      paddingTop: 10,
       alignItems: 'center',
   },
   slotContainer: {
-      marginBottom: 32,
+      marginBottom: 50,
       alignItems: 'center',
       width: '100%',
   },
+  slotTextCard: {
+      paddingVertical: 14,
+      paddingHorizontal: 20,
+      borderRadius: 16,
+      marginBottom: 20,
+      width: width * 0.85,
+      alignItems: 'center',
+      backgroundColor: 'rgba(255, 255, 255, 0.04)',
+      borderWidth: 1,
+      borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
   slotLabel: {
-      fontWeight: 'bold',
-      color: '#D0BCFF',
+      fontWeight: '900',
       textTransform: 'uppercase',
-      letterSpacing: 1,
+      letterSpacing: 2,
+      marginBottom: 6,
+      fontSize: 13,
   },
   slotDesc: {
-      marginBottom: 12,
+      textAlign: 'center',
       opacity: 0.7,
       fontStyle: 'italic',
+      fontFamily: 'serif',
+      lineHeight: 20,
   },
   cardWrapper: {
       position: 'relative',
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.44,
+      shadowRadius: 10.32,
+      elevation: 16,
   },
   tapHint: {
       position: 'absolute',
-      bottom: 10,
+      bottom: 15,
       alignSelf: 'center',
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      paddingHorizontal: 8,
-      borderRadius: 4,
+      backgroundColor: 'rgba(0,0,0,0.6)',
+      paddingVertical: 4,
+      paddingHorizontal: 12,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.2)',
+  },
+  tapHintText: {
+      color: 'white', 
+      fontSize: 10, 
+      fontWeight: 'bold',
+      letterSpacing: 1,
   },
   cardName: {
-      marginTop: 8,
+      marginTop: 16,
       fontWeight: 'bold',
+      fontFamily: 'serif',
   },
   footerSpace: {
-      height: 80,
+      height: 100,
   },
   actionBar: {
       position: 'absolute',
       bottom: 0,
       left: 0,
       right: 0,
-      padding: 16,
+      padding: 20,
+      paddingBottom: 34, 
       flexDirection: 'row',
       borderTopWidth: 1,
       borderTopColor: 'rgba(255,255,255,0.1)',
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
   }
 });
 

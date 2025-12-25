@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { SectionList, StyleSheet, TouchableOpacity, View, Modal, ScrollView } from 'react-native';
-import { Text, useTheme, Searchbar, Chip, IconButton, Button, Surface } from 'react-native-paper';
+import { SectionList, StyleSheet, TouchableOpacity, View, Modal, ScrollView, Dimensions } from 'react-native';
+import { Text, useTheme, Searchbar, IconButton, Button, Surface, Avatar } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
 import { ScreenContainer } from '../ScreenContainer';
@@ -11,19 +11,16 @@ import { Card } from '../../types/deck';
 import { useInterpretation } from '../../hooks/useInterpretation';
 import { InterpretationModal } from '../../components/InterpretationModal';
 
-// TODO: CONST
-const question: string = "Analyze the visual symbolism, colors, and archetypal meaning of this specific card in this deck"
-const PAGE_SIZE = 10
+const { width, height } = Dimensions.get('window');
+const PAGE_SIZE = 12;
 
-// TODO: DYNAMIC
-// Helper for cards grouping
-const groupCards = (cards: Card[], t: any, deckId: string) => {  
-  const groups: { title: string; data: Card[] }[] = [
-    { title: t('common:major_arcana', "Major Arcana"), data: [] },
-    { title: t('common:wands', "Wands"), data: [] },
-    { title: t('common:cups', "Cups"), data: [] },
-    { title: t('common:swords', "Swords"), data: [] },
-    { title: t('common:pentacles', "Pentacles"), data: [] },
+const groupCards = (cards: Card[], t: any) => {  
+  const groups: { title: string; type: string; data: Card[] }[] = [
+    { title: t('common:major_arcana', "Major Arcana"), type: 'major', data: [] },
+    { title: t('common:wands', "Wands"), type: 'wands', data: [] },
+    { title: t('common:cups', "Cups"), type: 'cups', data: [] },
+    { title: t('common:swords', "Swords"), type: 'swords', data: [] },
+    { title: t('common:pentacles', "Pentacles"), type: 'pentacles', data: [] },
   ];
 
   cards.forEach(card => {
@@ -42,18 +39,14 @@ const DeckExplorerScreen = () => {
   const theme = useTheme();
   const { activeDeckId } = useSettingsStore();
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Local
-  const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE)
+  const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   
-  // AI
   const { result, isLoading, error, interpretReading } = useInterpretation();
   const [aiModalVisible, setAiModalVisible] = useState(false);
 
   const deck = useMemo(() => getDeck(activeDeckId), [activeDeckId]);
 
-  // Reset the limit when searching
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setDisplayLimit(PAGE_SIZE); 
@@ -61,23 +54,13 @@ const DeckExplorerScreen = () => {
 
   const sections = useMemo(() => {
     if (!deck) return [];
-    
     let filtered = deck.cards;
-    
-    // 1. Filter by search
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      filtered = filtered.filter(c => {
-        const name = t(`decks:${activeDeckId}.cards.${c.id}.name`).toLowerCase();
-        return name.includes(q);
-      });
+      filtered = filtered.filter(c => t(`decks:${activeDeckId}.cards.${c.id}.name`).toLowerCase().includes(q));
     }
-
-    // 2. SLICE the data for Lazy Loading
     const paginatedCards = filtered.slice(0, displayLimit);
-
-    // 3. Group only the sliced cards
-    return groupCards(paginatedCards, t, activeDeckId);
+    return groupCards(paginatedCards, t);
   }, [deck, searchQuery, activeDeckId, t, displayLimit]);
 
   const loadMore = useCallback(() => {
@@ -86,17 +69,26 @@ const DeckExplorerScreen = () => {
     }
   }, [displayLimit, deck]);
 
+  const getGroupIcon = (type: string) => {
+    switch (type) {
+        case 'major': return 'star-shooting-outline';
+        case 'swords': return 'sword';
+        case 'cups': return 'cup-water';
+        case 'wands': return 'auto-fix';
+        case 'pentacles': return 'pentagram';
+        default: return 'cards-outline';
+    }
+  };
+
   const handleAnalyzeSymbolism = () => {
     if (!selectedCard || !deck) return;
     setAiModalVisible(true);
-    
     if (!result) {
-        // TODO: ADD SPREAD
         interpretReading(
             activeDeckId, 
-            { id: 'study', slots: [{id: 'main'}] }, // Fake spread
+            { id: 'study', slots: [{id: 'main'}] }, 
             [{ cardId: selectedCard.id, deckId: activeDeckId, positionId: 'main', isReversed: false }],
-            question
+            "Analyze the visual symbolism, colors, and archetypal meaning of this specific card."
         );
     }
   };
@@ -105,152 +97,260 @@ const DeckExplorerScreen = () => {
 
   return (
     <ScreenContainer>
+      {/* HEADER */}
+      <View style={styles.header}>
+        <Text variant="headlineMedium" style={styles.title}>{t('common:explorer', 'The Archive')}</Text>
+        <View style={[styles.accentLine, { backgroundColor: theme.colors.primary }]} />
+      </View>
+
       <Searchbar
-        placeholder={t('common:search_cards', "Search for cards...")}
+        placeholder={t('common:search_cards', "Search the cards...")}
         onChangeText={handleSearch}
         value={searchQuery}
-        style={{ marginBottom: 16, backgroundColor: theme.colors.elevation.level2 }}
+        style={styles.searchBar}
+        inputStyle={{ fontSize: 14 }}
       />
 
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.id}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text variant="titleMedium" style={[styles.sectionHeader, { color: theme.colors.primary }]}>
-            {title}
-          </Text>
+        stickySectionHeadersEnabled={false}
+        showsVerticalScrollIndicator={false}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        renderSectionHeader={({ section }) => (
+          <View style={styles.sectionHeader}>
+            <Avatar.Icon size={24} icon={getGroupIcon(section.type)} style={{ backgroundColor: 'transparent' }} color={theme.colors.primary} />
+            <Text variant="labelLarge" style={styles.sectionHeaderText}>{section.title.toUpperCase()}</Text>
+          </View>
         )}
         renderItem={({ item }) => (
-          <TouchableOpacity 
-            style={styles.cardItem} 
-            onPress={() => setSelectedCard(item)}
-          >
-             <CardImage deckId={activeDeckId} cardId={item.id} style={styles.thumbnail} />
-             <Text variant="bodyMedium" style={{ marginLeft: 16 }}>
-               {t(`decks:${activeDeckId}.cards.${item.id}.name`)}
-             </Text>
+          <TouchableOpacity onPress={() => setSelectedCard(item)} activeOpacity={0.7}>
+            <Surface style={styles.cardItem} elevation={1}>
+               <CardImage deckId={activeDeckId} cardId={item.id} style={styles.thumbnail} />
+               <View style={styles.itemInfo}>
+                 <Text variant="titleMedium" style={styles.cardName}>
+                    {t(`decks:${activeDeckId}.cards.${item.id}.name`)}
+                 </Text>
+                 <Text variant="labelSmall" style={styles.cardMeta}>
+                    {item.meta.type === 'major' ? t('common:major', 'Major') : t(`common:${item.meta.suit}`, item.meta.suit)}
+                 </Text>
+               </View>
+               <IconButton icon="chevron-right" size={20} opacity={0.3} />
+            </Surface>
           </TouchableOpacity>
         )}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.5} // Trigger when half-way through the last visible item
-        initialNumToRender={10}     // Reduce initial heavy lifting
-        maxToRenderPerBatch={10}    // Don't overwhelm the bridge
-        windowSize={5}              // Amount of content kept rendered (lower = less memory)
-        removeClippedSubviews={true} // Unmount off-screen components
-        stickySectionHeadersEnabled={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
       />
 
-      {/* MODAL CARD DETAIL (Reference View) */}
-      <Modal visible={!!selectedCard} animationType="slide" onRequestClose={() => setSelectedCard(null)}>
-         <View style={[styles.modalContainer, { backgroundColor: theme.colors.background }]}>
+      {/* MODAL CARD STUDY */}
+      <Modal visible={!!selectedCard} animationType="slide" transparent>
+         <View style={[styles.modalOverlay, { backgroundColor: theme.colors.background }]}>
             {selectedCard && (
-                <ScrollView contentContainerStyle={{ padding: 24, alignItems: 'center' }}>
+                <View style={{ flex: 1 }}>
+                    {/* CLOSE BUTTON */}
                     <IconButton 
-                        icon="chevron-down" 
-                        size={30} 
-                        style={{ alignSelf: 'flex-start' }}
+                        icon="close" 
+                        size={28} 
+                        style={styles.closeBtn}
                         onPress={() => setSelectedCard(null)} 
                     />
-                    
-                    <CardImage 
-                        deckId={activeDeckId} 
-                        cardId={selectedCard.id} 
-                        style={styles.largeImage} 
-                    />
 
-                    <Text variant="headlineMedium" style={styles.cardTitle}>
-                        {t(`decks:${activeDeckId}.cards.${selectedCard.id}.name`)}
-                    </Text>
-                    
-                    <View style={styles.metaContainer}>
-                        <Chip icon="cards-outline" style={{ marginRight: 8 }}>
-                            {selectedCard.meta.type.toUpperCase()}
-                        </Chip>
-                        {selectedCard.meta.suit && (
-                            <Chip icon="water-outline">
-                                {selectedCard.meta.suit.toUpperCase()}
-                            </Chip>
-                        )}
-                    </View>
+                    <ScrollView contentContainerStyle={styles.modalContent}>
+                        <View style={styles.imageShadowFrame}>
+                            <CardImage 
+                                deckId={activeDeckId} 
+                                cardId={selectedCard.id} 
+                                style={styles.largeImage} 
+                            />
+                        </View>
 
-                    <Text variant="bodyLarge" style={styles.keywords}>
-                        {t(`decks:${activeDeckId}.cards.${selectedCard.id}.keywords`)}
-                    </Text>
-                    
-                    <Button 
-                        mode="contained" 
-                        icon="creation" 
-                        onPress={handleAnalyzeSymbolism}
-                        style={{ marginTop: 32, width: '100%' }}
-                    >
-                        {t('common:interpreta', "Interpret")}
-                    </Button>
-                </ScrollView>
+                        <Text variant="headlineMedium" style={styles.modalCardTitle}>
+                            {t(`decks:${activeDeckId}.cards.${selectedCard.id}.name`)}
+                        </Text>
+                        
+                        <View style={styles.badgeRow}>
+                            <View style={styles.tagBadge}>
+                                <Text style={styles.tagText}>{selectedCard.meta.type.toUpperCase()}</Text>
+                            </View>
+                            {selectedCard.meta.suit && (
+                                <View style={styles.tagBadge}>
+                                    <Text style={styles.tagText}>{selectedCard.meta.suit.toUpperCase()}</Text>
+                                </View>
+                            )}
+                        </View>
+
+                        <Surface style={styles.keywordsBox} elevation={0}>
+                            <Text variant="bodyLarge" style={styles.keywordsText}>
+                                {t(`decks:${activeDeckId}.cards.${selectedCard.id}.keywords`)}
+                            </Text>
+                        </Surface>
+                        
+                        <Button 
+                            mode="contained" 
+                            icon="creation" 
+                            onPress={handleAnalyzeSymbolism}
+                            style={styles.studyButton}
+                            contentStyle={{ height: 54 }}
+                        >
+                            {t('common:study_symbolism', "Study Symbolism")}
+                        </Button>
+                        
+                        <View style={styles.footerSpacing} />
+                    </ScrollView>
+                </View>
             )}
          </View>
       </Modal>
 
-      {/* MODAL AI RESULT */}
       <InterpretationModal
         visible={aiModalVisible}
         onClose={() => setAiModalVisible(false)}
         isLoading={isLoading}
         content={result}
         error={error}
-        title={`Studio: ${selectedCard ? t(`decks:${activeDeckId}.cards.${selectedCard.id}.name`) : ''}`}
+        title={selectedCard ? t(`decks:${activeDeckId}.cards.${selectedCard.id}.name`) : ''}
       />
-
     </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionHeader: {
-    paddingVertical: 8,
-    marginTop: 16,
+  header: {
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  title: {
+    fontFamily: 'serif',
     fontWeight: 'bold',
-    backgroundColor: 'transparent'
+  },
+  accentLine: {
+    height: 3,
+    width: 30,
+    marginTop: 8,
+    borderRadius: 2,
+  },
+  searchBar: {
+    marginBottom: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    marginTop: 8,
+    gap: 8,
+  },
+  sectionHeaderText: {
+    letterSpacing: 2,
+    fontWeight: 'bold',
+    opacity: 0.7,
   },
   cardItem: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 12,
-    padding: 8,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    borderRadius: 8,
+    padding: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
   },
   thumbnail: {
-    width: 40,
-    height: 70,
-    borderRadius: 4,
+    width: 50,
+    height: 85,
+    borderRadius: 8,
   },
-  modalContainer: {
+  itemInfo: {
+    flex: 1,
+    marginLeft: 16,
+  },
+  cardName: {
+    fontFamily: 'serif',
+    fontWeight: 'bold',
+  },
+  cardMeta: {
+    opacity: 0.4,
+    marginTop: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  modalOverlay: {
       flex: 1,
   },
-  largeImage: {
-      width: 250,
-      height: 400,
-      borderRadius: 16,
-      marginBottom: 24,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 10 },
-      shadowOpacity: 0.5,
-      shadowRadius: 10,
+  closeBtn: {
+      position: 'absolute',
+      top: 40,
+      left: 10,
+      zIndex: 10,
   },
-  cardTitle: {
+  modalContent: {
+      paddingTop: 80,
+      paddingHorizontal: 24,
+      alignItems: 'center',
+  },
+  imageShadowFrame: {
+      elevation: 20,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 15 },
+      shadowOpacity: 0.6,
+      shadowRadius: 20,
+      marginBottom: 32,
+  },
+  largeImage: {
+      width: width * 0.65,
+      height: height * 0.5,
+      borderRadius: 20,
+  },
+  modalCardTitle: {
       fontWeight: 'bold',
       fontFamily: 'serif',
-      marginBottom: 16,
+      marginBottom: 12,
       textAlign: 'center',
   },
-  metaContainer: {
+  badgeRow: {
       flexDirection: 'row',
-      marginBottom: 16,
+      gap: 10,
+      marginBottom: 24,
   },
-  keywords: {
+  tagBadge: {
+      backgroundColor: 'rgba(255,255,255,0.06)',
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.1)',
+  },
+  tagText: {
+      fontSize: 10,
+      fontWeight: 'bold',
+      letterSpacing: 1,
+  },
+  keywordsBox: {
+      padding: 20,
+      backgroundColor: 'rgba(255,255,255,0.02)',
+      borderRadius: 16,
+      width: '100%',
+      borderWidth: 1,
+      borderColor: 'rgba(255,255,255,0.05)',
+  },
+  keywordsText: {
       textAlign: 'center',
       opacity: 0.7,
       fontStyle: 'italic',
+      fontFamily: 'serif',
+      lineHeight: 24,
+  },
+  studyButton: {
+      marginTop: 32,
+      width: '100%',
+      borderRadius: 12,
+  },
+  footerSpacing: {
+      height: 60,
   }
 });
 

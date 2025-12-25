@@ -1,12 +1,12 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, View, ViewStyle, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, StyleSheet, View, ViewStyle, TouchableOpacity, Platform } from 'react-native';
 import { CardImage } from './CardImage';
 
 interface Props {
   deckId: string;
-  cardId: string | null; // Null = mostriamo il retro
-  isReversed?: boolean;  // Se la carta è al rovescio
-  onFlip?: () => void;   // Callback quando l'utente tocca per girare
+  cardId: string | null; 
+  isReversed?: boolean;  
+  onFlip?: () => void;   
   style?: ViewStyle;
   width?: number;
   height?: number;
@@ -21,70 +21,119 @@ export const CardFlip: React.FC<Props> = ({
   width = 200, 
   height = 340 
 }) => {
-  // 0 = Back, 180 = Front
-  const animatedValue = useRef(new Animated.Value(0)).current;
+  // Flip: 0 (Back) to 180 (Front)
+  const flipAnim = useRef(new Animated.Value(0)).current;
+  // Scale: Subtle pop effect when flipping
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  
+  const [isFlipped, setIsFlipped] = useState(!!cardId);
 
-  // If cardId 180 (Front)
-  // If not 0 (Back)
   useEffect(() => {
-    Animated.spring(animatedValue, {
-      toValue: cardId ? 180 : 0,
-      friction: 8,
-      tension: 10,
-      useNativeDriver: true,
-    }).start();
+    const shouldBeFlipped = !!cardId;
+    
+    // Trigger the sequence: Scale Up -> Rotate -> Scale Down
+    Animated.parallel([
+      Animated.spring(flipAnim, {
+        toValue: shouldBeFlipped ? 180 : 0,
+        friction: 7,
+        tension: 15,
+        useNativeDriver: true,
+      }),
+      Animated.sequence([
+        Animated.timing(scaleAnim, {
+          toValue: 1.08,
+          duration: 150,
+          useNativeDriver: true,
+        }),
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          friction: 6,
+          useNativeDriver: true,
+        }),
+      ])
+    ]).start(() => {
+        setIsFlipped(shouldBeFlipped);
+    });
   }, [cardId]);
 
-  // Front Interpolation (visible from 90 to 270)
+  // Front Interpolation
   const frontAnimatedStyle = {
     transform: [
-      { rotateY: animatedValue.interpolate({
+      { perspective: 1000 },
+      { rotateY: flipAnim.interpolate({
         inputRange: [0, 180],
         outputRange: ['180deg', '360deg'],
       })},
-      // Reverse
-      { rotateZ: isReversed ? '180deg' : '0deg' }
+      { rotateZ: isReversed ? '180deg' : '0deg' },
+      { scale: scaleAnim }
     ],
-    opacity: animatedValue.interpolate({
+    opacity: flipAnim.interpolate({
         inputRange: [89, 90],
-        outputRange: [0, 1], // Half visible
+        outputRange: [0, 1],
     })
   };
 
-  // Back Interpolation (visible from 0 to 90)
+  // Back Interpolation
   const backAnimatedStyle = {
     transform: [
-      { rotateY: animatedValue.interpolate({
+      { perspective: 1000 },
+      { rotateY: flipAnim.interpolate({
         inputRange: [0, 180],
         outputRange: ['0deg', '180deg'],
-      })}
+      })},
+      { scale: scaleAnim }
     ],
-    opacity: animatedValue.interpolate({
+    opacity: flipAnim.interpolate({
         inputRange: [89, 90],
-        outputRange: [1, 0], // Half invisible
+        outputRange: [1, 0],
     })
   };
+
+  // Dynamic Shadow based on Flip Angle
+  const shadowOpacity = flipAnim.interpolate({
+    inputRange: [0, 90, 180],
+    outputRange: [0.3, 0.6, 0.3], // Higher shadow in mid-air
+  });
 
   return (
     <TouchableOpacity 
-      activeOpacity={1} 
+      activeOpacity={0.9} 
       onPress={onFlip} 
-      disabled={!!cardId} // Disable click on flipped card
+      disabled={!!cardId} 
       style={[style, { width, height }]}
     >
-      <View style={styles.container}>
-        {/* BACK */}
-        <Animated.View style={[styles.cardFace, backAnimatedStyle]}>
+      <Animated.View style={[
+          styles.container, 
+          { shadowOpacity: shadowOpacity }
+      ]}>
+        
+        {/* BACK FACE */}
+        <Animated.View 
+            style={[styles.cardFace, backAnimatedStyle, { zIndex: isFlipped ? 1 : 2 }]}
+            pointerEvents={isFlipped ? 'none' : 'auto'}
+        >
           <CardImage deckId={deckId} style={styles.image} />
+          {/* Subtle "Light Glint" during flip */}
+          <Animated.View style={[styles.glint, {
+              opacity: flipAnim.interpolate({
+                  inputRange: [0, 90, 180],
+                  outputRange: [0, 0.2, 0]
+              })
+          }]} />
         </Animated.View>
 
-        {/* FRONT (Card Image) */}
-        <Animated.View style={[styles.cardFace, frontAnimatedStyle]}>
-          {cardId && (
-            <CardImage deckId={deckId} cardId={cardId} style={styles.image} />
-          )}
+        {/* FRONT FACE */}
+        <Animated.View 
+            style={[styles.cardFace, frontAnimatedStyle, { zIndex: isFlipped ? 2 : 1 }]}
+            pointerEvents={isFlipped ? 'auto' : 'none'}
+        >
+          <CardImage 
+            deckId={deckId} 
+            cardId={cardId || undefined} 
+            style={styles.image} 
+          />
         </Animated.View>
-      </View>
+      </Animated.View>
     </TouchableOpacity>
   );
 };
@@ -92,6 +141,11 @@ export const CardFlip: React.FC<Props> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    // Base shadow config
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowRadius: 15,
+    elevation: 10,
   },
   cardFace: {
     position: 'absolute',
@@ -100,10 +154,21 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backfaceVisibility: 'hidden',
+    // Required for Android z-index quirks
+    ...Platform.select({
+        android: {
+            backgroundColor: 'transparent',
+        }
+    })
   },
   image: {
     width: '100%',
     height: '100%',
-    borderRadius: 12,
+    borderRadius: 14,
+  },
+  glint: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: '#FFF',
+      borderRadius: 14,
   }
 });

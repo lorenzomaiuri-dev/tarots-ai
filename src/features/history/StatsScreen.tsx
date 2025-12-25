@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { Text, useTheme, Surface, ProgressBar, Divider } from 'react-native-paper';
+import { View, ScrollView, StyleSheet, Dimensions } from 'react-native';
+import { Text, useTheme, Surface, ProgressBar, Divider, Avatar, IconButton } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { ScreenContainer } from '../ScreenContainer';
 import { useHistoryStore } from '../../store/useHistoryStore';
@@ -15,71 +15,84 @@ const StatsScreen = () => {
   const { readings } = useHistoryStore();
   const { activeDeckId } = useSettingsStore();
 
-  // 1. Get the deck definition
   const deck = useMemo(() => getDeck(activeDeckId), [activeDeckId]);
-  
-  // 2. Calculate stats
   const stats = useMemo(() => calculateStats(readings, activeDeckId), [readings, activeDeckId]);
+
+  // Map suit/group keys to mystical icons
+  const getGroupIcon = (key: string) => {
+    switch (key.toLowerCase()) {
+      case 'swords': return 'sword';
+      case 'cups': return 'cup-water';
+      case 'wands': return 'auto-fix'; // or 'magic-staff'
+      case 'pentacles': return 'pentagram';
+      case 'major': return 'star-shooting';
+      default: return 'cards-diamond';
+    }
+  };
 
   return (
     <ScreenContainer>
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-        <Text variant="headlineSmall" style={styles.header}>
-            {t('common:insights', 'Insights')}
-        </Text>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        
+        {/* HEADER */}
+        <View style={styles.headerContainer}>
+            <Text variant="headlineMedium" style={styles.headerTitle}>
+                {t('common:insights', 'Your Patterns')}
+            </Text>
+            <Text variant="labelLarge" style={[styles.headerSubtitle, { color: theme.colors.primary }]}>
+                {t('common:stats_subtitle', 'ELEMENTAL ALIGNMENT')}
+            </Text>
+        </View>
 
-        {/* SUMMARY CARDS */}
-        <View style={styles.row}>
-            <Surface style={[styles.statBox, { backgroundColor: theme.colors.primaryContainer }]}>
-                <Text variant="displaySmall" style={{ fontWeight: 'bold', color: theme.colors.onPrimaryContainer }}>
-                    {stats.totalReadings}
-                </Text>
-                <Text variant="labelMedium" style={{ color: theme.colors.onPrimaryContainer }}>
-                    {t('common:total_readings', 'Total Readings')}
-                </Text>
+        {/* TOP LEVEL STATS TILES */}
+        <View style={styles.summaryRow}>
+            <Surface style={styles.summaryTile} elevation={1}>
+                <Text variant="headlineMedium" style={styles.summaryNumber}>{stats.totalReadings}</Text>
+                <Text variant="labelSmall" style={styles.summaryLabel}>{t('common:readings', 'READINGS')}</Text>
             </Surface>
             
-            <Surface style={[styles.statBox, { backgroundColor: theme.colors.secondaryContainer }]}>
-                <Text variant="displaySmall" style={{ fontWeight: 'bold', color: theme.colors.onSecondaryContainer }}>
-                    {stats.totalCards}
-                </Text>
-                <Text variant="labelMedium" style={{ color: theme.colors.onSecondaryContainer }}>
-                    {t('common:drawn_cards', 'Drawn Cards')}
-                </Text>
+            <Surface style={styles.summaryTile} elevation={1}>
+                <Text variant="headlineMedium" style={styles.summaryNumber}>{stats.totalCards}</Text>
+                <Text variant="labelSmall" style={styles.summaryLabel}>{t('common:cards', 'CARDS')}</Text>
             </Surface>
         </View>
 
-        <Divider style={{ marginVertical: 24 }} />
-
-        {/* TOP CARD */}
+        {/* TOP CARD SPOTLIGHT */}
         {stats.topCardId && (
-            <View style={styles.section}>
-                <Text variant="titleMedium" style={styles.sectionTitle}>{t('common:recurring_card_title', 'Your recurring card')}</Text>
-                <View style={styles.topCardContainer}>
-                    <CardImage 
-                        deckId={activeDeckId} 
-                        cardId={stats.topCardId} 
-                        style={styles.topCardImage} 
-                    />
-                    <View style={{ marginLeft: 16, flex: 1 }}>
-                        <Text variant="titleLarge" style={{ fontWeight: 'bold' }}>
+            <Surface style={styles.spotlightCard} elevation={2}>
+                <View style={[styles.spotlightGlow, { backgroundColor: theme.colors.primary, opacity: 0.1 }]} />
+                <Text variant="labelMedium" style={styles.spotlightHeader}>
+                    {t('common:recurring_card_title', 'THE RECURRING SHADOW')}
+                </Text>
+                
+                <View style={styles.spotlightContent}>
+                    <View style={styles.cardFrame}>
+                        <CardImage 
+                            deckId={activeDeckId} 
+                            cardId={stats.topCardId} 
+                            style={styles.spotlightImage} 
+                        />
+                    </View>
+                    
+                    <View style={styles.spotlightText}>
+                        <Text variant="titleLarge" style={styles.topCardName}>
                             {t(`decks:${activeDeckId}.cards.${stats.topCardId}.name`)}
                         </Text>
-                        <Text variant="bodyMedium">
-                            {t('common:drawn', 'Drawn')} {stats.topCardCount} {t('common:times', 'times')}
-                        </Text>
-                        <Text variant="bodySmall" style={{ marginTop: 8, opacity: 0.7 }}>
-                          {t('common:recurring_card_message', 'This card seems to always come to you...')}
+                        <View style={styles.countBadge}>
+                            <Text style={styles.countBadgeText}>
+                                {stats.topCardCount} {t('common:times', 'times')}
+                            </Text>
+                        </View>
+                        <Text variant="bodySmall" style={styles.spotlightDesc}>
+                          {t('common:recurring_card_message', 'This energy consistently manifests in your journey.')}
                         </Text>
                     </View>
                 </View>
-            </View>
+            </Surface>
         )}
 
-        <Divider style={{ marginVertical: 24 }} />
-
-        {/* DYNAMIC SUIT DISTRIBUTION */}
-        <View style={styles.section}>
+        {/* ELEMENTAL BALANCE SECTION */}
+        <Surface style={styles.balanceSection} elevation={1}>
           <Text variant="titleMedium" style={styles.sectionTitle}>
             {t('common:elemental_balance_title', 'Elemental Balance')}
           </Text>
@@ -89,64 +102,178 @@ const StatsScreen = () => {
             const percentage = stats.totalCards > 0 ? count / stats.totalCards : 0;
 
             return (
-              <View key={groupKey} style={{ marginBottom: 12 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <Text variant="bodyMedium">
-                    {/* Translate using the labelKey from JSON */}
-                    {t(`common:${config.labelKey}`, groupKey)}
-                  </Text>
-                  <Text variant="bodyMedium" style={{ fontWeight: 'bold' }}>
+              <View key={groupKey} style={styles.progressItem}>
+                <View style={styles.progressLabelRow}>
+                  <View style={styles.iconAndLabel}>
+                    <Avatar.Icon 
+                        size={24} 
+                        icon={getGroupIcon(groupKey)} 
+                        style={{ backgroundColor: 'transparent' }} 
+                        color={config.color || theme.colors.onSurface}
+                    />
+                    <Text variant="bodyMedium" style={styles.groupName}>
+                        {t(`common:${config.labelKey}`, groupKey)}
+                    </Text>
+                  </View>
+                  <Text variant="labelLarge" style={{ fontWeight: 'bold' }}>
                     {Math.round(percentage * 100)}%
                   </Text>
                 </View>
                 <ProgressBar 
                   progress={percentage} 
                   color={config.color} 
-                  style={{ height: 8, borderRadius: 4 }} 
+                  style={styles.progressBar} 
                 />
               </View>
             );
           })}
-        </View>
+        </Surface>
+
       </ScrollView>
     </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  header: {
-    marginVertical: 16,
+  scrollContent: {
+    paddingBottom: 60,
+  },
+  headerContainer: {
+    marginTop: 20,
+    marginBottom: 30,
+    paddingHorizontal: 4,
+  },
+  headerTitle: {
+    fontFamily: 'serif',
     fontWeight: 'bold',
+  },
+  headerSubtitle: {
+    letterSpacing: 2,
+    marginTop: 4,
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 24,
+  },
+  summaryTile: {
+    flex: 1,
+    paddingVertical: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  summaryNumber: {
+    fontWeight: '900',
     fontFamily: 'serif',
   },
-  row: {
+  summaryLabel: {
+    opacity: 0.5,
+    letterSpacing: 1,
+    marginTop: 4,
+  },
+  spotlightCard: {
+    padding: 24,
+    borderRadius: 28,
+    marginBottom: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    overflow: 'hidden',
+  },
+  spotlightGlow: {
+    position: 'absolute',
+    top: -50,
+    right: -50,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+  },
+  spotlightHeader: {
+    letterSpacing: 2,
+    opacity: 0.6,
+    marginBottom: 20,
+    textAlign: 'center',
+    fontSize: 12,
+  },
+  spotlightContent: {
     flexDirection: 'row',
-    gap: 12,
-  },
-  statBox: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 16,
     alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
   },
-  section: {
-    marginBottom: 8,
+  cardFrame: {
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+  },
+  spotlightImage: {
+    width: 100,
+    height: 170,
+    borderRadius: 12,
+  },
+  spotlightText: {
+    flex: 1,
+    marginLeft: 20,
+  },
+  topCardName: {
+    fontFamily: 'serif',
+    fontWeight: 'bold',
+    lineHeight: 28,
+  },
+  countBadge: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginVertical: 8,
+  },
+  countBadgeText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  spotlightDesc: {
+    opacity: 0.5,
+    fontStyle: 'italic',
+    lineHeight: 18,
+  },
+  balanceSection: {
+    padding: 24,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   sectionTitle: {
-    marginBottom: 16,
+    fontFamily: 'serif',
     fontWeight: 'bold',
-    opacity: 0.8,
+    marginBottom: 24,
+    textAlign: 'center',
   },
-  topCardContainer: {
+  progressItem: {
+    marginBottom: 20,
+  },
+  progressLabelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  iconAndLabel: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  topCardImage: {
-    width: 80,
-    height: 130,
-    borderRadius: 8,
+  groupName: {
+    marginLeft: 4,
+    fontWeight: '600',
+  },
+  progressBar: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.05)',
   }
 });
 
