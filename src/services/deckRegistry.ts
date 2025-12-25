@@ -16,7 +16,7 @@ type DeckBundle = {
 const DECK_MANIFEST: Record<string, () => DeckBundle> = {
   'rider-waite': () => ({
     data: require('../data/decks/rider-waite/deck.json'),
-    images: require('../data/decks//rider-waite/images').default,
+    images: require('../data/decks/rider-waite/images').default,
     translations: {
       en: require('../locales/en/decks/rider-waite.json'),
       it: require('../locales/it/decks/rider-waite.json'),
