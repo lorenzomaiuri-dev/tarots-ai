@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Linking, Alert } from 'react-native';
+import { ScrollView, Linking, Alert } from 'react-native';
 import { 
   List, 
   Switch, 
@@ -144,7 +144,9 @@ const SettingsScreen = () => {
 
   return (
     <ScreenContainer>
-      {/* READING */}
+
+      <ScrollView>
+        {/* READING */}
       <List.Section>
         <List.Subheader>{t('common:reading', "Reading")}</List.Subheader>
         <List.Item
@@ -221,6 +223,7 @@ const SettingsScreen = () => {
           onPress={handleImport}
         />
       </List.Section>
+      </ScrollView>      
 
       {/* --- DIALOG THEME --- */}
       <Portal>
