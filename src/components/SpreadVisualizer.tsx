@@ -79,7 +79,7 @@ export const SpreadVisualizer: React.FC<Props> = ({
                   If the card is rotated (crossing), move the label to the side 
                   so it doesn't overlap the vertical card's label.
                 */}
-                {!drawn && (
+                {(
                   <View 
                     pointerEvents="none"
                     style={[
