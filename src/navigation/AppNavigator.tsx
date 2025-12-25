@@ -95,7 +95,7 @@ export const AppNavigator = () => {
       <Stack.Screen 
         name="DeckSelection" 
         component={DeckSelectionScreen} 
-        options={{ title: 'Seleziona Mazzo' }} 
+        options={{ title: t('common:deck_selection_title', 'Select Deck') }} 
       />
       <Stack.Screen 
         name="SpreadSelection" 
