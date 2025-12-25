@@ -83,6 +83,7 @@ export const SpreadVisualizer: React.FC<Props> = ({
                         {t(`spreads:${spread.id}.positions.${slot.label}.label`)}
                     </Text>
                 )}
+                {/* TODO: FIX TEXT AND BADGE IN OVERLAPPING CARDS */}
 
                 <TouchableOpacity 
                     onPress={() => !drawn && onSlotPress(slot.id)}

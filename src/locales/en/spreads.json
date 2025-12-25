@@ -1,18 +1,96 @@
 {
   "one-card": {
-    "name": "Single Card",
-    "description": "A single answer",
-    "positions": {
-      "0": { "label": "The Response", "description": "The Main Energy" }
+      "name": "Single Card",
+      "positions": {
+        "main": {
+          "label": "The Core Message"
+        }
+      }
+    },
+    "three-card": {
+      "name": "Past, Present, Future",
+      "positions": {
+        "past": {
+          "label": "Past Influences"
+        },
+        "present": {
+          "label": "Current Situation"
+        },
+        "future": {
+          "label": "Potential Outcome"
+        }
+      }
+    },
+    "relationship": {
+      "name": "Relationship Spread",
+      "positions": {
+        "you": {
+          "label": "You / Your Role"
+        },
+        "partner": {
+          "label": "Partner / The Other"
+        },
+        "dynamic": {
+          "label": "The Connection"
+        },
+        "outcome": {
+          "label": "Long-term Potential"
+        }
+      }
+    },
+    "five-card-cross": {
+      "name": "Five Card Cross",
+      "positions": {
+        "present": {
+          "label": "The Heart of the Matter"
+        },
+        "obstacle": {
+          "label": "The Challenge"
+        },
+        "advice": {
+          "label": "The Advice"
+        },
+        "outcome": {
+          "label": "Final Result"
+        },
+        "potential": {
+          "label": "Hidden Potential"
+        }
+      }
+    },
+    "celtic-cross": {
+      "name": "Celtic Cross",
+      "positions": {
+        "present": {
+          "label": "The Present"
+        },
+        "challenge": {
+          "label": "Immediate Challenge"
+        },
+        "conscious": {
+          "label": "Conscious Thoughts"
+        },
+        "subconscious": {
+          "label": "Subconscious Roots"
+        },
+        "past": {
+          "label": "The Past"
+        },
+        "future": {
+          "label": "Near Future"
+        },
+        "attitude": {
+          "label": "Your Attitude"
+        },
+        "environment": {
+          "label": "External Influences"
+        },
+        "hopes_fears": {
+          "label": "Hopes and Fears"
+        },
+        "outcome": {
+          "label": "Final Outcome"
+        }
+      }
     }
-  },
-  "three-card": {
-    "name": "Past, Present, Future",
-    "description": "Temporal Analysis of the situation",
-    "positions": {
-      "past": { "label": "Past", "description": "Past Influences" },
-      "present": { "label": "Present", "description": "Current Situation" },
-      "future": { "label": "Future", "description": "Possible evolution" }
-    }
-  }
 }

@@ -1,18 +1,96 @@
 {
   "one-card": {
     "name": "Carta Singola",
-    "description": "Una risposta secca e immediata",
     "positions": {
-      "0": { "label": "Il responso", "description": "L'energia principale" }
+      "main": {
+        "label": "Il Messaggio Centrale"
+      }
     }
   },
   "three-card": {
     "name": "Passato, Presente, Futuro",
-    "description": "Analisi temporale della situazione",
     "positions": {
-      "past": { "label": "Passato", "description": "Influenze passate" },
-      "present": { "label": "Presente", "description": "Situazione attuale" },
-      "future": { "label": "Futuro", "description": "Possibile evoluzione" }
+      "past": {
+        "label": "Influenze Passate"
+      },
+      "present": {
+        "label": "Situazione Attuale"
+      },
+      "future": {
+        "label": "Esito Potenziale"
+      }
+    }
+  },
+  "relationship": {
+    "name": "Stesa della Relazione",
+    "positions": {
+      "you": {
+        "label": "Tu / Il Tuo Ruolo"
+      },
+      "partner": {
+        "label": "Partner / L'Altro"
+      },
+      "dynamic": {
+        "label": "Il Legame"
+      },
+      "outcome": {
+        "label": "Potenziale a Lungo Termine"
+      }
+    }
+  },
+  "five-card-cross": {
+    "name": "Croce a Cinque Carte",
+    "positions": {
+      "present": {
+        "label": "Il Cuore della Questione"
+      },
+      "obstacle": {
+        "label": "La Sfida"
+      },
+      "advice": {
+        "label": "Il Consiglio"
+      },
+      "outcome": {
+        "label": "Risultato Finale"
+      },
+      "potential": {
+        "label": "Potenziale Nascosto"
+      }
+    }
+  },
+  "celtic-cross": {
+    "name": "Croce Celtica",
+    "positions": {
+      "present": {
+        "label": "Il Presente"
+      },
+      "challenge": {
+        "label": "Sfida Immediata"
+      },
+      "conscious": {
+        "label": "Pensieri Consci"
+      },
+      "subconscious": {
+        "label": "Radici Subconsce"
+      },
+      "past": {
+        "label": "Il Passato"
+      },
+      "future": {
+        "label": "Futuro Prossimo"
+      },
+      "attitude": {
+        "label": "Il Tuo Atteggiamento"
+      },
+      "environment": {
+        "label": "Influenze Esterne"
+      },
+      "hopes_fears": {
+        "label": "Speranze e Paure"
+      },
+      "outcome": {
+        "label": "Esito Finale"
+      }
     }
   }
 }
