@@ -148,60 +148,60 @@
       "name": "Le Monde (The World)",
       "keywords": "Completion, integration, travel, fulfillment"
     },
-    "pentacles_01": {
-      "name": "Ace of Pentacles",
+    "coins_01": {
+      "name": "Ace of Coins",
       "keywords": "Prosperity, physical seed, grounding, wealth"
     },
-    "pentacles_02": {
-      "name": "Two of Pentacles",
+    "coins_02": {
+      "name": "Two of Coins",
       "keywords": "Adaptability, juggling, change, balance"
     },
-    "pentacles_03": {
-      "name": "Three of Pentacles",
+    "coins_03": {
+      "name": "Three of Coins",
       "keywords": "Collaboration, craftsmanship, skill, work"
     },
-    "pentacles_04": {
-      "name": "Four of Pentacles",
+    "coins_04": {
+      "name": "Four of Coins",
       "keywords": "Conservation, security, hoarding, boundaries"
     },
-    "pentacles_05": {
-      "name": "Five of Pentacles",
+    "coins_05": {
+      "name": "Five of Coins",
       "keywords": "Financial strain, isolation, worry, hard times"
     },
-    "pentacles_06": {
-      "name": "Six of Pentacles",
+    "coins_06": {
+      "name": "Six of Coins",
       "keywords": "Generosity, sharing, charity, reciprocity"
     },
-    "pentacles_07": {
-      "name": "Seven of Pentacles",
+    "coins_07": {
+      "name": "Seven of Coins",
       "keywords": "Patience, harvest, evaluation, long-term views"
     },
-    "pentacles_08": {
-      "name": "Eight of Pentacles",
+    "coins_08": {
+      "name": "Eight of Coins",
       "keywords": "Diligence, mastery, repetitive task, focus"
     },
-    "pentacles_09": {
-      "name": "Nine of Pentacles",
+    "coins_09": {
+      "name": "Nine of Coins",
       "keywords": "Independence, luxury, self-sufficiency, comfort"
     },
-    "pentacles_10": {
-      "name": "Ten of Pentacles",
+    "coins_10": {
+      "name": "Ten of Coins",
       "keywords": "Legacy, inheritance, wealth, family foundations"
     },
-    "pentacles_11": {
-      "name": "Page of Pentacles",
+    "coins_11": {
+      "name": "Page of Coins",
       "keywords": "Student, practicality, new venture, news"
     },
-    "pentacles_12": {
-      "name": "Knight of Pentacles",
+    "coins_12": {
+      "name": "Knight of Coins",
       "keywords": "Methodical, reliable, routine, hard work"
     },
-    "pentacles_13": {
-      "name": "Queen of Pentacles",
+    "coins_13": {
+      "name": "Queen of Coins",
       "keywords": "Nurturing, fertility, domesticity, sensuality"
     },
-    "pentacles_14": {
-      "name": "King of Pentacles",
+    "coins_14": {
+      "name": "King of Coins",
       "keywords": "Financial power, security, management, success"
     },
     "swords_01": {

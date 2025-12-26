@@ -1,5 +1,5 @@
 export type CardType = 'major' | 'minor' | 'oracle' | 'other';
-export type CardSuit = 'wands' | 'cups' | 'swords' | 'pentacles' | 'none';
+export type CardSuit = 'wands' | 'cups' | 'swords' | 'pentacles' | 'coins' | 'none';
 
 export interface DeckGroup {
   color: string;

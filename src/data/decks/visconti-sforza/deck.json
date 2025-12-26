@@ -7,7 +7,7 @@
       "wands": { "color": "#D84315", "labelKey": "wands_stats_title" },
       "cups": { "color": "#1976D2", "labelKey": "cups_stats_title" },
       "swords": { "color": "#455A64", "labelKey": "swords_stats_title" },
-      "pentacles": { "color": "#2E7D32", "labelKey": "pentacles_stats_title" }
+      "coins": { "color": "#2E7D32", "labelKey": "coins_stats_title" }
     }
   },
   "cards": [
@@ -652,141 +652,141 @@
       "sortIndex": 63
     },
     {
-      "id": "pentacles_01",
-      "image": "pentacles_01",
+      "id": "coins_01",
+      "image": "coins_01",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 1
       },
       "sortIndex": 64
     },
     {
-      "id": "pentacles_02",
-      "image": "pentacles_02",
+      "id": "coins_02",
+      "image": "coins_02",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 2
       },
       "sortIndex": 65
     },
     {
-      "id": "pentacles_03",
-      "image": "pentacles_03",
+      "id": "coins_03",
+      "image": "coins_03",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 3
       },
       "sortIndex": 66
     },
     {
-      "id": "pentacles_04",
-      "image": "pentacles_04",
+      "id": "coins_04",
+      "image": "coins_04",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 4
       },
       "sortIndex": 67
     },
     {
-      "id": "pentacles_05",
-      "image": "pentacles_05",
+      "id": "coins_05",
+      "image": "coins_05",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 5
       },
       "sortIndex": 68
     },
     {
-      "id": "pentacles_06",
-      "image": "pentacles_06",
+      "id": "coins_06",
+      "image": "coins_06",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 6
       },
       "sortIndex": 69
     },
     {
-      "id": "pentacles_07",
-      "image": "pentacles_07",
+      "id": "coins_07",
+      "image": "coins_07",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 7
       },
       "sortIndex": 70
     },
     {
-      "id": "pentacles_08",
-      "image": "pentacles_08",
+      "id": "coins_08",
+      "image": "coins_08",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 8
       },
       "sortIndex": 71
     },
     {
-      "id": "pentacles_09",
-      "image": "pentacles_09",
+      "id": "coins_09",
+      "image": "coins_09",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 9
       },
       "sortIndex": 72
     },
     {
-      "id": "pentacles_10",
-      "image": "pentacles_10",
+      "id": "coins_10",
+      "image": "coins_10",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 10
       },
       "sortIndex": 73
     },
     {
-      "id": "pentacles_11",
-      "image": "pentacles_11",
+      "id": "coins_11",
+      "image": "coins_11",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 11
       },
       "sortIndex": 74
     },
     {
-      "id": "pentacles_12",
-      "image": "pentacles_12",
+      "id": "coins_12",
+      "image": "coins_12",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 12
       },
       "sortIndex": 75
     },
     {
-      "id": "pentacles_13",
-      "image": "pentacles_13",
+      "id": "coins_13",
+      "image": "coins_13",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 13
       },
       "sortIndex": 76
     },
     {
-      "id": "pentacles_14",
-      "image": "pentacles_14",
+      "id": "coins_14",
+      "image": "coins_14",
       "meta": {
         "type": "minor",
-        "suit": "pentacles",
+        "suit": "coins",
         "number": 14
       },
       "sortIndex": 77

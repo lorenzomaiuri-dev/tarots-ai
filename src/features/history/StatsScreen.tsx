@@ -35,6 +35,7 @@ const StatsScreen = () => {
       case 'cups': return 'cup-water';
       case 'wands': return 'auto-fix';
       case 'pentacles': return 'pentagram';
+      case 'coins': return 'pentagram';
       case 'major': return 'star-shooting';
       default: return 'cards-diamond';
     }
