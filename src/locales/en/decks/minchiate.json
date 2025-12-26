@@ -1,0 +1,396 @@
+{
+  "info": {
+    "name": "Minchiate Fiorentine",
+    "description": "An expanded 97-card deck from Florence, featuring additional trumps for the Zodiac, Elements, and Virtues. Notable for its centaur knights and unique hierarchy."
+  },
+  "cards": {
+    "coins_01": {
+      "name": "Ace of Coins",
+      "keywords": "Prosperity, new opportunity, seed of wealth"
+    },
+    "coins_02": {
+      "name": "Two of Coins",
+      "keywords": "Balance, adaptability, juggling priorities"
+    },
+    "coins_03": {
+      "name": "Three of Coins",
+      "keywords": "Teamwork, craftsmanship, initial progress"
+    },
+    "coins_04": {
+      "name": "Four of Coins",
+      "keywords": "Hannibal on his elephant, Stability, Security, Historical Power, Strategy"
+    },
+    "coins_05": {
+      "name": "Five of Coins",
+      "keywords": "Hardship, financial loss, isolation"
+    },
+    "coins_06": {
+      "name": "Six of Coins",
+      "keywords": "Generosity, charity, sharing wealth"
+    },
+    "coins_07": {
+      "name": "Seven of Coins",
+      "keywords": "Patience, investment, long-term effort"
+    },
+    "coins_08": {
+      "name": "Eight of Coins",
+      "keywords": "Diligence, mastery, skill development"
+    },
+    "coins_09": {
+      "name": "Nine of Coins",
+      "keywords": "Self-sufficiency, luxury, fruits of labor"
+    },
+    "coins_10": {
+      "name": "Ten of Coins",
+      "keywords": "Legacy, family wealth, established tradition"
+    },
+    "coins_11_page": {
+      "name": "Maiden of Coins",
+      "keywords": "Maid, Study, news of money, practical dreamer"
+    },
+    "coins_12_knight": {
+      "name": "She-knight of Coins",
+      "keywords": "Centaur, reliability, methodical progress, endurance"
+    },
+    "coins_13_queen": {
+      "name": "Queen of Coins",
+      "keywords": "Nurturing, practical, earthly abundance"
+    },
+    "coins_14_king": {
+      "name": "King of Coins",
+      "keywords": "Stability, worldly success, provider"
+    },
+    "cups_01": {
+      "name": "Ace of Cups",
+      "keywords": "Emotional beginning, intuition, love"
+    },
+    "cups_02": {
+      "name": "Two of Cups",
+      "keywords": "Partnership, attraction, mutual feelings"
+    },
+    "cups_03": {
+      "name": "Three of Cups",
+      "keywords": "The Dog, Fidelity, Celebration, Friendship, Shared joy, Instinct"
+    },
+    "cups_04": {
+      "name": "Four of Cups",
+      "keywords": "Monkey with Mirror, Vanity, Self-reflection, Introspection, Apathy, Imitation"
+    },
+    "cups_05": {
+      "name": "Five of Cups",
+      "keywords": "Grief, regret, focus on the past"
+    },
+    "cups_06": {
+      "name": "Six of Cups",
+      "keywords": "Nostalgia, childhood, innocence"
+    },
+    "cups_07": {
+      "name": "Seven of Cups",
+      "keywords": "Illusion, choices, daydreams"
+    },
+    "cups_08": {
+      "name": "Eight of Cups",
+      "keywords": "Abandonment, walking away, seeking truth"
+    },
+    "cups_09": {
+      "name": "Nine of Cups",
+      "keywords": "Contentment, satisfaction, wish fulfillment"
+    },
+    "cups_10": {
+      "name": "Ten of Cups",
+      "keywords": "Harmony, family bliss, emotional fulfillment"
+    },
+    "cups_11": {
+      "name": "Maiden of Cups",
+      "keywords": "Maid, sensitivity, creative news, idealism"
+    },
+    "cups_12": {
+      "name": "She-knight of Cups",
+      "keywords": "Centaur, romance, charm, following the heart"
+    },
+    "cups_13": {
+      "name": "Queen of Cups",
+      "keywords": "Compassion, psychic ability, reflection"
+    },
+    "cups_14": {
+      "name": "King of Cups",
+      "keywords": "Emotional balance, diplomacy, counselor"
+    },
+       "maj00_fool": {
+      "name": "The Fool",
+      "keywords": "Epiphany, Sane madness, Liberation, Clean slate, Rare opportunity"
+    },
+    "maj01_popeone": {
+      "name": "Pope One: The Magician",
+      "keywords": "Mercury charlatan, Materializing ideas, Master alchemist, Skill, Survival"
+    },
+    "maj02_grandduke": {
+      "name": "Pope Two: The Grand Duke (The Queen)",
+      "keywords": "Fertility, Union, Patronage, Nurturing, Earthly abundance"
+    },
+    "maj03_westernemperor": {
+      "name": "Pope Three: Emperor of the West",
+      "keywords": "Leadership, Authority, Rationality, Born warrior, Discipline, 'First by reason'"
+    },
+    "maj04_easternemperor": {
+      "name": "Pope Four: Emperor of the East",
+      "keywords": "Discretion, Strategy, Androgynous, Secret power, Diplomacy, Information management"
+    },
+    "maj05_love": {
+      "name": "Pope Five: Love",
+      "keywords": "Vulnerability, Commitment, Cupid's arrow, Change of status, Humility"
+    },
+    "maj06_temperance": {
+      "name": "Temperance",
+      "keywords": "Moderation, Self-regulation, Continuity, Exercise of will, Balance"
+    },
+    "maj07_fortitude": {
+      "name": "Fortitude",
+      "keywords": "Endurance, Perseverance, Architect of the temple, Inner power, Stability"
+    },
+    "maj08_justice": {
+      "name": "Justice",
+      "keywords": "Equity, Sentences, Reasoning, Weighing merit, Truth"
+    },
+    "maj09_wheelfortune": {
+      "name": "Wheel of Fortune",
+      "keywords": "Donkey-headed theriomorph, Cycles, Lightness, Destiny, Transformation, Flowing"
+    },
+    "maj10_chariot": {
+      "name": "The Chariot",
+      "keywords": "Female driver, Victory, Success, Vertigo, Control, Inspiration"
+    },
+    "maj11_time": {
+      "name": "Time",
+      "keywords": "Saturn, Maturity, Experience, Non-linear time, Limits, Patience"
+    },
+    "maj12_hangedman": {
+      "name": "The Hanged Man",
+      "keywords": "Suspension, Lost perspective, Punishment, Clinging to mistakes, Detention"
+    },
+    "maj13_death": {
+      "name": "Death",
+      "keywords": "Transformation, Rebirth, Urgency (Now!), Clearing space, New growth"
+    },
+    "maj14_devil": {
+      "name": "The Devil",
+      "keywords": "Selfishness, Temptation, Flashy pleasure, Material bondage, Seduction"
+    },
+    "maj15_houseofdevil": {
+      "name": "The House of the Devil",
+      "keywords": "Escaping the trap, Breaking free, Adrenaline, Revelation, Renouncing self-destructive voices"
+    },
+    "maj16_hope": {
+      "name": "Hope",
+      "keywords": "Confidence, Optimism, Patience, Watering the dry stick, Divine surprise"
+    },
+    "maj17_prudence": {
+      "name": "Prudence",
+      "keywords": "Caution, Self-knowledge, Memory of the past, Circumspection, Sensing consequences"
+    },
+    "maj18_faith": {
+      "name": "Faith",
+      "keywords": "Certainty, Spiritual trust, Peace of mind, Crossing the river, Stepping into the void"
+    },
+    "maj19_charity": {
+      "name": "Charity",
+      "keywords": "Compassion, Unselfishness, Boundless love, Heart on fire, Equality"
+    },
+    "maj20_fire": {
+      "name": "Fire",
+      "keywords": "Phoenix, Transmutation, Passion, Purification, Eternal spark"
+    },
+    "maj21_water": {
+      "name": "Water",
+      "keywords": "Ship with Lion at the prow, Emotional journey, Courage, Flow, Renewal"
+    },
+    "maj22_earth": {
+      "name": "Earth",
+      "keywords": "The Sheep, Mascherone (Living stone face), Tree of Life, Material body, Stability, Territory, Great Mother, Physical work, Nurturing"
+    },
+    "maj23_air": {
+      "name": "Air",
+      "keywords": "Birds and Panther/Cat, Divine verb, Intellect, Communication, Overlapping dimensions, Imagination"
+    },
+    "maj24_libra": {
+      "name": "Libra",
+      "keywords": "Alchemical Sublimation, Proportion, Fox and Porcupine, Balance, Harmony"
+    },
+    "maj25_virgo": {
+      "name": "Virgo",
+      "keywords": "Alchemical Distillation, Ceres, Purity, Discernment, Harvest"
+    },
+    "maj26_scorpio": {
+      "name": "Scorpio",
+      "keywords": "Alchemical Filtration, Nigredo, Regeneration, Duck eating the Scorpion, Mystery"
+    },
+    "maj27_aries": {
+      "name": "Aries",
+      "keywords": "Alchemical Calcination, Vital spark, Ram and Rabbit, Impulse, Rebirth"
+    },
+    "maj28_capricorn": {
+      "name": "Capricorn",
+      "keywords": "Alchemical Putrefaction, Reason, Winter, Solid foundations, Responsibility"
+    },
+    "maj29_sagittarius": {
+      "name": "Sagittarius",
+      "keywords": "Alchemical Ceration, Adventure, Centaur and Pig, Instinct, Beyond boundaries"
+    },
+    "maj30_cancer": {
+      "name": "Cancer",
+      "keywords": "Alchemical Dissolution, Sensitivity, Crab, Home, Past memories"
+    },
+    "maj31_pisces": {
+      "name": "Pisces",
+      "keywords": "Alchemical Projection, Emotions, Two fish, Letting go, Flow"
+    },
+    "maj32_aquarius": {
+      "name": "Aquarius",
+      "keywords": "Alchemical Multiplication, Innovation, Overturning pitchers, Future vision"
+    },
+    "maj33_leo": {
+      "name": "Leo",
+      "keywords": "Alchemical Digestion, Pride, Leadership, Vitality, Self-love"
+    },
+    "maj34_taurus": {
+      "name": "Taurus",
+      "keywords": "Alchemical Coagulation, Senses, Building, Carpe diem, Earthy pleasure"
+    },
+    "maj35_gemini": {
+      "name": "Gemini (The Flesh)",
+      "keywords": "Alchemical Fixation, Verb made flesh, Soulmate, Wit, Duality, Interaction"
+    },
+    "maj36_star": {
+      "name": "The Star (First Air)",
+      "keywords": "Guidance, Destination, Offering, Heavenly news, Inspiration"
+    },
+    "maj37_moon": {
+      "name": "The Moon (Second Air)",
+      "keywords": "Unconscious, Astronomer, Illusion, Diffuse boundaries, Cyclical language"
+    },
+    "maj38_sun": {
+      "name": "The Sun (Third Air)",
+      "keywords": "Truth in sight, Joy, Friendship, Vitality, Enlightenment"
+    },
+    "maj39_world": {
+      "name": "The World (Fourth Air)",
+      "keywords": "Integration, Broadened horizons, Completion, Diversity, Contribution"
+    },
+    "maj40_trumpets": {
+      "name": "The Trumpets (Fame)",
+      "keywords": "The Highest Air, Announcement, Immortality, Final judgment, High stakes, Rattle the table"
+    },
+    "swords_01": {
+      "name": "Ace of Swords",
+      "keywords": "Decision, Sharp mind, Breakthrough, Initiative"
+    },
+    "swords_02": {
+      "name": "Two of Swords",
+      "keywords": "Resting deer, Peace, Truce, Vulnerability"
+    },
+    "swords_03": {
+      "name": "Three of Swords",
+      "keywords": "She-wolf with Romulus and Remus, Origins, Nurturing in conflict, Founding, Roman History"
+    },
+    "swords_04": {
+      "name": "Four of Swords",
+      "keywords": "Squirrel and Pegasus, Imagination, Flight from reality, Spiritual power, Rest"
+    },
+    "swords_05": {
+      "name": "Five of Swords",
+      "keywords": "Hen and Dog, Domestic conflict, Alertness, Protecting the nest"
+    },
+    "swords_06": {
+      "name": "Six of Swords",
+      "keywords": "Peacock and Cat, Vanity vs Stealth, Transition, Journey, Observation"
+    },
+    "swords_07": {
+      "name": "Seven of Swords",
+      "keywords": "Deception, strategy, stealth"
+    },
+    "swords_08": {
+      "name": "Eight of Swords",
+      "keywords": "Monkey and Rabbit, Curiosity and Fear, Mental trap, Agility of thought"
+    },
+    "swords_09": {
+      "name": "Nine of Swords",
+      "keywords": "Anxiety, nightmares, overthinking"
+    },
+    "swords_10": {
+      "name": "Ten of Swords",
+      "keywords": "Two Bears (Orsini Family), Strength in ending, Protection, Finality, Lineage"
+    },
+    "swords_11": {
+      "name": "Page of Swords",
+      "keywords": "Curiosity, vigilance, mental energy"
+    },
+    "swords_12": {
+      "name": "Knight of Swords",
+      "keywords": "Centaur, swift action, logic, assertiveness"
+    },
+    "swords_13": {
+      "name": "Queen of Swords",
+      "keywords": "Independence, clear boundaries, intellect"
+    },
+    "swords_14": {
+      "name": "King of Swords",
+      "keywords": "Truth, authority, intellectual power"
+    },
+    "wands_01": {
+      "name": "Ace of Wands",
+      "keywords": "Inspiration, passion, creative spark"
+    },
+    "wands_02": {
+      "name": "Two of Wands",
+      "keywords": "The Fox and the Stork (Aesop's Fable), Planning, Reciprocity, Cunning, Perspectives, 'Receive what we give'"
+    },
+    "wands_03": {
+      "name": "Three of Wands",
+      "keywords": "Looking ahead, enterprise, trade"
+    },
+    "wands_04": {
+      "name": "Four of Wands",
+      "keywords": "Celebration, homecoming, stability"
+    },
+    "wands_05": {
+      "name": "Five of Wands",
+      "keywords": "Competition, struggle, diversity of opinion"
+    },
+    "wands_06": {
+      "name": "Six of Wands",
+      "keywords": "Victory, public recognition, pride"
+    },
+    "wands_07": {
+      "name": "Seven of Wands",
+      "keywords": "Defense, standing ground, challenge"
+    },
+    "wands_08": {
+      "name": "Eight of Wands",
+      "keywords": "Speed, movement, quick news"
+    },
+    "wands_09": {
+      "name": "Nine of Wands",
+      "keywords": "Resilience, persistence, near completion"
+    },
+    "wands_10": {
+      "name": "Ten of Wands",
+      "keywords": "Burden, responsibility, hard work"
+    },
+    "wands_11": {
+      "name": "Page of Wands",
+      "keywords": "Enthusiasm, discovery, messages"
+    },
+    "wands_12": {
+      "name": "Knight of Wands",
+      "keywords": "Centaur, adventure, impulsiveness, movement"
+    },
+    "wands_13": {
+      "name": "Queen of Wands",
+      "keywords": "Confidence, socialite, fire energy"
+    },
+    "wands_14": {
+      "name": "King of Wands",
+      "keywords": "Visionary, leadership, entrepreneur"
+    }
+  }
+}
