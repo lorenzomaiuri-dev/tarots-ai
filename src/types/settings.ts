@@ -5,6 +5,7 @@ export interface AppPreferences {
   onlyMajorArcana: boolean;
   animationEnabled: boolean;
   theme: 'light' | 'dark' | 'system';
+  language: string;
 }
 
 export interface SettingsState {

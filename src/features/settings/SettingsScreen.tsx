@@ -14,6 +14,7 @@ import {
   List
 } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../locales/i18n';
 import { ScreenContainer } from '../ScreenContainer';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { DEFAULTS } from '../../constants';
@@ -27,9 +28,24 @@ const SettingsScreen = () => {
 
   const [visible, setVisible] = useState(false);
   const [themeDialogVisible, setThemeDialogVisible] = useState(false);
+  const [languageDialogVisible, setLanguageDialogVisible] = useState(false);
   const [tempApiKey, setTempApiKey] = useState('');
   const [tempModelId, setTempModelId] = useState('');
   const [tempBaseUrl, setTempBaseUrl] = useState('');
+
+  const changeLanguage = (lang: string) => {
+    i18n.changeLanguage(lang);
+    updatePreferences({ language: lang });
+    setLanguageDialogVisible(false);
+  };
+
+  const getLanguageLabel = (lang: string) => {
+    switch (lang) {
+      case 'it': return 'Italiano';
+      case 'en': return 'English';
+      default: return t('common:system', 'System');
+    }
+  }
 
   const handleExport = async () => {
     try {
@@ -145,14 +161,22 @@ const SettingsScreen = () => {
             />
         </Surface>
 
-        {/* APPEARANCE */}
-        <Text variant="labelLarge" style={styles.sectionLabel}>{t('common:appearance', 'AESTHETICS')}</Text>
+        {/* APPEARANCE & LANGUAGE */}
+       <Text variant="labelLarge" style={styles.sectionLabel}>{t('common:appearance', 'AESTHETICS')}</Text>
         <Surface style={styles.settingsCard} elevation={1}>
             <SettingRow 
                 title={t('common:theme', "Interface Theme")}
                 description={getThemeLabel(preferences.theme)}
                 icon="palette-outline"
                 onPress={() => setThemeDialogVisible(true)}
+                right={(props: any) => <List.Icon {...props} icon="chevron-right" />}
+            />
+            <View style={styles.divider} />
+            <SettingRow 
+                title={t('common:language', "Language")}
+                description={getLanguageLabel(preferences.language || i18n.language)}
+                icon="translate"
+                onPress={() => setLanguageDialogVisible(true)}
                 right={(props: any) => <List.Icon {...props} icon="chevron-right" />}
             />
         </Surface>
@@ -198,6 +222,22 @@ const SettingsScreen = () => {
         {/* // TODO: HANDLING OF VERSION */}
         <Text style={styles.versionText}>Tarots AI — Version 1.0.0</Text>
       </ScrollView>      
+
+      {/* LANGUAGE DIALOG */}
+      <Portal>
+        <Dialog visible={languageDialogVisible} onDismiss={() => setLanguageDialogVisible(false)} style={styles.dialog}>
+          <Dialog.Title style={styles.dialogTitle}>{t('common:select_language', "Select Language")}</Dialog.Title>
+          <Dialog.Content>
+            <RadioButton.Group 
+              onValueChange={v => changeLanguage(v)} 
+              value={preferences.language || i18n.language}
+            >
+                <RadioButton.Item label="Italiano" value="it" />
+                <RadioButton.Item label="English" value="en" />
+            </RadioButton.Group>
+          </Dialog.Content>
+        </Dialog>
+      </Portal>
 
       {/* THEME DIALOG */}
       <Portal>
