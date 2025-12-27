@@ -1,9 +1,12 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-import { Text, useTheme, Surface } from 'react-native-paper';
-import { CardFlip } from './CardFlip';
-import { Spread, DrawnCard } from '../types/reading';
+
+import { Dimensions, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+
 import { useTranslation } from 'react-i18next';
+import { Surface, Text, useTheme } from 'react-native-paper';
+
+import { DrawnCard, Spread } from '../types/reading';
+import { CardFlip } from './CardFlip';
 
 // Configuration for visual sizing
 const CARD_WIDTH = 110;
@@ -17,12 +20,7 @@ interface Props {
   onSlotPress: (slotId: string) => void;
 }
 
-export const SpreadVisualizer: React.FC<Props> = ({ 
-  spread, 
-  deckId, 
-  drawnCards, 
-  onSlotPress 
-}) => {
+export const SpreadVisualizer: React.FC<Props> = ({ spread, deckId, drawnCards, onSlotPress }) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -30,7 +28,7 @@ export const SpreadVisualizer: React.FC<Props> = ({
   let maxX = 0;
   let maxY = 0;
 
-  spread.slots.forEach(slot => {
+  spread.slots.forEach((slot) => {
     if (slot.layout) {
       if (slot.layout.x > maxX) maxX = slot.layout.x;
       if (slot.layout.y > maxY) maxY = slot.layout.y;
@@ -42,24 +40,23 @@ export const SpreadVisualizer: React.FC<Props> = ({
   const canvasHeight = (maxY + 1) * (CARD_HEIGHT + GUTTER) + GUTTER * 4;
 
   return (
-    <ScrollView 
-      horizontal 
+    <ScrollView
+      horizontal
       contentContainerStyle={{ width: Math.max(canvasWidth, Dimensions.get('window').width) }}
       showsHorizontalScrollIndicator={false}
       decelerationRate="fast"
     >
-      <ScrollView 
+      <ScrollView
         contentContainerStyle={{ height: Math.max(canvasHeight, 600) }}
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.tableMat, { width: canvasWidth, height: canvasHeight }]}>
-          
           {spread.slots.map((slot, index) => {
             const layout = slot.layout || { x: 0, y: 0 };
-            const drawn = drawnCards.find(c => c.positionId === slot.id);
-            
+            const drawn = drawnCards.find((c) => c.positionId === slot.id);
+
             // Calculate absolute position
-            const top = layout.y * (CARD_HEIGHT + GUTTER) + (GUTTER * 2);
+            const top = layout.y * (CARD_HEIGHT + GUTTER) + GUTTER * 2;
             const left = layout.x * (CARD_WIDTH + GUTTER) + GUTTER;
 
             const rotation = layout.rotation || 0;
@@ -67,24 +64,21 @@ export const SpreadVisualizer: React.FC<Props> = ({
             const zIndex = (layout.zIndex ?? index) + 10;
 
             return (
-              <View 
-                key={slot.id} 
+              <View
+                key={slot.id}
                 pointerEvents="box-none"
                 style={[
-                  styles.slotContainer, 
-                  { top, left, width: CARD_WIDTH, height: CARD_HEIGHT, zIndex }
+                  styles.slotContainer,
+                  { top, left, width: CARD_WIDTH, height: CARD_HEIGHT, zIndex },
                 ]}
               >
                 {/* 1. SLOT LABEL */}
-                <Surface 
+                <Surface
                   elevation={2}
-                  style={[
-                    styles.labelPill, 
-                    isRotated ? styles.labelRotated : styles.labelStandard
-                  ]}
+                  style={[styles.labelPill, isRotated ? styles.labelRotated : styles.labelStandard]}
                 >
-                  <Text 
-                    variant="labelSmall" 
+                  <Text
+                    variant="labelSmall"
                     style={[styles.labelText, { color: theme.colors.primary }]}
                     numberOfLines={2}
                   >
@@ -93,45 +87,43 @@ export const SpreadVisualizer: React.FC<Props> = ({
                 </Surface>
 
                 {/* 2. CARD AREA */}
-                <TouchableOpacity 
-                    onPress={() => onSlotPress(slot.id)}
-                    activeOpacity={0.9}
-                    style={[
-                        styles.cardTouchArea,
-                        { transform: [{ rotate: `${rotation}deg` }] }
-                    ]}
+                <TouchableOpacity
+                  onPress={() => onSlotPress(slot.id)}
+                  activeOpacity={0.9}
+                  style={[styles.cardTouchArea, { transform: [{ rotate: `${rotation}deg` }] }]}
                 >
-                    {/* GHOST SLOT */}
-                    {!drawn && (
-                        <View style={[styles.ghostSlot, { borderColor: theme.colors.outlineVariant }]} />
-                    )}
+                  {/* GHOST SLOT */}
+                  {!drawn && (
+                    <View
+                      style={[styles.ghostSlot, { borderColor: theme.colors.outlineVariant }]}
+                    />
+                  )}
 
-                    <View style={styles.cardShadowWrapper}>
-                        <CardFlip
-                            deckId={deckId}
-                            cardId={drawn?.cardId || null}
-                            isReversed={drawn?.isReversed}
-                            onFlip={() => onSlotPress(slot.id)}
-                            width={CARD_WIDTH}
-                            height={CARD_HEIGHT}
-                        />
-                    </View>
+                  <View style={styles.cardShadowWrapper}>
+                    <CardFlip
+                      deckId={deckId}
+                      cardId={drawn?.cardId || null}
+                      isReversed={drawn?.isReversed}
+                      onFlip={() => onSlotPress(slot.id)}
+                      width={CARD_WIDTH}
+                      height={CARD_HEIGHT}
+                    />
+                  </View>
                 </TouchableOpacity>
 
                 {/* 3. POSITION BADGE */}
-                <Surface 
+                <Surface
                   elevation={4}
                   style={[
-                    styles.badge, 
+                    styles.badge,
                     { backgroundColor: theme.colors.elevation.level5 },
-                    isRotated ? { top: -8, right: -8 } : { bottom: -8, right: -8 }
+                    isRotated ? { top: -8, right: -8 } : { bottom: -8, right: -8 },
                   ]}
                 >
                   <Text style={[styles.badgeText, { color: theme.colors.primary }]}>
                     {index + 1}
                   </Text>
                 </Surface>
-
               </View>
             );
           })}
@@ -157,10 +149,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   cardShadowWrapper: {
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.58,
-    shadowRadius: 16.00,
+    shadowRadius: 16.0,
     elevation: 24,
   },
   ghostSlot: {
@@ -184,7 +176,7 @@ const styles = StyleSheet.create({
     minWidth: 60,
   },
   labelText: {
-    fontSize: 9, 
+    fontSize: 9,
     textAlign: 'center',
     fontWeight: 'bold',
     letterSpacing: 1,
@@ -210,8 +202,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.1)',
   },
   badgeText: {
-    fontSize: 11, 
+    fontSize: 11,
     fontWeight: '900',
     fontFamily: 'serif',
-  }
+  },
 });

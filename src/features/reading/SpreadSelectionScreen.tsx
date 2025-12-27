@@ -1,14 +1,17 @@
 import React, { useMemo, useState } from 'react';
+
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import { Text, Surface, useTheme, IconButton } from 'react-native-paper';
+
 import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../types/navigation';
-import { ScreenContainer } from '../ScreenContainer';
-import spreadsData from '../../data/spreads.json';
-import { Spread } from '../../types/reading';
+import { useTranslation } from 'react-i18next';
+import { IconButton, Surface, Text, useTheme } from 'react-native-paper';
+
 import { IntentionModal } from '../../components/IntentionModal';
+import spreadsData from '../../data/spreads.json';
+import { RootStackParamList } from '../../types/navigation';
+import { Spread } from '../../types/reading';
+import { ScreenContainer } from '../ScreenContainer';
 
 const SpreadSelectionScreen = () => {
   const { t } = useTranslation();
@@ -20,7 +23,7 @@ const SpreadSelectionScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
 
   const selectableSpreads = useMemo(() => {
-    return spreadsData.filter(s => s.id !== 'daily');
+    return spreadsData.filter((s) => s.id !== 'daily');
   }, []);
 
   // 1. Open Modal
@@ -33,26 +36,28 @@ const SpreadSelectionScreen = () => {
   const handleConfirmIntent = (customQuestion: string) => {
     setModalVisible(false);
     if (selectedSpread) {
-      navigation.navigate('ReadingTable', { 
+      navigation.navigate('ReadingTable', {
         spreadId: selectedSpread.id,
-        customQuestion: customQuestion
+        customQuestion: customQuestion,
       });
     }
   };
 
   const renderItem = ({ item }: { item: Spread }) => {
     return (
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={() => handleSpreadClick(item)}
         activeOpacity={0.7}
         style={styles.cardContainer}
       >
         <Surface style={styles.surface} elevation={1}>
           <View style={styles.contentRow}>
-            <View style={[styles.iconContainer, { backgroundColor: theme.colors.primaryContainer }]}>
-              <IconButton 
-                icon={item.icon || 'cards-playing-outline'} 
-                size={28} 
+            <View
+              style={[styles.iconContainer, { backgroundColor: theme.colors.primaryContainer }]}
+            >
+              <IconButton
+                icon={item.icon || 'cards-playing-outline'}
+                size={28}
                 iconColor={theme.colors.onPrimaryContainer}
               />
             </View>
@@ -65,13 +70,15 @@ const SpreadSelectionScreen = () => {
               </Text>
             </View>
             <View style={styles.badgeContainer}>
-               <View style={[styles.countBadge, { borderColor: theme.colors.outlineVariant }]}>
-                  <Text style={styles.countText}>{item.slots.length}</Text>
-                  <Text style={styles.cardsLabel}>{t('common:cards', 'cards').toUpperCase()}</Text>
-               </View>
+              <View style={[styles.countBadge, { borderColor: theme.colors.outlineVariant }]}>
+                <Text style={styles.countText}>{item.slots.length}</Text>
+                <Text style={styles.cardsLabel}>{t('common:cards', 'cards').toUpperCase()}</Text>
+              </View>
             </View>
           </View>
-          <View style={[styles.accentLine, { backgroundColor: theme.colors.primary, opacity: 0.3 }]} />
+          <View
+            style={[styles.accentLine, { backgroundColor: theme.colors.primary, opacity: 0.3 }]}
+          />
         </Surface>
       </TouchableOpacity>
     );
@@ -91,7 +98,7 @@ const SpreadSelectionScreen = () => {
         </Text>
         <View style={[styles.headerDivider, { backgroundColor: theme.colors.primary }]} />
       </View>
-      
+
       <FlatList
         data={selectableSpreads}
         renderItem={renderItem}
@@ -108,7 +115,6 @@ const SpreadSelectionScreen = () => {
         defaultQuestion={getDefaultQuestion()}
         spreadName={selectedSpread ? t(`spreads:${selectedSpread.id}.name`) : ''}
       />
-
     </ScreenContainer>
   );
 };
@@ -197,7 +203,7 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     bottom: 0,
-  }
+  },
 });
 
 export default SpreadSelectionScreen;

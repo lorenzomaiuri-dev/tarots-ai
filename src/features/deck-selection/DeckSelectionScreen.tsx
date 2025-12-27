@@ -1,23 +1,25 @@
 import React, { useMemo, useState } from 'react';
-import { 
-  FlatList, 
-  StyleSheet, 
-  TouchableOpacity, 
-  View, 
-  Dimensions, 
-  LayoutAnimation, 
-  Platform, 
-  UIManager 
-} from 'react-native';
-import { Text, useTheme, Surface, IconButton, Button } from 'react-native-paper';
-import { useTranslation } from 'react-i18next';
 
-import { ScreenContainer } from '../ScreenContainer';
+import {
+  Dimensions,
+  FlatList,
+  LayoutAnimation,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  UIManager,
+  View,
+} from 'react-native';
+
+import { useTranslation } from 'react-i18next';
+import { Button, IconButton, Surface, Text, useTheme } from 'react-native-paper';
+
 import { CardImage } from '../../components/CardImage';
-import { useSettingsStore } from '../../store/useSettingsStore';
-import { getAvailableDecks } from '../../services/deckRegistry';
-import { DeckInfo } from '../../types/deck';
 import { useHaptics } from '../../hooks/useHaptics';
+import { getAvailableDecks } from '../../services/deckRegistry';
+import { useSettingsStore } from '../../store/useSettingsStore';
+import { DeckInfo } from '../../types/deck';
+import { ScreenContainer } from '../ScreenContainer';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -28,10 +30,10 @@ const DeckSelectionScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const haptics = useHaptics();
-  
+
   const { activeDeckId, setActiveDeckId } = useSettingsStore();
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  
+
   const decks = useMemo(() => getAvailableDecks(), []);
 
   const handleSelect = (id: string) => {
@@ -51,71 +53,77 @@ const DeckSelectionScreen = () => {
 
     return (
       <View style={styles.cardWrapper}>
-        <Surface 
+        <Surface
           style={[
-            styles.deckCard, 
-            isActive && { borderColor: theme.colors.primary, backgroundColor: 'rgba(255,255,255,0.06)' }
-          ]} 
+            styles.deckCard,
+            isActive && {
+              borderColor: theme.colors.primary,
+              backgroundColor: 'rgba(255,255,255,0.06)',
+            },
+          ]}
           elevation={isActive ? 4 : 1}
         >
           {/* Main Selectable Area */}
-          <TouchableOpacity 
-            onPress={() => handleSelect(item.id)} 
+          <TouchableOpacity
+            onPress={() => handleSelect(item.id)}
             activeOpacity={0.8}
             style={styles.cardContent}
           >
             {/* LEFT: DECK PREVIEW */}
             <View style={styles.imageFrame}>
-              <CardImage 
-                deckId={item.id} 
-                style={styles.deckPreviewImage} 
-              />
+              <CardImage deckId={item.id} style={styles.deckPreviewImage} />
               {isActive && (
                 <View style={[styles.activeIndicator, { backgroundColor: theme.colors.primary }]}>
-                   <IconButton icon="check" size={14} iconColor="white" />
+                  <IconButton icon="check" size={14} iconColor="white" />
                 </View>
               )}
             </View>
 
             {/* RIGHT: DECK DETAILS */}
             <View style={styles.infoContainer}>
-              <View style={styles.titleRow}>
+              <View>
                 <Text variant="titleMedium" style={styles.deckName}>
-                    {t(`decks:${item.id}.info.name`)}
+                  {t(`decks:${item.id}.info.name`)}
                 </Text>
               </View>
 
               <View>
-                <Text 
-                  variant="bodySmall" 
-                  numberOfLines={isExpanded ? undefined : 2} 
+                <Text
+                  variant="bodySmall"
+                  numberOfLines={isExpanded ? undefined : 2}
                   style={styles.deckDescription}
                 >
                   {t(`decks:${item.id}.info.description`)}
                 </Text>
-                
+
                 {/* Expand Toggle Button */}
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => toggleExpand(item.id)}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
                   <Text style={[styles.readMoreText, { color: theme.colors.primary }]}>
-                    {isExpanded ? t('common:show_less', 'Show Less') : t('common:read_more', 'Read More')}
+                    {isExpanded
+                      ? t('common:show_less', 'Show Less')
+                      : t('common:read_more', 'Read More')}
                   </Text>
                 </TouchableOpacity>
               </View>
 
               <View style={styles.metaRow}>
                 <View style={styles.metaBadge}>
-                    <Text style={styles.metaText}>{item.totalCards} {t('common:cards', 'CARDS')}</Text>
+                  <Text style={styles.metaText}>
+                    {item.totalCards} {t('common:cards', 'CARDS')}
+                  </Text>
                 </View>
                 <Text style={styles.authorText}> {item.author}</Text>
               </View>
             </View>
           </TouchableOpacity>
-          
+
           {/* DECORATIVE ACTIVE BAR */}
-          {isActive && <View style={[styles.activeAccentBar, { backgroundColor: theme.colors.primary }]} />}
+          {isActive && (
+            <View style={[styles.activeAccentBar, { backgroundColor: theme.colors.primary }]} />
+          )}
         </Surface>
       </View>
     );
@@ -266,7 +274,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 3,
-  }
+  },
 });
 
 export default DeckSelectionScreen;

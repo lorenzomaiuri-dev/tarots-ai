@@ -1,4 +1,5 @@
 import seedrandom from 'seedrandom';
+
 import { Card, Deck } from '../types/deck';
 
 /**
@@ -40,10 +41,10 @@ export const drawCards = (
   // 5. Check for orientation
   return selectedCards.map((card) => {
     const isReversed = allowReversed ? rng() < 0.5 : false;
-    
+
     return {
       card,
-      isReversed
+      isReversed,
     };
   });
 };

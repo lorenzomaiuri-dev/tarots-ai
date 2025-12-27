@@ -1,23 +1,26 @@
 import React from 'react';
-import { useColorScheme } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { 
-  MD3DarkTheme, 
-  MD3LightTheme, 
-  Provider as PaperProvider, 
-  adaptNavigationTheme,
-  configureFonts
-} from 'react-native-paper';
-import { 
-  DarkTheme as NavigationDarkTheme, 
-  DefaultTheme as NavigationDefaultTheme 
-} from '@react-navigation/native';
 
+import { useColorScheme } from 'react-native';
+
+import { StatusBar } from 'expo-status-bar';
+
+import { NavigationContainer } from '@react-navigation/native';
+import {
+  DarkTheme as NavigationDarkTheme,
+  DefaultTheme as NavigationDefaultTheme,
+} from '@react-navigation/native';
+import {
+  MD3DarkTheme,
+  MD3LightTheme,
+  Provider as PaperProvider,
+  adaptNavigationTheme,
+  configureFonts,
+} from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import './src/locales/i18n';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { useSettingsStore } from './src/store/useSettingsStore';
-import './src/locales/i18n'; 
 
 const MysticalDarkTheme = {
   ...MD3DarkTheme,
@@ -27,7 +30,7 @@ const MysticalDarkTheme = {
     onPrimary: '#381E72',
     primaryContainer: '#4F378B',
     onPrimaryContainer: '#EADDFF',
-    
+
     secondary: '#CCC2DC',
     onSecondary: '#332D41',
     secondaryContainer: '#4A4458',
@@ -36,7 +39,7 @@ const MysticalDarkTheme = {
     background: '#121212',
     onBackground: '#E6E1E5',
 
-    surface: '#121212', 
+    surface: '#121212',
     surfaceVariant: '#49454F',
     onSurface: '#E6E1E5',
     onSurfaceVariant: '#CAC4D0',
@@ -52,8 +55,8 @@ const MysticalDarkTheme = {
       level4: '#2C2C2C',
       level5: '#313131',
     },
-    
-    backdrop: 'rgba(0, 0, 0, 0.7)', 
+
+    backdrop: 'rgba(0, 0, 0, 0.7)',
   },
 };
 
@@ -69,18 +72,17 @@ const MyNavDarkTheme = {
     background: MysticalDarkTheme.colors.background,
     card: MysticalDarkTheme.colors.elevation.level1,
     border: MysticalDarkTheme.colors.outlineVariant,
-  }
+  },
 };
 
 export default function App() {
   const systemColorScheme = useColorScheme();
-  
-  const { preferences } = useSettingsStore(); 
+
+  const { preferences } = useSettingsStore();
   const currentTheme = preferences.theme;
 
-  const isDark = 
-    currentTheme === 'dark' || 
-    (currentTheme === 'system' && systemColorScheme === 'dark');
+  const isDark =
+    currentTheme === 'dark' || (currentTheme === 'system' && systemColorScheme === 'dark');
 
   const paperTheme = isDark ? MysticalDarkTheme : MD3LightTheme;
   const navTheme = isDark ? MyNavDarkTheme : NavLightTheme;
@@ -90,7 +92,10 @@ export default function App() {
       <PaperProvider theme={paperTheme}>
         <NavigationContainer theme={navTheme}>
           <AppNavigator />
-          <StatusBar style={isDark ? 'light' : 'dark'} backgroundColor={paperTheme.colors.background} />
+          <StatusBar
+            style={isDark ? 'light' : 'dark'}
+            backgroundColor={paperTheme.colors.background}
+          />
         </NavigationContainer>
       </PaperProvider>
     </SafeAreaProvider>

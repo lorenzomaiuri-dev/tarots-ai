@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useSettingsStore } from '../store/useSettingsStore';
-import { StorageService } from '../services/storage';
-import { getDailySeed, drawCards } from '../services/rng';
+import { useCallback, useEffect, useState } from 'react';
+
+import { STORAGE_KEYS } from '../constants';
 import { getDeck } from '../services/deckRegistry';
+import { drawCards, getDailySeed } from '../services/rng';
+import { StorageService } from '../services/storage';
+import { useSettingsStore } from '../store/useSettingsStore';
 import { DrawnCard } from '../types/reading';
-import { STORAGE_KEYS } from "../constants";
 
 export const useDailyDraw = () => {
   const { activeDeckId, preferences, userName } = useSettingsStore();
@@ -28,7 +29,7 @@ export const useDailyDraw = () => {
           setDailyCard(saved);
         }
       } catch (e) {
-        console.error("Error loading daily card", e);
+        console.error('Error loading daily card', e);
       } finally {
         setIsLoading(false);
       }
@@ -39,14 +40,14 @@ export const useDailyDraw = () => {
   // 2. Drawing function
   const drawNow = useCallback(async () => {
     const deck = getDeck(activeDeckId);
-    if (!deck) return;    
-    
+    if (!deck) return;
+
     // Filter major arcana based on preferences
     let deckToUse = deck;
     if (preferences.onlyMajorArcana) {
       deckToUse = {
         ...deck,
-        cards: deck.cards.filter(c => c.meta.type === 'major')
+        cards: deck.cards.filter((c) => c.meta.type === 'major'),
       };
     }
 
@@ -57,7 +58,7 @@ export const useDailyDraw = () => {
       cardId: drawn.card.id,
       deckId: activeDeckId,
       positionId: 'daily',
-      isReversed: drawn.isReversed
+      isReversed: drawn.isReversed,
     };
 
     setDailyCard(newDailyCard);
@@ -68,6 +69,6 @@ export const useDailyDraw = () => {
     dailyCard,
     isLoading,
     drawNow,
-    isAlreadyDrawn: !!dailyCard
+    isAlreadyDrawn: !!dailyCard,
   };
 };

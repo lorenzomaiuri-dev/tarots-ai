@@ -1,6 +1,6 @@
 export interface AIModelConfig {
   provider: 'openrouter' | 'openai' | 'local';
-  modelId: string;       // es: "google/gemini-2.0-flash-exp"
+  modelId: string; // es: "google/gemini-2.0-flash-exp"
   apiKey?: string;
   baseUrl?: string;
 }

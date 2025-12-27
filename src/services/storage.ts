@@ -9,7 +9,7 @@ export const StorageService = {
       return null;
     }
   },
-  
+
   setString: async (key: string, value: string) => {
     try {
       await AsyncStorage.setItem(key, value);
@@ -40,7 +40,7 @@ export const StorageService = {
   delete: async (key: string) => {
     await AsyncStorage.removeItem(key);
   },
-  
+
   clearAll: async () => {
     await AsyncStorage.clear();
   },

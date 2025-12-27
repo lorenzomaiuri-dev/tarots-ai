@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useSettingsStore } from '../store/useSettingsStore';
+
 import { generateInterpretation } from '../services/ai';
-import { buildInterpretationPrompt } from '../services/promptBuilder';
 import { getDeck } from '../services/deckRegistry';
-import { Spread, DrawnCard } from '../types/reading';
+import { buildInterpretationPrompt } from '../services/promptBuilder';
+import { useSettingsStore } from '../store/useSettingsStore';
+import { DrawnCard, Spread } from '../types/reading';
 
 export const useInterpretation = () => {
   const { aiConfig } = useSettingsStore();
@@ -30,7 +31,7 @@ export const useInterpretation = () => {
 
       // 2. Call AI service
       const text = await generateInterpretation(messages, aiConfig);
-      
+
       setResult(text);
     } catch (err: any) {
       console.error('Interpretation Error:', err);
@@ -45,6 +46,6 @@ export const useInterpretation = () => {
     isLoading,
     error,
     interpretReading,
-    reset: () => setResult(null)
+    reset: () => setResult(null),
   };
 };

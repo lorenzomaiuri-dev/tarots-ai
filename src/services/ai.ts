@@ -1,11 +1,10 @@
+import { AI_CONFIG } from '../constants';
 import { AIModelConfig, ChatMessage } from '../types/ai';
-import { AI_CONFIG } from "../constants";
 
 export const generateInterpretation = async (
   messages: ChatMessage[],
   config: AIModelConfig
 ): Promise<string> => {
-  
   if (!config.apiKey) {
     throw new Error('Missing API key in settings');
   }
@@ -14,7 +13,7 @@ export const generateInterpretation = async (
     const response = await fetch(`${config.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
         'HTTP-Referer': AI_CONFIG.SITE_URL,
         'X-Title': AI_CONFIG.APP_NAME,
         'Content-Type': 'application/json',
@@ -32,10 +31,9 @@ export const generateInterpretation = async (
     }
 
     const data = await response.json();
-    
+
     // OpenRouter / OpenAI standard response structure
     return data.choices?.[0]?.message?.content || '';
-    
   } catch (error) {
     console.error('AI Generation Failed:', error);
     throw error;

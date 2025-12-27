@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Dimensions, Alert } from 'react-native';
-import { Text, Button, useTheme, Surface, IconButton, Avatar } from 'react-native-paper';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
-import { RootStackParamList } from '../../types/navigation';
-import { AI_CONFIG } from "../../constants";
-import spreadsData from '../../data/spreads.json';
 
-import { ScreenContainer } from '../ScreenContainer';
-import { useSettingsStore } from '../../store/useSettingsStore';
+import { Alert, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { Avatar, Button, IconButton, Surface, Text, useTheme } from 'react-native-paper';
+
+import { CardFlip } from '../../components/CardFlip';
+import { InterpretationModal } from '../../components/InterpretationModal';
+import { AI_CONFIG } from '../../constants';
+import spreadsData from '../../data/spreads.json';
 import { useDailyDraw } from '../../hooks/useDailyDraw';
 import { useHaptics } from '../../hooks/useHaptics';
-import { CardFlip } from '../../components/CardFlip';
 import { useInterpretation } from '../../hooks/useInterpretation';
 import { useHistoryStore } from '../../store/useHistoryStore';
-import { InterpretationModal } from '../../components/InterpretationModal';
+import { useSettingsStore } from '../../store/useSettingsStore';
+import { RootStackParamList } from '../../types/navigation';
 import { ReadingSession, Spread } from '../../types/reading';
+import { ScreenContainer } from '../ScreenContainer';
 
 const { width } = Dimensions.get('window');
 
@@ -23,7 +25,7 @@ const HomeScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  
+
   const { activeDeckId } = useSettingsStore();
   const { addReading } = useHistoryStore();
   const haptics = useHaptics();
@@ -32,10 +34,11 @@ const HomeScreen = () => {
   const [isSaved, setIsSaved] = useState(false);
   const { result, isLoading: isAiLoading, error, interpretReading } = useInterpretation();
 
-  const DAILY_SPREAD: Spread = spreadsData.find(s => s.id === 'daily') || {
-     id: 'daily', slots: [{ id: 'day-energy' }] // Fallback
+  const DAILY_SPREAD: Spread = spreadsData.find((s) => s.id === 'daily') || {
+    id: 'daily',
+    slots: [{ id: 'daily', label: 'daily' }], // Fallback
   };
-  const dailyQuestion = t('prompts:daily_focus', "What is the main energy for my day?");
+  const dailyQuestion = t('prompts:daily_focus', 'What is the main energy for my day?');
 
   const handleInterpret = () => {
     if (!dailyCard) return;
@@ -47,7 +50,7 @@ const HomeScreen = () => {
 
   const handleSaveToJournal = () => {
     if (!dailyCard || !result) return;
-    
+
     const session: ReadingSession = {
       id: Date.now().toString(),
       timestamp: Date.now(),
@@ -55,19 +58,21 @@ const HomeScreen = () => {
       deckId: activeDeckId,
       cards: [dailyCard],
       aiInterpretation: result,
-      userNotes: ''
+      userNotes: '',
     };
-    
+
     addReading(session);
     setIsSaved(true);
     Alert.alert(t('common:saved', 'Saved'), t('common:saved_to_journal', 'Saved to journal'));
   };
 
-  const formattedDate = new Date().toLocaleDateString(undefined, { 
-    weekday: 'short', 
-    day: 'numeric', 
-    month: 'long' 
-  }).toUpperCase();
+  const formattedDate = new Date()
+    .toLocaleDateString(undefined, {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'long',
+    })
+    .toUpperCase();
 
   return (
     <ScreenContainer>
@@ -77,17 +82,18 @@ const HomeScreen = () => {
           <Text variant="labelMedium" style={[styles.dateText, { color: theme.colors.primary }]}>
             {formattedDate}
           </Text>
-          <Text variant="headlineMedium" style={styles.appName}>{AI_CONFIG.APP_NAME}</Text>
+          <Text variant="headlineMedium" style={styles.appName}>
+            {AI_CONFIG.APP_NAME}
+          </Text>
         </View>
-        <IconButton 
-          icon="cog-outline" 
-          onPress={() => navigation.navigate('MainTabs', { screen: 'SettingsTab' })} 
+        <IconButton
+          icon="cog-outline"
+          onPress={() => navigation.navigate('MainTabs', { screen: 'SettingsTab' })}
           style={styles.settingsBtn}
         />
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollPadding}>
-        
         {/* DAILY CARD FOCUS BOX */}
         <Surface style={styles.dailyFocusContainer} elevation={1}>
           <View style={styles.focusHeader}>
@@ -99,20 +105,20 @@ const HomeScreen = () => {
           </View>
 
           <View style={styles.cardDisplayArea}>
-             <CardFlip 
-               deckId={activeDeckId}
-               cardId={dailyCard?.cardId || null}
-               isReversed={dailyCard?.isReversed}
-               onFlip={drawNow}
-               width={width * 0.45}
-               height={width * 0.75}
-             />
-             
-             {!dailyCard && (
-               <Text variant="labelSmall" style={styles.tapPrompt}>
-                 {t('common:tap_to_reveal', 'TAP TO REVEAL')}
-               </Text>
-             )}
+            <CardFlip
+              deckId={activeDeckId}
+              cardId={dailyCard?.cardId || null}
+              isReversed={dailyCard?.isReversed}
+              onFlip={drawNow}
+              width={width * 0.45}
+              height={width * 0.75}
+            />
+
+            {!dailyCard && (
+              <Text variant="labelSmall" style={styles.tapPrompt}>
+                {t('common:tap_to_reveal', 'TAP TO REVEAL')}
+              </Text>
+            )}
           </View>
 
           {dailyCard ? (
@@ -120,40 +126,56 @@ const HomeScreen = () => {
               <Text variant="headlineSmall" style={styles.revealedCardName}>
                 {t(`decks:${activeDeckId}.cards.${dailyCard.cardId}.name`)}
               </Text>
-              <Text variant="labelLarge" style={[styles.orientationText, { color: theme.colors.secondary }]}>
-                 {dailyCard.isReversed ? t('common:reversed', "Reversed") : t('common:upright', "Upright")}
+              <Text
+                variant="labelLarge"
+                style={[styles.orientationText, { color: theme.colors.secondary }]}
+              >
+                {dailyCard.isReversed
+                  ? t('common:reversed', 'Reversed')
+                  : t('common:upright', 'Upright')}
               </Text>
-              
-              <Button 
-                icon="creation" 
-                mode="contained" 
+
+              <Button
+                icon="creation"
+                mode="contained"
                 onPress={handleInterpret}
                 style={styles.interpretButton}
                 contentStyle={{ height: 48 }}
               >
-                {t('common:get_interpretation', "Reveal Meaning")}
+                {t('common:get_interpretation', 'Reveal Meaning')}
               </Button>
             </View>
           ) : (
             <Text variant="bodyMedium" style={styles.dailySubtitle}>
-              {t('common:daily_card_subtitle', "Focus your energy and reveal your guidance for today.")}
+              {t(
+                'common:daily_card_subtitle',
+                'Focus your energy and reveal your guidance for today.'
+              )}
             </Text>
           )}
         </Surface>
 
         {/* PRIMARY ACTIONS GRID */}
         <View style={styles.actionsGrid}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.mainAction, { backgroundColor: theme.colors.primaryContainer }]}
             onPress={() => navigation.navigate('SpreadSelection')}
           >
-            <Avatar.Icon size={48} icon="cards-playing-outline" style={{ backgroundColor: 'transparent' }} color={theme.colors.onPrimaryContainer} />
-            <Text variant="titleMedium" style={{ fontWeight: 'bold', color: theme.colors.onPrimaryContainer }}>
+            <Avatar.Icon
+              size={48}
+              icon="cards-playing-outline"
+              style={{ backgroundColor: 'transparent' }}
+              color={theme.colors.onPrimaryContainer}
+            />
+            <Text
+              variant="titleMedium"
+              style={{ fontWeight: 'bold', color: theme.colors.onPrimaryContainer }}
+            >
               {t('common:new_reading', 'New Reading')}
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.secondaryAction, { backgroundColor: 'rgba(255,255,255,0.05)' }]}
             onPress={() => navigation.navigate('MainTabs', { screen: 'HistoryTab' })}
           >
@@ -165,7 +187,9 @@ const HomeScreen = () => {
         {/* ACTIVE DECK STATUS */}
         <Surface style={styles.deckStatusCard} elevation={0}>
           <View style={styles.deckInfoLeft}>
-            <Text variant="labelSmall" style={{ opacity: 0.5, letterSpacing: 1 }}>{t('common:active_deck', 'ACTIVE DECK')}</Text>
+            <Text variant="labelSmall" style={{ opacity: 0.5, letterSpacing: 1 }}>
+              {t('common:active_deck', 'ACTIVE DECK')}
+            </Text>
             <Text variant="bodyLarge" style={styles.deckName} numberOfLines={1}>
               {t(`decks:${activeDeckId}.info.name`)}
             </Text>
@@ -177,7 +201,6 @@ const HomeScreen = () => {
             {t('common:explore', 'Explore')}
           </Button>
         </Surface>
-
       </ScrollView>
 
       <InterpretationModal
@@ -189,23 +212,23 @@ const HomeScreen = () => {
         title={t('common:daily_reading_title', 'Daily Insight')}
         actions={
           !isSaved ? (
-            <Button 
-              mode="contained-tonal" 
-              icon="notebook-plus-outline" 
+            <Button
+              mode="contained-tonal"
+              icon="notebook-plus-outline"
               onPress={handleSaveToJournal}
               style={{ width: '100%' }}
             >
-              {t('common:save_to_journal', "Save to Journal")}
+              {t('common:save_to_journal', 'Save to Journal')}
             </Button>
           ) : (
-            <Button 
-              mode="outlined" 
-              icon="check" 
-              disabled 
+            <Button
+              mode="outlined"
+              icon="check"
+              disabled
               style={{ width: '100%', borderColor: theme.colors.primary }}
               textColor={theme.colors.primary}
             >
-              {t('common:saved', "Salvato")}
+              {t('common:saved', 'Salvato')}
             </Button>
           )
         }
@@ -345,7 +368,7 @@ const styles = StyleSheet.create({
     fontFamily: 'serif',
     fontWeight: 'bold',
     marginTop: 2,
-  }
+  },
 });
 
 export default HomeScreen;

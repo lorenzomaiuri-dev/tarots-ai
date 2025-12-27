@@ -1,8 +1,9 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { zustandStorage } from './storageAdapter';
+import { createJSONStorage, persist } from 'zustand/middleware';
+
+import { DEFAULTS, STORAGE_KEYS } from '../constants';
 import { SettingsState } from '../types/settings';
-import { STORAGE_KEYS, DEFAULTS } from '../constants';
+import { zustandStorage } from './storageAdapter';
 
 export const useSettingsStore = create<SettingsState>()(
   persist(
@@ -12,7 +13,7 @@ export const useSettingsStore = create<SettingsState>()(
       themeMode: DEFAULTS.THEME,
       activeDeckId: DEFAULTS.ACTIVE_DECK,
       isOnboardingCompleted: false,
-      
+
       aiConfig: {
         provider: DEFAULTS.PROVIDER,
         modelId: DEFAULTS.AI_MODEL,
@@ -25,7 +26,7 @@ export const useSettingsStore = create<SettingsState>()(
         onlyMajorArcana: false,
         animationEnabled: true,
         theme: 'system',
-        language: 'en'
+        language: 'en',
       },
 
       // --- Actions ---
@@ -33,15 +34,15 @@ export const useSettingsStore = create<SettingsState>()(
       setThemeMode: (mode) => set({ themeMode: mode }),
       completeOnboarding: () => set({ isOnboardingCompleted: true }),
       setActiveDeckId: (id) => set({ activeDeckId: id }),
-      
-      setAiConfig: (newConfig) => 
-        set((state) => ({ 
-          aiConfig: { ...state.aiConfig, ...newConfig } 
-        })),      
+
+      setAiConfig: (newConfig) =>
+        set((state) => ({
+          aiConfig: { ...state.aiConfig, ...newConfig },
+        })),
 
       updatePreferences: (newPrefs) =>
         set((state) => ({
-          preferences: { ...state.preferences, ...newPrefs }
+          preferences: { ...state.preferences, ...newPrefs },
         })),
     }),
     {

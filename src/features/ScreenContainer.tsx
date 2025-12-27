@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { StyleSheet, View, ViewStyle } from 'react-native';
+
 import { useTheme } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   children: React.ReactNode;
@@ -14,16 +16,18 @@ export const ScreenContainer: React.FC<Props> = ({ children, style, centered }) 
   const theme = useTheme();
 
   return (
-    <View style={[
-      styles.container, 
-      { 
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-        backgroundColor: theme.colors.background 
-      },
-      centered && styles.centered,
-      style
-    ]}>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          backgroundColor: theme.colors.background,
+        },
+        centered && styles.centered,
+        style,
+      ]}
+    >
       {children}
     </View>
   );
@@ -37,5 +41,5 @@ const styles = StyleSheet.create({
   centered: {
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });

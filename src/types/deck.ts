@@ -26,7 +26,7 @@ export interface DeckInfo {
   author?: string;
   totalCards: number;
   // Dynamic groups mapping: e.g. "major" -> { color: "#...", labelKey: "..." }
-  groups: Record<string, DeckGroup>; 
+  groups: Record<string, DeckGroup>;
 }
 
 export interface Deck {

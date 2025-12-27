@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { Modal, ScrollView, StyleSheet, View, ActivityIndicator, Animated } from 'react-native';
-import { Text, IconButton, Button, useTheme, Surface, Avatar } from 'react-native-paper';
+
+import { ActivityIndicator, Animated, Modal, ScrollView, StyleSheet, View } from 'react-native';
+
 import { useTranslation } from 'react-i18next';
 import Markdown from 'react-native-markdown-display';
+import { Avatar, Button, IconButton, Surface, Text, useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
@@ -15,14 +17,14 @@ interface Props {
   actions?: React.ReactNode;
 }
 
-export const InterpretationModal: React.FC<Props> = ({ 
-  visible, 
-  onClose, 
-  isLoading, 
-  content, 
+export const InterpretationModal: React.FC<Props> = ({
+  visible,
+  onClose,
+  isLoading,
+  content,
   error,
   title,
-  actions
+  actions,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -43,7 +45,7 @@ export const InterpretationModal: React.FC<Props> = ({
     }
   }, [isLoading]);
 
-  const modalTitle = title || t('common:interpretation_title', "Oracle Insight");
+  const modalTitle = title || t('common:interpretation_title', 'Oracle Insight');
 
   return (
     <Modal
@@ -53,11 +55,12 @@ export const InterpretationModal: React.FC<Props> = ({
       onRequestClose={onClose}
     >
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        
         {/* HEADER SECTION */}
         <View style={[styles.header, { paddingTop: 20 }]}>
           <View style={styles.headerContent}>
-            <Text variant="headlineSmall" style={styles.title}>{modalTitle}</Text>
+            <Text variant="headlineSmall" style={styles.title}>
+              {modalTitle}
+            </Text>
             <View style={[styles.accentLine, { backgroundColor: theme.colors.primary }]} />
           </View>
           <IconButton icon="close-circle-outline" size={28} onPress={onClose} />
@@ -68,61 +71,58 @@ export const InterpretationModal: React.FC<Props> = ({
           {isLoading ? (
             <View style={styles.center}>
               <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-                <Avatar.Icon 
-                    size={80} 
-                    icon="auto-fix" 
-                    style={{ backgroundColor: 'transparent' }} 
-                    color={theme.colors.primary} 
+                <Avatar.Icon
+                  size={80}
+                  icon="auto-fix"
+                  style={{ backgroundColor: 'transparent' }}
+                  color={theme.colors.primary}
                 />
               </Animated.View>
               <Text variant="titleMedium" style={styles.loadingTitle}>
-                {t('common:consulting_stars', "Consulting the Arcana...")}
+                {t('common:consulting_stars', 'Consulting the Arcana...')}
               </Text>
               <Text style={styles.loadingSubtitle}>
-                {t('common:loading_desc', "Searching the infinite threads of destiny")}
+                {t('common:loading_desc', 'Searching the infinite threads of destiny')}
               </Text>
             </View>
           ) : error ? (
             <View style={styles.center}>
-              <Avatar.Icon size={64} icon="alert-decagram-outline" style={{ backgroundColor: 'transparent' }} color={theme.colors.error} />
-              <Text style={[styles.errorText, { color: theme.colors.error }]}>
-                {error}
-              </Text>
+              <Avatar.Icon
+                size={64}
+                icon="alert-decagram-outline"
+                style={{ backgroundColor: 'transparent' }}
+                color={theme.colors.error}
+              />
+              <Text style={[styles.errorText, { color: theme.colors.error }]}>{error}</Text>
               <Button mode="contained" onPress={onClose} style={styles.actionButton}>
-                {t('common:back', "Back")}
+                {t('common:back', 'Back')}
               </Button>
             </View>
           ) : (
-            <ScrollView 
-                showsVerticalScrollIndicator={false} 
-                contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 40 }]}
             >
               <Surface style={styles.interpretationSurface} elevation={1}>
-                 <Markdown style={markdownStyles(theme)}>
-                    {content || ''}
-                 </Markdown>
+                <Markdown style={markdownStyles(theme)}>{content || ''}</Markdown>
 
-                 {/* --- ACTIONS SECTION */}
-                 {actions && (
-                   <View style={styles.actionsContainer}>
-                     {actions}
-                   </View>
-                 )}
-                 
-                 <View style={styles.scrollDecoration}>
-                    <View style={styles.dot} />
-                    <View style={[styles.line, { backgroundColor: theme.colors.outlineVariant }]} />
-                    <View style={styles.dot} />
-                 </View>
+                {/* --- ACTIONS SECTION */}
+                {actions && <View style={styles.actionsContainer}>{actions}</View>}
+
+                <View style={styles.scrollDecoration}>
+                  <View style={styles.dot} />
+                  <View style={[styles.line, { backgroundColor: theme.colors.outlineVariant }]} />
+                  <View style={styles.dot} />
+                </View>
               </Surface>
 
-              <Button 
-                mode="text" 
-                onPress={onClose} 
+              <Button
+                mode="text"
+                onPress={onClose}
                 style={styles.closeFooterBtn}
                 labelStyle={{ letterSpacing: 2 }}
               >
-                {t('common:close', "Close")}
+                {t('common:close', 'Close')}
               </Button>
             </ScrollView>
           )}
@@ -132,13 +132,12 @@ export const InterpretationModal: React.FC<Props> = ({
   );
 };
 
-
 const markdownStyles = (theme: any) => ({
   body: {
     color: theme.colors.onSurface,
     fontSize: 17,
     lineHeight: 28,
-    fontFamily: 'serif', 
+    fontFamily: 'serif',
     opacity: 0.9,
   },
   heading1: {
@@ -146,7 +145,7 @@ const markdownStyles = (theme: any) => ({
     marginTop: 24,
     marginBottom: 12,
     fontFamily: 'serif',
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     fontSize: 24,
     textAlign: 'center',
   },
@@ -155,13 +154,13 @@ const markdownStyles = (theme: any) => ({
     marginTop: 20,
     marginBottom: 10,
     fontFamily: 'serif',
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     fontSize: 20,
     letterSpacing: 0.5,
   },
   strong: {
     color: theme.colors.primary,
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
   },
   em: {
     fontStyle: 'italic',
@@ -181,7 +180,7 @@ const markdownStyles = (theme: any) => ({
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     height: 1,
     marginVertical: 20,
-  }
+  },
 });
 
 const styles = StyleSheet.create({
@@ -196,7 +195,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   headerContent: {
-      flex: 1,
+    flex: 1,
   },
   title: {
     fontFamily: 'serif',
@@ -249,8 +248,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   closeFooterBtn: {
-      marginTop: 30,
-      opacity: 0.5,
+    marginTop: 30,
+    opacity: 0.5,
   },
   scrollDecoration: {
     flexDirection: 'row',
@@ -275,6 +274,6 @@ const styles = StyleSheet.create({
     paddingTop: 24,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.1)',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 });

@@ -1,7 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, View, StyleSheet, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { Text, TextInput, Button, useTheme, Surface, IconButton } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+
 import { useTranslation } from 'react-i18next';
+import { Button, IconButton, Surface, Text, TextInput, useTheme } from 'react-native-paper';
 
 interface Props {
   visible: boolean;
@@ -11,12 +21,12 @@ interface Props {
   spreadName?: string;
 }
 
-export const IntentionModal: React.FC<Props> = ({ 
-  visible, 
-  onClose, 
-  onConfirm, 
-  defaultQuestion = '', 
-  spreadName 
+export const IntentionModal: React.FC<Props> = ({
+  visible,
+  onClose,
+  onConfirm,
+  defaultQuestion = '',
+  spreadName,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -30,56 +40,72 @@ export const IntentionModal: React.FC<Props> = ({
 
   const handleConfirm = () => {
     onConfirm(question);
-    setQuestion(''); 
+    setQuestion('');
   };
 
   return (
-    <Modal
-      visible={visible}
-      animationType="fade"
-      transparent={true}
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="fade" transparent={true} onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={[styles.overlay, { backgroundColor: 'rgba(0,0,0,0.8)' }]}>
-          <KeyboardAvoidingView 
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={styles.keyboardView}
           >
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-              <Surface 
+              <Surface
                 style={[
-                  styles.modalContainer, 
-                  { 
+                  styles.modalContainer,
+                  {
                     backgroundColor: theme.colors.elevation.level3,
-                    borderColor: theme.colors.outlineVariant 
-                  }
-                ]} 
+                    borderColor: theme.colors.outlineVariant,
+                  },
+                ]}
                 elevation={4}
               >
-                
                 {/* Header */}
                 <View style={styles.header}>
-                  <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
-                    <IconButton icon="star-four-points-outline" size={20} iconColor={theme.colors.primary} style={{margin: 0}} />
-                    <Text variant="titleMedium" style={[styles.title, { color: theme.colors.onSurface }]}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <IconButton
+                      icon="star-four-points-outline"
+                      size={20}
+                      iconColor={theme.colors.primary}
+                      style={{ margin: 0 }}
+                    />
+                    <Text
+                      variant="titleMedium"
+                      style={[styles.title, { color: theme.colors.onSurface }]}
+                    >
                       {t('common:set_intention', 'Intention')}
                     </Text>
                   </View>
-                  <IconButton icon="close" size={20} onPress={onClose} iconColor={theme.colors.onSurfaceVariant} />
+                  <IconButton
+                    icon="close"
+                    size={20}
+                    onPress={onClose}
+                    iconColor={theme.colors.onSurfaceVariant}
+                  />
                 </View>
 
                 {/* Context */}
                 {spreadName && (
                   <View style={styles.subtitleContainer}>
-                     <Text variant="labelSmall" style={{ color: theme.colors.primary, fontWeight: 'bold', letterSpacing: 1 }}>
-                        {spreadName.toUpperCase()}
-                     </Text>
+                    <Text
+                      variant="labelSmall"
+                      style={{ color: theme.colors.primary, fontWeight: 'bold', letterSpacing: 1 }}
+                    >
+                      {spreadName.toUpperCase()}
+                    </Text>
                   </View>
                 )}
 
-                <Text variant="bodyMedium" style={[styles.instruction, { color: theme.colors.onSurfaceVariant }]}>
-                  {t('common:intention_desc', 'Focus on your question. Be specific, but open to guidance.')}
+                <Text
+                  variant="bodyMedium"
+                  style={[styles.instruction, { color: theme.colors.onSurfaceVariant }]}
+                >
+                  {t(
+                    'common:intention_desc',
+                    'Focus on your question. Be specific, but open to guidance.'
+                  )}
                 </Text>
 
                 {/* Input Area */}
@@ -93,10 +119,10 @@ export const IntentionModal: React.FC<Props> = ({
                   multiline
                   numberOfLines={4}
                   style={[
-                    styles.input, 
-                    { 
-                      backgroundColor: theme.colors.background
-                    }
+                    styles.input,
+                    {
+                      backgroundColor: theme.colors.background,
+                    },
                   ]}
                   outlineColor={theme.colors.outline}
                   activeOutlineColor={theme.colors.primary}
@@ -105,9 +131,9 @@ export const IntentionModal: React.FC<Props> = ({
 
                 {/* Actions */}
                 <View style={styles.actions}>
-                  <Button 
-                    mode="contained" 
-                    onPress={handleConfirm} 
+                  <Button
+                    mode="contained"
+                    onPress={handleConfirm}
                     contentStyle={{ height: 50 }}
                     style={styles.button}
                     icon="cards-playing-outline"
@@ -116,7 +142,6 @@ export const IntentionModal: React.FC<Props> = ({
                     {t('common:begin_reading', 'Begin Reading')}
                   </Button>
                 </View>
-
               </Surface>
             </TouchableWithoutFeedback>
           </KeyboardAvoidingView>
@@ -179,5 +204,5 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: 16,
-  }
+  },
 });

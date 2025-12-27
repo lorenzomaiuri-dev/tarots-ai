@@ -1,22 +1,24 @@
 import React, { useMemo, useState } from 'react';
-import { FlatList, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Text, Surface, useTheme, Searchbar, Avatar, IconButton } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Swipeable, GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { RootStackParamList } from '../../types/navigation';
-import { ScreenContainer } from '../ScreenContainer';
+import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
+import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
+import { Avatar, IconButton, Searchbar, Surface, Text, useTheme } from 'react-native-paper';
+
 import { useHistoryStore } from '../../store/useHistoryStore';
+import { RootStackParamList } from '../../types/navigation';
 import { ReadingSession } from '../../types/reading';
+import { ScreenContainer } from '../ScreenContainer';
 
 const HistoryScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   const { readings, deleteReading } = useHistoryStore();
 
   const dynamicCardStyle = {
@@ -28,7 +30,7 @@ const HistoryScreen = () => {
     let result = [...readings].sort((a, b) => b.timestamp - a.timestamp);
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      result = result.filter(r => {
+      result = result.filter((r) => {
         const spreadName = t(`spreads:${r.spreadId}.name`).toLowerCase();
         return spreadName.includes(q) || r.userNotes?.toLowerCase().includes(q);
       });
@@ -42,27 +44,27 @@ const HistoryScreen = () => {
       t('common:confirm_delete', 'Vuoi rimuovere questo ricordo dalle tue cronache?'),
       [
         { text: t('common:cancel', 'Annulla'), style: 'cancel' },
-        { 
-          text: t('common:delete', 'Elimina'), 
-          style: 'destructive', 
-          onPress: () => deleteReading(id) 
-        }
+        {
+          text: t('common:delete', 'Elimina'),
+          style: 'destructive',
+          onPress: () => deleteReading(id),
+        },
       ]
     );
   };
 
   const renderRightActions = (id: string) => {
     return (
-      <TouchableOpacity 
-        style={styles.deleteAction} 
+      <TouchableOpacity
+        style={styles.deleteAction}
         onPress={() => handleDelete(id)}
         activeOpacity={0.6}
       >
-        <Avatar.Icon 
-          size={44} 
-          icon="trash-can-outline" 
-          style={{ backgroundColor: theme.colors.errorContainer }} 
-          color={theme.colors.error} 
+        <Avatar.Icon
+          size={44}
+          icon="trash-can-outline"
+          style={{ backgroundColor: theme.colors.errorContainer }}
+          color={theme.colors.error}
         />
       </TouchableOpacity>
     );
@@ -75,12 +77,12 @@ const HistoryScreen = () => {
 
     return (
       <View style={styles.cardWrapper}>
-        <Swipeable 
+        <Swipeable
           renderRightActions={() => renderRightActions(item.id)}
           friction={2}
           rightThreshold={40}
         >
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => navigation.navigate('ReadingDetail', { readingId: item.id })}
             activeOpacity={0.7}
           >
@@ -91,20 +93,38 @@ const HistoryScreen = () => {
               </View>
 
               <View style={styles.contentMain}>
-                <Text variant="labelSmall" style={[styles.deckName, { color: theme.colors.secondary }]}>
+                <Text
+                  variant="labelSmall"
+                  style={[styles.deckName, { color: theme.colors.secondary }]}
+                >
                   {t(`decks:${item.deckId}.info.name`)}
                 </Text>
                 <Text variant="titleMedium" style={styles.spreadTitle}>
                   {t(`spreads:${item.spreadId}.name`)}
                 </Text>
-                
+
                 <View style={styles.badgeRow}>
-                  <View style={[styles.miniBadge, { backgroundColor: theme.dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' }]}>
-                     <Text style={styles.miniBadgeText}>{item.cards.length} {t('common:cards', 'CARDS')}</Text>
+                  <View
+                    style={[
+                      styles.miniBadge,
+                      {
+                        backgroundColor: theme.dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                      },
+                    ]}
+                  >
+                    <Text style={styles.miniBadgeText}>
+                      {item.cards.length} {t('common:cards', 'CARDS')}
+                    </Text>
                   </View>
                   {item.aiInterpretation && (
-                    <View style={[styles.miniBadge, { backgroundColor: theme.colors.primaryContainer }]}>
-                      <Text style={[styles.miniBadgeText, { color: theme.colors.onPrimaryContainer }]}>AI SPIRIT</Text>
+                    <View
+                      style={[styles.miniBadge, { backgroundColor: theme.colors.primaryContainer }]}
+                    >
+                      <Text
+                        style={[styles.miniBadgeText, { color: theme.colors.onPrimaryContainer }]}
+                      >
+                        AI SPIRIT
+                      </Text>
                     </View>
                   )}
                 </View>
@@ -129,13 +149,16 @@ const HistoryScreen = () => {
               {/* STATS */}
               <View style={styles.headerRow}>
                 <View>
-                  <Text variant="headlineMedium" style={[styles.pageTitle, { color: theme.colors.onSurface }]}>
+                  <Text
+                    variant="headlineMedium"
+                    style={[styles.pageTitle, { color: theme.colors.onSurface }]}
+                  >
                     {t('common:journal_title', 'Chronicles')}
                   </Text>
                   <View style={[styles.accentLine, { backgroundColor: theme.colors.primary }]} />
                 </View>
-                <IconButton 
-                  icon="chart-timeline-variant" 
+                <IconButton
+                  icon="chart-timeline-variant"
                   mode="contained-tonal"
                   size={24}
                   onPress={() => navigation.navigate('Stats')}
@@ -152,14 +175,19 @@ const HistoryScreen = () => {
                 elevation={0}
               />
 
-              <Text variant="labelLarge" style={[styles.sectionLabel, { color: theme.colors.primary }]}>
+              <Text
+                variant="labelLarge"
+                style={[styles.sectionLabel, { color: theme.colors.primary }]}
+              >
                 {t('common:past_readings', 'RECENT MEMORIES')}
               </Text>
             </>
           }
           ListEmptyComponent={
             <View style={styles.emptyState}>
-              <Text style={{ opacity: 0.5 }}>{t('common:no_history_yet', 'No memories recorded yet...')}</Text>
+              <Text style={{ opacity: 0.5 }}>
+                {t('common:no_history_yet', 'No memories recorded yet...')}
+              </Text>
             </View>
           }
           contentContainerStyle={styles.listPadding}
@@ -276,7 +304,7 @@ const styles = StyleSheet.create({
   emptyState: {
     alignItems: 'center',
     marginTop: 80,
-  }
+  },
 });
 
 export default HistoryScreen;

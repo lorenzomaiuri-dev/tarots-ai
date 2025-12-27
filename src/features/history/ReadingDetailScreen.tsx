@@ -1,17 +1,20 @@
-import React, { useRef, useState, useLayoutEffect } from 'react';
-import { ScrollView, View, StyleSheet, Dimensions } from 'react-native';
-import { Text, useTheme, Surface, TextInput, IconButton, Avatar } from 'react-native-paper';
-import Markdown from 'react-native-markdown-display';
-import { useRoute, RouteProp, useNavigation } from '@react-navigation/native';
-import { useTranslation } from 'react-i18next';
-import ViewShot, { captureRef } from 'react-native-view-shot';
+import React, { useLayoutEffect, useRef, useState } from 'react';
+
+import { Dimensions, ImageStyle, ScrollView, StyleProp, StyleSheet, View } from 'react-native';
+
 import * as Sharing from 'expo-sharing';
 
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
+import Markdown from 'react-native-markdown-display';
+import { Avatar, IconButton, Surface, Text, TextInput, useTheme } from 'react-native-paper';
+import ViewShot, { captureRef } from 'react-native-view-shot';
+
+import { CardImage } from '../../components/CardImage';
+import { useHistoryStore } from '../../store/useHistoryStore';
 import { RootStackParamList } from '../../types/navigation';
 import { ScreenContainer } from '../ScreenContainer';
-import { useHistoryStore } from '../../store/useHistoryStore';
-import { CardImage } from '../../components/CardImage';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type DetailRouteProp = RouteProp<RootStackParamList, 'ReadingDetail'>;
 const { width } = Dimensions.get('window');
@@ -21,22 +24,30 @@ const ReadingDetailScreen = () => {
   const theme = useTheme();
   const route = useRoute<DetailRouteProp>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  
+
   const { readings, updateUserNotes } = useHistoryStore();
-  const reading = readings.find(r => r.id === route.params.readingId);
-  
+  const reading = readings.find((r) => r.id === route.params.readingId);
+
   const viewShotRef = useRef(null);
   const [notes, setNotes] = useState(reading?.userNotes || '');
-  const [isEditing, setIsEditing] = useState(false);    
+  const [isEditing, setIsEditing] = useState(false);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <IconButton icon="share-variant-outline" onPress={handleShare} />,
+    });
+  }, [navigation]);
 
   if (!reading) return null;
 
-  const dateStr = new Date(reading.timestamp).toLocaleDateString(undefined, {
+  const dateStr = new Date(reading.timestamp)
+    .toLocaleDateString(undefined, {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
-      year: 'numeric'
-  }).toUpperCase();
+      year: 'numeric',
+    })
+    .toUpperCase();
 
   const handleSaveNotes = () => {
     updateUserNotes(reading.id, notes);
@@ -49,47 +60,39 @@ const ReadingDetailScreen = () => {
         const uri = await captureRef(viewShotRef.current, {
           format: 'jpg',
           quality: 0.8,
-          result: 'tmpfile'
+          result: 'tmpfile',
         });
 
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(uri, {
             mimeType: 'image/jpeg',
-            dialogTitle: t('common:share_reading', 'Share your destiny')
+            dialogTitle: t('common:share_reading', 'Share your destiny'),
           });
         }
       }
     } catch (e) {
-      console.error("Error sharing", e);
+      console.error('Error sharing', e);
     }
   };
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <IconButton icon="share-variant-outline" onPress={handleShare} />
-      )
-    });
-  }, [navigation]);
-
   return (
     <ScreenContainer style={{ paddingHorizontal: 0 }}>
-      <ViewShot 
-        ref={viewShotRef} 
-        options={{ format: 'jpg', quality: 0.9 }} 
+      <ViewShot
+        ref={viewShotRef}
+        options={{ format: 'jpg', quality: 0.9 }}
         style={{ flex: 1, backgroundColor: theme.colors.background }}
       >
-        <ScrollView 
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
         >
           {/* HEADER SECTION */}
           <View style={styles.header}>
             <Text variant="labelSmall" style={[styles.dateText, { color: theme.colors.primary }]}>
-                {dateStr}
+              {dateStr}
             </Text>
             <Text variant="headlineSmall" style={styles.title}>
-                {t(`spreads:${reading.spreadId}.name`)}
+              {t(`spreads:${reading.spreadId}.name`)}
             </Text>
             <View style={[styles.accentLine, { backgroundColor: theme.colors.primary }]} />
           </View>
@@ -97,7 +100,7 @@ const ReadingDetailScreen = () => {
           {/* CARDS ASSEMBLY */}
           <View style={styles.sectionHeader}>
             <Text variant="labelMedium" style={styles.sectionLabel}>
-                {t('common:assembly', 'THE ASSEMBLY')}
+              {t('common:assembly', 'THE ASSEMBLY')}
             </Text>
           </View>
 
@@ -107,28 +110,38 @@ const ReadingDetailScreen = () => {
                 <View style={styles.cardItemRow}>
                   {/* Card Image with Shadow */}
                   <View style={styles.cardImageFrame}>
-                     <CardImage 
-                       deckId={reading.deckId} 
-                       cardId={drawn.cardId} 
-                       style={[
-                         styles.cardImage, 
-                         drawn.isReversed && { transform: [{ rotate: '180deg' }] }
-                       ]} 
-                     />
+                    <CardImage
+                      deckId={reading.deckId}
+                      cardId={drawn.cardId}
+                      style={
+                        [
+                          styles.cardImage,
+                          drawn.isReversed ? { transform: [{ rotate: '180deg' }] } : undefined,
+                        ] as StyleProp<ImageStyle>
+                      }
+                    />
                   </View>
 
                   {/* Card Info */}
                   <View style={styles.cardTextInfo}>
-                    <Text variant="labelSmall" style={[styles.positionLabel, { color: theme.colors.secondary }]}>
-                      {index + 1}. {t(`spreads:${reading.spreadId}.positions.${drawn.positionId}.label`).toUpperCase()}
+                    <Text
+                      variant="labelSmall"
+                      style={[styles.positionLabel, { color: theme.colors.secondary }]}
+                    >
+                      {index + 1}.{' '}
+                      {t(
+                        `spreads:${reading.spreadId}.positions.${drawn.positionId}.label`
+                      ).toUpperCase()}
                     </Text>
                     <Text variant="titleMedium" style={styles.cardNameText}>
                       {t(`decks:${reading.deckId}.cards.${drawn.cardId}.name`)}
                     </Text>
                     <View style={styles.orientationBadge}>
-                        <Text style={styles.orientationText}>
-                          {drawn.isReversed ? t('common:reversed', 'REVERSED') : t('common:upright', 'UPRIGHT')}
-                        </Text>
+                      <Text style={styles.orientationText}>
+                        {drawn.isReversed
+                          ? t('common:reversed', 'REVERSED')
+                          : t('common:upright', 'UPRIGHT')}
+                      </Text>
                     </View>
                   </View>
                 </View>
@@ -139,22 +152,38 @@ const ReadingDetailScreen = () => {
           {/* AI INTERPRETATION SECTION */}
           <View style={styles.sectionHeader}>
             <Text variant="labelMedium" style={styles.sectionLabel}>
-                {t('common:interpretation_title', 'SACRED INSIGHT')}
+              {t('common:interpretation_title', 'SACRED INSIGHT')}
             </Text>
           </View>
 
           <Surface style={styles.aiInterpretationBox} elevation={1}>
             <View style={styles.aiHeader}>
-                <Avatar.Icon size={32} icon="creation" style={{ backgroundColor: 'transparent' }} color={theme.colors.tertiary} />
-                <Text variant="titleMedium" style={[styles.aiTitle, { color: theme.colors.tertiary }]}>
-                    {t('common:ai_insight', 'Spirit Message')}
-                </Text>
+              <Avatar.Icon
+                size={32}
+                icon="creation"
+                style={{ backgroundColor: 'transparent' }}
+                color={theme.colors.tertiary}
+              />
+              <Text
+                variant="titleMedium"
+                style={[styles.aiTitle, { color: theme.colors.tertiary }]}
+              >
+                {t('common:ai_insight', 'Spirit Message')}
+              </Text>
             </View>
-            
+
             {reading.aiInterpretation ? (
-              <Markdown style={{ 
-                  body: { color: theme.colors.onSurface, fontSize: 16, lineHeight: 24, fontFamily: 'serif', opacity: 0.9 } 
-              }}>
+              <Markdown
+                style={{
+                  body: {
+                    color: theme.colors.onSurface,
+                    fontSize: 16,
+                    lineHeight: 24,
+                    fontFamily: 'serif',
+                    opacity: 0.9,
+                  },
+                }}
+              >
                 {reading.aiInterpretation}
               </Markdown>
             ) : (
@@ -162,24 +191,24 @@ const ReadingDetailScreen = () => {
                 {t('common:no_interpretation', 'No interpretation was sought for this reading.')}
               </Text>
             )}
-            
+
             <View style={styles.scrollDecoration}>
-                <View style={styles.dot} />
-                <View style={[styles.line, { backgroundColor: theme.colors.outlineVariant }]} />
-                <View style={styles.dot} />
+              <View style={styles.dot} />
+              <View style={[styles.line, { backgroundColor: theme.colors.outlineVariant }]} />
+              <View style={styles.dot} />
             </View>
           </Surface>
 
           {/* PERSONAL NOTES SECTION */}
           <View style={styles.sectionHeader}>
             <Text variant="labelMedium" style={styles.sectionLabel}>
-                {t('common:personal_reflections', 'REFLECTIONS')}
+              {t('common:personal_reflections', 'REFLECTIONS')}
             </Text>
-            <IconButton 
-                icon={isEditing ? "check-circle" : "pencil-circle-outline"} 
-                size={24} 
-                iconColor={isEditing ? theme.colors.primary : theme.colors.onSurface}
-                onPress={isEditing ? handleSaveNotes : () => setIsEditing(true)} 
+            <IconButton
+              icon={isEditing ? 'check-circle' : 'pencil-circle-outline'}
+              size={24}
+              iconColor={isEditing ? theme.colors.primary : theme.colors.onSurface}
+              onPress={isEditing ? handleSaveNotes : () => setIsEditing(true)}
             />
           </View>
 
@@ -202,10 +231,10 @@ const ReadingDetailScreen = () => {
           )}
 
           <Text style={styles.footerBranding}>
-             {t('common:app_footer', 'CHRONICLED BY AI TAROTS')}
+            {t('common:app_footer', 'CHRONICLED BY AI TAROTS')}
           </Text>
         </ScrollView>
-      </ViewShot>      
+      </ViewShot>
     </ScreenContainer>
   );
 };
@@ -375,7 +404,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
     fontSize: 10,
     letterSpacing: 2,
-  }
+  },
 });
 
 export default ReadingDetailScreen;
