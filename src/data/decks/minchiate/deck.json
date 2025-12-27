@@ -15,8 +15,8 @@
       "id": "coins_01",
       "image": "coins_01",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 0
@@ -25,8 +25,8 @@
       "id": "coins_02",
       "image": "coins_02",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 1
@@ -35,8 +35,8 @@
       "id": "coins_03",
       "image": "coins_03",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 2
@@ -45,8 +45,8 @@
       "id": "coins_04",
       "image": "coins_04",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 3
@@ -55,8 +55,8 @@
       "id": "coins_05",
       "image": "coins_05",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 4
@@ -65,8 +65,8 @@
       "id": "coins_06",
       "image": "coins_06",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 5
@@ -75,8 +75,8 @@
       "id": "coins_07",
       "image": "coins_07",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 6
@@ -85,8 +85,8 @@
       "id": "coins_08",
       "image": "coins_08",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 7
@@ -95,8 +95,8 @@
       "id": "coins_09",
       "image": "coins_09",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 8
@@ -105,8 +105,8 @@
       "id": "coins_10",
       "image": "coins_10",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 9
@@ -115,8 +115,8 @@
       "id": "coins_11_page",
       "image": "coins_11_page",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 10
@@ -125,8 +125,8 @@
       "id": "coins_12_knight",
       "image": "coins_12_knight",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 11
@@ -135,8 +135,8 @@
       "id": "coins_13_queen",
       "image": "coins_13_queen",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 12
@@ -145,8 +145,8 @@
       "id": "coins_14_king",
       "image": "coins_14_king",
       "meta": {
-        "type": "other",
-        "suit": null,
+        "type": "minor",
+        "suit": "coins",
         "number": 0
       },
       "sortIndex": 13
@@ -295,7 +295,7 @@
       "id": "maj00_fool",
       "image": "maj00_fool",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -305,7 +305,7 @@
       "id": "maj01_popeone",
       "image": "maj01_popeone",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -315,7 +315,7 @@
       "id": "maj02_grandduke",
       "image": "maj02_grandduke",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -325,7 +325,7 @@
       "id": "maj03_westernemperor",
       "image": "maj03_westernemperor",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -335,7 +335,7 @@
       "id": "maj04_easternemperor",
       "image": "maj04_easternemperor",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -345,7 +345,7 @@
       "id": "maj05_love",
       "image": "maj05_love",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -355,7 +355,7 @@
       "id": "maj06_temperance",
       "image": "maj06_temperance",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -365,7 +365,7 @@
       "id": "maj07_fortitude",
       "image": "maj07_fortitude",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -375,7 +375,7 @@
       "id": "maj08_justice",
       "image": "maj08_justice",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -385,7 +385,7 @@
       "id": "maj09_wheelfortune",
       "image": "maj09_wheelfortune",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -395,7 +395,7 @@
       "id": "maj10_chariot",
       "image": "maj10_chariot",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -405,7 +405,7 @@
       "id": "maj11_time",
       "image": "maj11_time",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -415,7 +415,7 @@
       "id": "maj12_hangedman",
       "image": "maj12_hangedman",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -425,7 +425,7 @@
       "id": "maj13_death",
       "image": "maj13_death",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -435,7 +435,7 @@
       "id": "maj14_devil",
       "image": "maj14_devil",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -445,7 +445,7 @@
       "id": "maj15_houseofdevil",
       "image": "maj15_houseofdevil",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -455,7 +455,7 @@
       "id": "maj16_hope",
       "image": "maj16_hope",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -465,7 +465,7 @@
       "id": "maj17_prudence",
       "image": "maj17_prudence",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -475,7 +475,7 @@
       "id": "maj18_faith",
       "image": "maj18_faith",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -485,7 +485,7 @@
       "id": "maj19_charity",
       "image": "maj19_charity",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -495,7 +495,7 @@
       "id": "maj20_fire",
       "image": "maj20_fire",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -505,7 +505,7 @@
       "id": "maj21_water",
       "image": "maj21_water",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -515,7 +515,7 @@
       "id": "maj22_earth",
       "image": "maj22_earth",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -525,7 +525,7 @@
       "id": "maj23_air",
       "image": "maj23_air",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -535,7 +535,7 @@
       "id": "maj24_libra",
       "image": "maj24_libra",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -545,7 +545,7 @@
       "id": "maj25_virgo",
       "image": "maj25_virgo",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -555,7 +555,7 @@
       "id": "maj26_scorpio",
       "image": "maj26_scorpio",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -565,7 +565,7 @@
       "id": "maj27_aries",
       "image": "maj27_aries",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -575,7 +575,7 @@
       "id": "maj28_capricorn",
       "image": "maj28_capricorn",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -585,7 +585,7 @@
       "id": "maj29_sagittarius",
       "image": "maj29_sagittarius",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -595,7 +595,7 @@
       "id": "maj30_cancer",
       "image": "maj30_cancer",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -605,7 +605,7 @@
       "id": "maj31_pisces",
       "image": "maj31_pisces",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -615,7 +615,7 @@
       "id": "maj32_aquarius",
       "image": "maj32_aquarius",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -625,7 +625,7 @@
       "id": "maj33_leo",
       "image": "maj33_leo",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -635,7 +635,7 @@
       "id": "maj34_taurus",
       "image": "maj34_taurus",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -645,7 +645,7 @@
       "id": "maj35_gemini",
       "image": "maj35_gemini",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -655,7 +655,7 @@
       "id": "maj36_star",
       "image": "maj36_star",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -665,7 +665,7 @@
       "id": "maj37_moon",
       "image": "maj37_moon",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -675,7 +675,7 @@
       "id": "maj38_sun",
       "image": "maj38_sun",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -685,7 +685,7 @@
       "id": "maj39_world",
       "image": "maj39_world",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
@@ -695,7 +695,7 @@
       "id": "maj40_trumpets",
       "image": "maj40_trumpets",
       "meta": {
-        "type": "other",
+        "type": "major",
         "suit": null,
         "number": 0
       },
