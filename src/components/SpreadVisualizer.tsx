@@ -3,15 +3,18 @@ import React from 'react';
 import { Dimensions, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
-import { Surface, Text, useTheme } from 'react-native-paper';
+import { Text, useTheme } from 'react-native-paper';
 
+import { useHaptics } from '../hooks/useHaptics';
 import { DrawnCard, Spread } from '../types/reading';
+// Components
 import { CardFlip } from './CardFlip';
+import { GlassSurface } from './GlassSurface';
 
 // Configuration for visual sizing
-const CARD_WIDTH = 110;
-const CARD_HEIGHT = 185;
-const GUTTER = 25;
+const CARD_WIDTH = 115; // Slightly wider for better presence
+const CARD_HEIGHT = 190;
+const GUTTER = 30;
 
 interface Props {
   spread: Spread;
@@ -23,31 +26,34 @@ interface Props {
 export const SpreadVisualizer: React.FC<Props> = ({ spread, deckId, drawnCards, onSlotPress }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const haptics = useHaptics();
 
   // 1. Calculate Canvas Size
   let maxX = 0;
   let maxY = 0;
 
   spread.slots.forEach((slot) => {
-    if (slot.layout) {
-      if (slot.layout.x > maxX) maxX = slot.layout.x;
-      if (slot.layout.y > maxY) maxY = slot.layout.y;
-    }
+    const layout = slot.layout || { x: 0, y: 0 };
+    if (layout.x > maxX) maxX = layout.x;
+    if (layout.y > maxY) maxY = layout.y;
   });
 
-  // Calculate total canvas dimensions
   const canvasWidth = (maxX + 1) * (CARD_WIDTH + GUTTER) + GUTTER * 2;
   const canvasHeight = (maxY + 1) * (CARD_HEIGHT + GUTTER) + GUTTER * 4;
+
+  const handlePress = (slotId: string) => {
+    haptics.impact('light');
+    onSlotPress(slotId);
+  };
 
   return (
     <ScrollView
       horizontal
       contentContainerStyle={{ width: Math.max(canvasWidth, Dimensions.get('window').width) }}
       showsHorizontalScrollIndicator={false}
-      decelerationRate="fast"
     >
       <ScrollView
-        contentContainerStyle={{ height: Math.max(canvasHeight, 600) }}
+        contentContainerStyle={{ height: Math.max(canvasHeight, 650) }}
         showsVerticalScrollIndicator={false}
       >
         <View style={[styles.tableMat, { width: canvasWidth, height: canvasHeight }]}>
@@ -55,12 +61,9 @@ export const SpreadVisualizer: React.FC<Props> = ({ spread, deckId, drawnCards, 
             const layout = slot.layout || { x: 0, y: 0 };
             const drawn = drawnCards.find((c) => c.positionId === slot.id);
 
-            // Calculate absolute position
             const top = layout.y * (CARD_HEIGHT + GUTTER) + GUTTER * 2;
             const left = layout.x * (CARD_WIDTH + GUTTER) + GUTTER;
-
             const rotation = layout.rotation || 0;
-            const isRotated = rotation !== 0;
             const zIndex = (layout.zIndex ?? index) + 10;
 
             return (
@@ -72,30 +75,33 @@ export const SpreadVisualizer: React.FC<Props> = ({ spread, deckId, drawnCards, 
                   { top, left, width: CARD_WIDTH, height: CARD_HEIGHT, zIndex },
                 ]}
               >
-                {/* 1. SLOT LABEL */}
-                <Surface
-                  elevation={2}
-                  style={[styles.labelPill, isRotated ? styles.labelRotated : styles.labelStandard]}
+                <GlassSurface
+                  intensity={40}
+                  style={[
+                    styles.labelPill,
+                    rotation !== 0 ? styles.labelRotated : styles.labelStandard,
+                  ]}
                 >
                   <Text
                     variant="labelSmall"
                     style={[styles.labelText, { color: theme.colors.primary }]}
-                    numberOfLines={2}
+                    numberOfLines={1}
                   >
                     {t(`spreads:${spread.id}.positions.${slot.id}.label`).toUpperCase()}
                   </Text>
-                </Surface>
+                </GlassSurface>
 
-                {/* 2. CARD AREA */}
+                {/* CARD AREA */}
                 <TouchableOpacity
-                  onPress={() => onSlotPress(slot.id)}
+                  onPress={() => handlePress(slot.id)}
                   activeOpacity={0.9}
                   style={[styles.cardTouchArea, { transform: [{ rotate: `${rotation}deg` }] }]}
                 >
-                  {/* GHOST SLOT */}
+                  {/* GHOST SLOT*/}
                   {!drawn && (
-                    <View
-                      style={[styles.ghostSlot, { borderColor: theme.colors.outlineVariant }]}
+                    <GlassSurface
+                      intensity={10}
+                      style={[styles.ghostSlot, { borderColor: theme.colors.primary + '30' }]}
                     />
                   )}
 
@@ -104,26 +110,25 @@ export const SpreadVisualizer: React.FC<Props> = ({ spread, deckId, drawnCards, 
                       deckId={deckId}
                       cardId={drawn?.cardId || null}
                       isReversed={drawn?.isReversed}
-                      onFlip={() => onSlotPress(slot.id)}
+                      onFlip={() => handlePress(slot.id)}
                       width={CARD_WIDTH}
                       height={CARD_HEIGHT}
                     />
                   </View>
                 </TouchableOpacity>
 
-                {/* 3. POSITION BADGE */}
-                <Surface
-                  elevation={4}
+                {/* POSITION BADGE */}
+                <GlassSurface
+                  intensity={60}
                   style={[
                     styles.badge,
-                    { backgroundColor: theme.colors.elevation.level5 },
-                    isRotated ? { top: -8, right: -8 } : { bottom: -8, right: -8 },
+                    rotation !== 0 ? { top: -6, right: -6 } : { bottom: -6, right: -6 },
                   ]}
                 >
-                  <Text style={[styles.badgeText, { color: theme.colors.primary }]}>
+                  <Text style={[styles.badgeText, { color: theme.colors.onSurface }]}>
                     {index + 1}
                   </Text>
-                </Surface>
+                </GlassSurface>
               </View>
             );
           })}
@@ -150,60 +155,57 @@ const styles = StyleSheet.create({
   },
   cardShadowWrapper: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.58,
-    shadowRadius: 16.0,
-    elevation: 24,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
+    elevation: 10,
   },
   ghostSlot: {
     position: 'absolute',
-    width: CARD_WIDTH - 4,
-    height: CARD_HEIGHT - 4,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    opacity: 0.3,
+    width: CARD_WIDTH - 6,
+    height: CARD_HEIGHT - 6,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderStyle: 'solid',
+    backgroundColor: 'rgba(255,255,255,0.03)',
   },
   labelPill: {
     position: 'absolute',
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 8,
+    borderRadius: 20,
     zIndex: 100,
-    backgroundColor: 'rgba(20, 20, 20, 0.85)',
+    minWidth: 70,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    minWidth: 60,
+    borderColor: 'rgba(255,255,255,0.15)',
   },
   labelText: {
-    fontSize: 9,
+    fontSize: 8,
     textAlign: 'center',
-    fontWeight: 'bold',
-    letterSpacing: 1,
-    fontFamily: 'serif',
+    fontWeight: '900',
+    letterSpacing: 1.5,
   },
   labelStandard: {
-    top: -30,
+    top: -24,
     alignSelf: 'center',
   },
   labelRotated: {
-    left: CARD_WIDTH - 15,
-    top: CARD_HEIGHT / 2 - 15,
+    left: CARD_WIDTH - 20,
+    top: -15,
   },
   badge: {
     position: 'absolute',
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 110,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: 'rgba(255,255,255,0.2)',
   },
   badgeText: {
-    fontSize: 11,
-    fontWeight: '900',
-    fontFamily: 'serif',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
 });

@@ -1,13 +1,15 @@
 import React, { useMemo, useState } from 'react';
 
-import { Alert, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { FlatList, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
-import { Avatar, IconButton, Searchbar, Surface, Text, useTheme } from 'react-native-paper';
+import { Avatar, Button, IconButton, Searchbar, Text, useTheme } from 'react-native-paper';
 
+import { GlassSurface } from '../../components/GlassSurface';
+import { useHaptics } from '../../hooks/useHaptics';
 import { useHistoryStore } from '../../store/useHistoryStore';
 import { RootStackParamList } from '../../types/navigation';
 import { ReadingSession } from '../../types/reading';
@@ -16,15 +18,13 @@ import { ScreenContainer } from '../ScreenContainer';
 const HistoryScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const haptics = useHaptics();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   const [searchQuery, setSearchQuery] = useState('');
+  const [readingToDelete, setReadingToDelete] = useState<string | null>(null);
 
   const { readings, deleteReading } = useHistoryStore();
-
-  const dynamicCardStyle = {
-    backgroundColor: theme.dark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.02)',
-    borderColor: theme.dark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
-  };
 
   const filteredReadings = useMemo(() => {
     let result = [...readings].sort((a, b) => b.timestamp - a.timestamp);
@@ -38,34 +38,32 @@ const HistoryScreen = () => {
     return result;
   }, [readings, searchQuery, t]);
 
-  const handleDelete = (id: string) => {
-    Alert.alert(
-      t('common:delete_reading', 'Elimina Lettura'),
-      t('common:confirm_delete', 'Vuoi rimuovere questo ricordo dalle tue cronache?'),
-      [
-        { text: t('common:cancel', 'Annulla'), style: 'cancel' },
-        {
-          text: t('common:delete', 'Elimina'),
-          style: 'destructive',
-          onPress: () => deleteReading(id),
-        },
-      ]
-    );
+  const confirmDelete = () => {
+    if (readingToDelete) {
+      deleteReading(readingToDelete);
+      setReadingToDelete(null);
+      haptics.notification('success');
+    }
   };
 
   const renderRightActions = (id: string) => {
     return (
       <TouchableOpacity
         style={styles.deleteAction}
-        onPress={() => handleDelete(id)}
-        activeOpacity={0.6}
+        onPress={() => {
+          haptics.impact('heavy');
+          setReadingToDelete(id);
+        }}
+        activeOpacity={0.8}
       >
-        <Avatar.Icon
-          size={44}
-          icon="trash-can-outline"
-          style={{ backgroundColor: theme.colors.errorContainer }}
-          color={theme.colors.error}
-        />
+        <GlassSurface intensity={40} style={styles.deleteGlass}>
+          <Avatar.Icon
+            size={40}
+            icon="trash-can-outline"
+            style={{ backgroundColor: 'transparent' }}
+            color={theme.colors.error}
+          />
+        </GlassSurface>
       </TouchableOpacity>
     );
   };
@@ -81,13 +79,22 @@ const HistoryScreen = () => {
           renderRightActions={() => renderRightActions(item.id)}
           friction={2}
           rightThreshold={40}
+          onSwipeableOpen={() => haptics.selection()}
         >
           <TouchableOpacity
-            onPress={() => navigation.navigate('ReadingDetail', { readingId: item.id })}
-            activeOpacity={0.7}
+            onPress={() => {
+              haptics.impact('light');
+              navigation.navigate('ReadingDetail', { readingId: item.id });
+            }}
+            activeOpacity={0.9}
           >
-            <Surface style={[styles.journalCard, dynamicCardStyle]} elevation={0}>
-              <View style={styles.dateSide}>
+            <GlassSurface intensity={15} style={styles.journalCard}>
+              <View
+                style={[
+                  styles.dateSide,
+                  { backgroundColor: theme.dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.03)' },
+                ]}
+              >
                 <Text style={[styles.dateDay, { color: theme.colors.primary }]}>{day}</Text>
                 <Text style={styles.dateMonth}>{month}</Text>
               </View>
@@ -97,39 +104,42 @@ const HistoryScreen = () => {
                   variant="labelSmall"
                   style={[styles.deckName, { color: theme.colors.secondary }]}
                 >
-                  {t(`decks:${item.deckId}.info.name`)}
+                  {t(`decks:${item.deckId}.info.name`).toUpperCase()}
                 </Text>
                 <Text variant="titleMedium" style={styles.spreadTitle}>
                   {t(`spreads:${item.spreadId}.name`)}
                 </Text>
 
                 <View style={styles.badgeRow}>
-                  <View
-                    style={[
-                      styles.miniBadge,
-                      {
-                        backgroundColor: theme.dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-                      },
-                    ]}
-                  >
+                  <GlassSurface intensity={5} style={styles.miniBadge}>
                     <Text style={styles.miniBadgeText}>
                       {item.cards.length} {t('common:cards', 'CARDS')}
                     </Text>
-                  </View>
+                  </GlassSurface>
                   {item.aiInterpretation && (
-                    <View
-                      style={[styles.miniBadge, { backgroundColor: theme.colors.primaryContainer }]}
+                    <GlassSurface
+                      intensity={20}
+                      style={[
+                        styles.miniBadge,
+                        { backgroundColor: theme.colors.primaryContainer + '40' },
+                      ]}
                     >
                       <Text
                         style={[styles.miniBadgeText, { color: theme.colors.onPrimaryContainer }]}
                       >
-                        AI SPIRIT
+                        ✨ {t('common:ai_insight', 'INSIGHT')}
                       </Text>
-                    </View>
+                    </GlassSurface>
                   )}
                 </View>
               </View>
-            </Surface>
+              <IconButton
+                icon="chevron-right"
+                size={20}
+                style={styles.chevron}
+                iconColor={theme.colors.onSurfaceDisabled}
+              />
+            </GlassSurface>
           </TouchableOpacity>
         </Swipeable>
       </View>
@@ -149,10 +159,7 @@ const HistoryScreen = () => {
               {/* STATS */}
               <View style={styles.headerRow}>
                 <View>
-                  <Text
-                    variant="headlineMedium"
-                    style={[styles.pageTitle, { color: theme.colors.onSurface }]}
-                  >
+                  <Text variant="headlineMedium" style={styles.pageTitle}>
                     {t('common:journal_title', 'Chronicles')}
                   </Text>
                   <View style={[styles.accentLine, { backgroundColor: theme.colors.primary }]} />
@@ -167,10 +174,11 @@ const HistoryScreen = () => {
               </View>
 
               <Searchbar
-                placeholder={t('common:search_journal', 'Search destiny...')}
+                placeholder={t('common:search_journal', 'Search your destiny...')}
                 onChangeText={setSearchQuery}
                 value={searchQuery}
                 style={styles.searchBar}
+                inputStyle={styles.searchInput}
                 mode="bar"
                 elevation={0}
               />
@@ -185,7 +193,13 @@ const HistoryScreen = () => {
           }
           ListEmptyComponent={
             <View style={styles.emptyState}>
-              <Text style={{ opacity: 0.5 }}>
+              <Avatar.Icon
+                size={80}
+                icon="book-outline"
+                style={{ backgroundColor: 'transparent' }}
+                color={theme.colors.onSurfaceDisabled}
+              />
+              <Text style={styles.emptyText}>
                 {t('common:no_history_yet', 'No memories recorded yet...')}
               </Text>
             </View>
@@ -193,13 +207,45 @@ const HistoryScreen = () => {
           contentContainerStyle={styles.listPadding}
         />
       </ScreenContainer>
+
+      {/* DELETE MODAL */}
+      <Modal visible={!!readingToDelete} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <GlassSurface intensity={60} style={styles.deleteModal}>
+            <Text variant="titleLarge" style={styles.modalTitle}>
+              {t('common:delete_reading', 'Erase Memory')}
+            </Text>
+            <Text variant="bodyMedium" style={styles.modalBody}>
+              {t(
+                'common:confirm_delete',
+                'Are you sure you want to remove this record from your chronicles?'
+              )}
+            </Text>
+            <View style={styles.modalActions}>
+              <Button mode="text" onPress={() => setReadingToDelete(null)} style={{ flex: 1 }}>
+                {t('common:cancel', 'Cancel')}
+              </Button>
+              <Button
+                mode="contained"
+                onPress={confirmDelete}
+                buttonColor={theme.colors.error}
+                textColor="white"
+                style={{ flex: 1 }}
+              >
+                {t('common:delete', 'Erase')}
+              </Button>
+            </View>
+          </GlassSurface>
+        </View>
+      </Modal>
     </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
   listPadding: {
-    paddingBottom: 40,
+    paddingBottom: 100,
+    paddingHorizontal: 16,
   },
   headerRow: {
     flexDirection: 'row',
@@ -207,7 +253,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginTop: 20,
     marginBottom: 24,
-    paddingHorizontal: 4,
   },
   pageTitle: {
     fontFamily: 'serif',
@@ -215,7 +260,7 @@ const styles = StyleSheet.create({
   },
   accentLine: {
     height: 3,
-    width: 30,
+    width: 25,
     marginTop: 8,
     borderRadius: 2,
   },
@@ -224,45 +269,50 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   sectionLabel: {
-    letterSpacing: 1.5,
+    letterSpacing: 2,
     marginBottom: 16,
-    marginLeft: 4,
-    fontSize: 11,
-    fontWeight: '700',
-    opacity: 0.8,
+    fontSize: 10,
+    fontWeight: '900',
+    opacity: 0.6,
   },
   searchBar: {
     marginBottom: 32,
-    backgroundColor: 'rgba(128, 128, 128, 0.08)',
-    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  searchInput: {
+    fontSize: 14,
   },
   cardWrapper: {
-    marginBottom: 12,
+    marginBottom: 16,
   },
   journalCard: {
     flexDirection: 'row',
-    borderRadius: 20,
+    borderRadius: 24,
     borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    minHeight: 110,
     overflow: 'hidden',
-    minHeight: 100,
   },
   dateSide: {
-    width: 65,
+    width: 75,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(128, 128, 128, 0.05)',
     borderRightWidth: 1,
-    borderRightColor: 'rgba(128, 128, 128, 0.1)',
+    borderRightColor: 'rgba(255, 255, 255, 0.05)',
   },
   dateDay: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: 'bold',
     fontFamily: 'serif',
   },
   dateMonth: {
-    fontSize: 10,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '900',
     opacity: 0.5,
+    letterSpacing: 1,
   },
   contentMain: {
     flex: 1,
@@ -270,40 +320,90 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   deckName: {
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+    fontSize: 9,
+    fontWeight: '900',
+    letterSpacing: 1,
     marginBottom: 4,
+    opacity: 0.6,
   },
   spreadTitle: {
     fontFamily: 'serif',
-    fontWeight: '600',
-    fontSize: 17,
+    fontWeight: 'bold',
+    fontSize: 18,
+    marginBottom: 8,
   },
   badgeRow: {
     flexDirection: 'row',
-    gap: 6,
-    marginTop: 4,
+    gap: 8,
   },
   miniBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   miniBadgeText: {
     fontSize: 9,
-    fontWeight: '800',
-    opacity: 0.7,
+    fontWeight: 'bold',
+  },
+  chevron: {
+    alignSelf: 'center',
+    marginRight: 4,
   },
   deleteAction: {
+    width: 80,
+    height: '100%',
+    paddingLeft: 10,
+    justifyContent: 'center',
+  },
+  deleteGlass: {
+    flex: 1,
+    borderRadius: 24,
+    backgroundColor: 'rgba(255, 59, 48, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 90,
-    height: '100%',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 59, 48, 0.3)',
   },
   emptyState: {
     alignItems: 'center',
     marginTop: 80,
+    opacity: 0.5,
+  },
+  emptyText: {
+    marginTop: 12,
+    fontStyle: 'italic',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  deleteModal: {
+    width: '100%',
+    padding: 24,
+    borderRadius: 32,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  modalTitle: {
+    fontFamily: 'serif',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 12,
+  },
+  modalBody: {
+    textAlign: 'center',
+    opacity: 0.8,
+    lineHeight: 22,
+    marginBottom: 24,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 12,
   },
 });
 

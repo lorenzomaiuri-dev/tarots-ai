@@ -1,5 +1,9 @@
 import React from 'react';
 
+import { StyleSheet } from 'react-native';
+
+import { BlurView } from 'expo-blur';
+
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -37,9 +41,18 @@ export const AppNavigator = () => {
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: theme.colors.elevation.level1,
-            borderTopColor: 'rgba(255,255,255,0.1)',
+            position: 'absolute',
+            borderTopColor: 'transparent',
+            backgroundColor: 'transparent',
+            elevation: 0,
           },
+          tabBarBackground: () => (
+            <BlurView
+              tint={theme.dark ? 'dark' : 'light'}
+              intensity={80}
+              style={StyleSheet.absoluteFill}
+            />
+          ),
           tabBarActiveTintColor: theme.colors.primary,
           tabBarInactiveTintColor: theme.colors.onSurfaceDisabled,
           tabBarIcon: ({ focused, color, size }) => {

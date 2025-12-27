@@ -1,6 +1,15 @@
 import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
-import { ImageStyle, ScrollView, StyleProp, StyleSheet, View } from 'react-native';
+import {
+  ImageStyle,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleProp,
+  StyleSheet,
+  View,
+} from 'react-native';
 
 import * as Sharing from 'expo-sharing';
 
@@ -8,10 +17,12 @@ import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import Markdown from 'react-native-markdown-display';
-import { Avatar, IconButton, Surface, Text, TextInput, useTheme } from 'react-native-paper';
+import { Avatar, IconButton, Text, TextInput, useTheme } from 'react-native-paper';
 import ViewShot, { captureRef } from 'react-native-view-shot';
 
 import { CardImage } from '../../components/CardImage';
+import { GlassSurface } from '../../components/GlassSurface';
+import { useHaptics } from '../../hooks/useHaptics';
 import { useHistoryStore } from '../../store/useHistoryStore';
 import { RootStackParamList } from '../../types/navigation';
 import { ScreenContainer } from '../ScreenContainer';
@@ -21,6 +32,7 @@ type DetailRouteProp = RouteProp<RootStackParamList, 'ReadingDetail'>;
 const ReadingDetailScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const haptics = useHaptics();
   const route = useRoute<DetailRouteProp>();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
@@ -28,13 +40,11 @@ const ReadingDetailScreen = () => {
   const reading = readings.find((r) => r.id === route.params.readingId);
 
   const viewShotRef = useRef(null);
-
-  // Local state for notes
   const [notes, setNotes] = useState(reading?.userNotes || '');
   const [isEditing, setIsEditing] = useState(false);
 
-  // Wrap handleShare in useCallback to stabilize it
   const handleShare = useCallback(async () => {
+    haptics.impact('light');
     try {
       if (viewShotRef.current) {
         const uri = await captureRef(viewShotRef.current, {
@@ -42,7 +52,6 @@ const ReadingDetailScreen = () => {
           quality: 0.8,
           result: 'tmpfile',
         });
-
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(uri, {
             mimeType: 'image/jpeg',
@@ -53,16 +62,20 @@ const ReadingDetailScreen = () => {
     } catch (e) {
       console.error('Error sharing', e);
     }
-  }, [t]);
+  }, [t, haptics]);
 
-  // Setup Header Button
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <IconButton icon="share-variant-outline" onPress={handleShare} />,
+      headerRight: () => (
+        <IconButton
+          icon="share-variant-outline"
+          onPress={handleShare}
+          iconColor={theme.colors.primary}
+        />
+      ),
     });
-  }, [navigation, handleShare]);
+  }, [navigation, handleShare, theme.colors.primary]);
 
-  // Early return if reading not found
   if (!reading) return null;
 
   const dateStr = new Date(reading.timestamp)
@@ -77,198 +90,211 @@ const ReadingDetailScreen = () => {
   const handleSaveNotes = () => {
     updateUserNotes(reading.id, notes);
     setIsEditing(false);
+    haptics.notification('success');
+    Keyboard.dismiss();
   };
 
   return (
     <ScreenContainer style={{ paddingHorizontal: 0 }}>
-      <ViewShot
-        ref={viewShotRef}
-        options={{ format: 'jpg', quality: 0.9 }}
-        style={{ flex: 1, backgroundColor: theme.colors.background }}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
+        <ViewShot
+          ref={viewShotRef}
+          options={{ format: 'jpg', quality: 0.9 }}
+          style={{ flex: 1, backgroundColor: 'transparent' }}
         >
-          {/* HEADER SECTION */}
-          <View style={styles.header}>
-            <Text variant="labelSmall" style={[styles.dateText, { color: theme.colors.primary }]}>
-              {dateStr}
-            </Text>
-            <Text variant="headlineSmall" style={styles.title}>
-              {t(`spreads:${reading.spreadId}.name`)}
-            </Text>
-            <View style={[styles.accentLine, { backgroundColor: theme.colors.primary }]} />
-          </View>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {/* HEADER */}
+            <View style={styles.header}>
+              <Text variant="labelSmall" style={[styles.dateText, { color: theme.colors.primary }]}>
+                {dateStr}
+              </Text>
+              <Text variant="headlineSmall" style={styles.title}>
+                {t(`spreads:${reading.spreadId}.name`)}
+              </Text>
+              <View style={[styles.accentLine, { backgroundColor: theme.colors.primary }]} />
+            </View>
 
-          {/* CARDS ASSEMBLY */}
-          <View style={styles.sectionHeader}>
-            <Text variant="labelMedium" style={styles.sectionLabel}>
-              {t('common:assembly', 'THE ASSEMBLY')}
-            </Text>
-          </View>
+            {/* ASSEMBLY SECTION */}
+            <View style={styles.sectionHeader}>
+              <Text variant="labelMedium" style={styles.sectionLabel}>
+                {t('common:assembly', 'THE ASSEMBLY')}
+              </Text>
+            </View>
 
-          <View style={styles.cardsGrid}>
-            {reading.cards.map((drawn, index) => (
-              <Surface key={index} style={styles.cardItemSurface} elevation={1}>
-                <View style={styles.cardItemRow}>
-                  {/* Card Image with Shadow */}
-                  <View style={styles.cardImageFrame}>
-                    <CardImage
-                      deckId={reading.deckId}
-                      cardId={drawn.cardId}
-                      style={
-                        [
-                          styles.cardImage,
-                          drawn.isReversed ? { transform: [{ rotate: '180deg' }] } : undefined,
-                        ] as StyleProp<ImageStyle>
-                      }
-                    />
-                  </View>
+            <View style={styles.cardsGrid}>
+              {reading.cards.map((drawn, index) => (
+                <GlassSurface key={index} intensity={15} style={styles.cardItemSurface}>
+                  <View style={styles.cardItemRow}>
+                    <View style={styles.cardImageFrame}>
+                      <CardImage
+                        deckId={reading.deckId}
+                        cardId={drawn.cardId}
+                        style={
+                          [
+                            styles.cardImage,
+                            drawn.isReversed ? { transform: [{ rotate: '180deg' }] } : undefined,
+                          ] as StyleProp<ImageStyle>
+                        }
+                      />
+                    </View>
 
-                  {/* Card Info */}
-                  <View style={styles.cardTextInfo}>
-                    <Text
-                      variant="labelSmall"
-                      style={[styles.positionLabel, { color: theme.colors.secondary }]}
-                    >
-                      {index + 1}.{' '}
-                      {t(
-                        `spreads:${reading.spreadId}.positions.${drawn.positionId}.label`
-                      ).toUpperCase()}
-                    </Text>
-                    <Text variant="titleMedium" style={styles.cardNameText}>
-                      {t(`decks:${reading.deckId}.cards.${drawn.cardId}.name`)}
-                    </Text>
-                    <View style={styles.orientationBadge}>
-                      <Text style={styles.orientationText}>
-                        {drawn.isReversed
-                          ? t('common:reversed', 'REVERSED')
-                          : t('common:upright', 'UPRIGHT')}
+                    <View style={styles.cardTextInfo}>
+                      <Text
+                        variant="labelSmall"
+                        style={[styles.positionLabel, { color: theme.colors.primary }]}
+                      >
+                        {index + 1}.{' '}
+                        {t(
+                          `spreads:${reading.spreadId}.positions.${drawn.positionId}.label`
+                        ).toUpperCase()}
                       </Text>
+                      <Text variant="titleMedium" style={styles.cardNameText}>
+                        {t(`decks:${reading.deckId}.cards.${drawn.cardId}.name`)}
+                      </Text>
+                      <GlassSurface intensity={10} style={styles.orientationBadge}>
+                        <Text style={styles.orientationText}>
+                          {drawn.isReversed
+                            ? t('common:reversed', 'REVERSED')
+                            : t('common:upright', 'UPRIGHT')}
+                        </Text>
+                      </GlassSurface>
                     </View>
                   </View>
-                </View>
-              </Surface>
-            ))}
-          </View>
+                </GlassSurface>
+              ))}
+            </View>
 
-          {/* AI INTERPRETATION SECTION */}
-          <View style={styles.sectionHeader}>
-            <Text variant="labelMedium" style={styles.sectionLabel}>
-              {t('common:interpretation_title', 'SACRED INSIGHT')}
-            </Text>
-          </View>
+            {/* INTERPRETATION SECTION */}
+            <View style={styles.sectionHeader}>
+              <Text variant="labelMedium" style={styles.sectionLabel}>
+                {t('common:interpretation_title', 'SACRED INSIGHT')}
+              </Text>
+            </View>
 
-          <Surface style={styles.aiInterpretationBox} elevation={1}>
-            <View style={styles.aiHeader}>
-              <Avatar.Icon
-                size={32}
-                icon="creation"
-                style={{ backgroundColor: 'transparent' }}
-                color={theme.colors.tertiary}
+            <GlassSurface intensity={25} style={styles.aiInterpretationBox}>
+              <View style={styles.aiHeader}>
+                <Avatar.Icon
+                  size={32}
+                  icon="creation"
+                  style={{ backgroundColor: 'transparent' }}
+                  color={theme.colors.primary}
+                />
+                <Text
+                  variant="titleMedium"
+                  style={[styles.aiTitle, { color: theme.colors.primary }]}
+                >
+                  {t('common:ai_insight', 'Spirit Message')}
+                </Text>
+              </View>
+
+              {reading.aiInterpretation ? (
+                <Markdown
+                  style={{
+                    body: {
+                      color: theme.colors.onSurface,
+                      fontSize: 16,
+                      lineHeight: 26,
+                      fontFamily: 'serif',
+                      opacity: 0.9,
+                    },
+                  }}
+                >
+                  {reading.aiInterpretation}
+                </Markdown>
+              ) : (
+                <Text style={styles.emptyText}>
+                  {t('common:no_interpretation', 'No interpretation recorded.')}
+                </Text>
+              )}
+            </GlassSurface>
+
+            {/* REFLECTIONS SECTION */}
+            <View style={styles.sectionHeader}>
+              <Text variant="labelMedium" style={styles.sectionLabel}>
+                {t('common:personal_reflections', 'REFLECTIONS')}
+              </Text>
+              <IconButton
+                icon={isEditing ? 'check-circle' : 'pencil-circle-outline'}
+                size={28}
+                iconColor={isEditing ? theme.colors.primary : theme.colors.onSurfaceVariant}
+                onPress={
+                  isEditing
+                    ? handleSaveNotes
+                    : () => {
+                        haptics.impact('light');
+                        setIsEditing(true);
+                      }
+                }
               />
-              <Text
-                variant="titleMedium"
-                style={[styles.aiTitle, { color: theme.colors.tertiary }]}
-              >
-                {t('common:ai_insight', 'Spirit Message')}
-              </Text>
             </View>
 
-            {reading.aiInterpretation ? (
-              <Markdown
-                style={{
-                  body: {
-                    color: theme.colors.onSurface,
-                    fontSize: 16,
-                    lineHeight: 24,
-                    fontFamily: 'serif',
-                    opacity: 0.9,
-                  },
-                }}
-              >
-                {reading.aiInterpretation}
-              </Markdown>
-            ) : (
-              <Text style={styles.emptyText}>
-                {t('common:no_interpretation', 'No interpretation was sought for this reading.')}
-              </Text>
-            )}
+            <GlassSurface
+              intensity={isEditing ? 40 : 10}
+              style={[styles.notesBox, isEditing && styles.notesBoxEditing]}
+            >
+              {isEditing ? (
+                <TextInput
+                  multiline
+                  value={notes}
+                  onChangeText={setNotes}
+                  autoFocus
+                  placeholder={t('common:write_reflections', 'Describe your energy...')}
+                  style={styles.notesInput}
+                  textColor={theme.colors.onSurface}
+                  underlineColor="transparent"
+                  activeUnderlineColor="transparent"
+                />
+              ) : (
+                <Text style={notes ? styles.notesText : styles.emptyText}>
+                  {notes || t('common:no_notes_yet', 'Your pages are waiting...')}
+                </Text>
+              )}
+            </GlassSurface>
 
-            <View style={styles.scrollDecoration}>
-              <View style={styles.dot} />
-              <View style={[styles.line, { backgroundColor: theme.colors.outlineVariant }]} />
-              <View style={styles.dot} />
-            </View>
-          </Surface>
-
-          {/* PERSONAL NOTES SECTION */}
-          <View style={styles.sectionHeader}>
-            <Text variant="labelMedium" style={styles.sectionLabel}>
-              {t('common:personal_reflections', 'REFLECTIONS')}
+            <Text style={styles.footerBranding}>
+              {t('common:app_footer', 'CHRONICLED BY AI TAROT')}
             </Text>
-            <IconButton
-              icon={isEditing ? 'check-circle' : 'pencil-circle-outline'}
-              size={24}
-              iconColor={isEditing ? theme.colors.primary : theme.colors.onSurface}
-              onPress={isEditing ? handleSaveNotes : () => setIsEditing(true)}
-            />
-          </View>
-
-          {isEditing ? (
-            <TextInput
-              mode="outlined"
-              multiline
-              value={notes}
-              onChangeText={setNotes}
-              placeholder={t('common:write_reflections', 'Describe how you feel...')}
-              style={styles.notesInput}
-              outlineStyle={{ borderRadius: 16 }}
-            />
-          ) : (
-            <Surface style={styles.notesBox} elevation={1}>
-              <Text style={notes ? styles.notesText : styles.emptyText}>
-                {notes || t('common:no_notes_yet', 'The pages of your reflection are empty...')}
-              </Text>
-            </Surface>
-          )}
-
-          <Text style={styles.footerBranding}>
-            {t('common:app_footer', 'CHRONICLED BY AI TAROTS')}
-          </Text>
-        </ScrollView>
-      </ViewShot>
+          </ScrollView>
+        </ViewShot>
+      </KeyboardAvoidingView>
     </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
   scrollContent: {
-    paddingBottom: 60,
-    paddingHorizontal: 16,
+    paddingBottom: 100,
+    paddingHorizontal: 20,
   },
   header: {
-    marginTop: 20,
-    marginBottom: 32,
+    marginTop: 24,
+    marginBottom: 40,
     alignItems: 'center',
   },
   dateText: {
-    letterSpacing: 2,
-    fontWeight: 'bold',
+    letterSpacing: 3,
+    fontWeight: '900',
+    fontSize: 10,
     marginBottom: 8,
   },
   title: {
     fontFamily: 'serif',
     fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 26,
+    fontSize: 28,
   },
   accentLine: {
-    height: 3,
-    width: 40,
-    marginTop: 16,
-    borderRadius: 2,
+    height: 1,
+    width: 60,
+    marginTop: 20,
+    opacity: 0.3,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -279,40 +305,39 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     letterSpacing: 2,
-    opacity: 0.6,
-    fontWeight: 'bold',
+    opacity: 0.5,
+    fontWeight: '900',
+    fontSize: 11,
   },
   cardsGrid: {
     gap: 16,
-    marginBottom: 32,
+    marginBottom: 40,
   },
   cardItemSurface: {
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    overflow: 'hidden',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   cardItemRow: {
     flexDirection: 'row',
-    padding: 12,
+    padding: 14,
     alignItems: 'center',
   },
   cardImageFrame: {
-    width: 70,
-    height: 110,
-    borderRadius: 8,
+    width: 75,
+    height: 125,
+    borderRadius: 12,
     marginRight: 20,
-    elevation: 5,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 8,
   },
   cardImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 8,
+    borderRadius: 12,
   },
   cardTextInfo: {
     flex: 1,
@@ -320,94 +345,86 @@ const styles = StyleSheet.create({
   positionLabel: {
     fontSize: 10,
     fontWeight: '900',
-    marginBottom: 4,
+    marginBottom: 6,
+    letterSpacing: 1,
   },
   cardNameText: {
     fontFamily: 'serif',
     fontWeight: 'bold',
-    marginBottom: 8,
+    fontSize: 18,
+    marginBottom: 10,
   },
   orientationBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   orientationText: {
     fontSize: 9,
-    fontWeight: 'bold',
-    opacity: 0.5,
+    fontWeight: '900',
+    opacity: 0.6,
     letterSpacing: 1,
   },
   aiInterpretationBox: {
     padding: 24,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 32,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    marginBottom: 32,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    marginBottom: 40,
   },
   aiHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-    marginLeft: -8,
+    marginLeft: -4,
   },
   aiTitle: {
     fontFamily: 'serif',
     fontWeight: 'bold',
-    letterSpacing: 1,
-  },
-  scrollDecoration: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 24,
-    opacity: 0.2,
-  },
-  line: {
-    height: 1,
-    width: 60,
-    marginHorizontal: 10,
-  },
-  dot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#FFF',
+    letterSpacing: 1.5,
+    fontSize: 14,
+    textTransform: 'uppercase',
   },
   notesBox: {
     padding: 20,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-    borderStyle: 'dashed',
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
-    minHeight: 120,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    minHeight: 140,
+  },
+  notesBoxEditing: {
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   notesInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'transparent',
     fontSize: 16,
-    minHeight: 150,
+    lineHeight: 24,
+    paddingHorizontal: 0,
   },
   notesText: {
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 26,
     opacity: 0.8,
+    fontStyle: 'italic',
+    fontFamily: 'serif',
   },
   emptyText: {
     opacity: 0.4,
     fontStyle: 'italic',
     textAlign: 'center',
-    marginTop: 10,
+    marginTop: 20,
   },
   footerBranding: {
     textAlign: 'center',
     opacity: 0.2,
-    marginTop: 40,
+    marginTop: 60,
     fontSize: 10,
-    letterSpacing: 2,
+    letterSpacing: 3,
+    fontWeight: 'bold',
   },
 });
 

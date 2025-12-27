@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
 
-import { Alert, Linking, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  Alert,
+  Linking,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+
+import { BlurView } from 'expo-blur';
 
 import { useTranslation } from 'react-i18next';
-import {
-  Button,
-  Dialog,
-  List,
-  Portal,
-  RadioButton,
-  Surface,
-  Switch,
-  Text,
-  TextInput,
-  useTheme,
-} from 'react-native-paper';
+import { Button, List, RadioButton, Switch, Text, TextInput, useTheme } from 'react-native-paper';
 
+// Components
+import { GlassSurface } from '../../components/GlassSurface';
+import { GlassyModal } from '../../components/GlassyModal';
+// Logic & Constants
 import { DEFAULTS } from '../../constants';
+import { useHaptics } from '../../hooks/useHaptics';
 import i18n from '../../locales/i18n';
 import { BackupService } from '../../services/backup';
 import { useHistoryStore } from '../../store/useHistoryStore';
@@ -26,44 +30,28 @@ import { ScreenContainer } from '../ScreenContainer';
 const SettingsScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const haptics = useHaptics();
   const { preferences, updatePreferences, aiConfig, setAiConfig } = useSettingsStore();
 
-  const [visible, setVisible] = useState(false);
-  const [themeDialogVisible, setThemeDialogVisible] = useState(false);
-  const [languageDialogVisible, setLanguageDialogVisible] = useState(false);
+  // Modal Visibility States
+  const [aiVisible, setAiVisible] = useState(false);
+  const [themeVisible, setThemeVisible] = useState(false);
+  const [langVisible, setLangVisible] = useState(false);
+
+  // Temp AI States
   const [tempApiKey, setTempApiKey] = useState('');
   const [tempModelId, setTempModelId] = useState('');
   const [tempBaseUrl, setTempBaseUrl] = useState('');
 
-  const dialogBgColor = theme.dark ? '#121212' : theme.colors.surface;
-
-  const dynamicCardStyle = {
-    backgroundColor: theme.dark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.02)',
-    borderColor: theme.dark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
-  };
-
-  const dynamicDivider = {
-    backgroundColor: theme.dark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
-  };
-
   const changeLanguage = (lang: string) => {
+    haptics.selection();
     i18n.changeLanguage(lang);
     updatePreferences({ language: lang });
-    setLanguageDialogVisible(false);
-  };
-
-  const getLanguageLabel = (lang: string) => {
-    switch (lang) {
-      case 'it':
-        return 'Italiano';
-      case 'en':
-        return 'English';
-      default:
-        return t('common:system', 'System');
-    }
+    setLangVisible(false);
   };
 
   const handleExport = async () => {
+    haptics.impact('medium');
     try {
       const data = {
         history: useHistoryStore.getState().readings,
@@ -71,17 +59,17 @@ const SettingsScreen = () => {
         exportDate: new Date().toISOString(),
       };
       await BackupService.exportJson(data, 'tarot_journal_backup.json');
+      haptics.notification('success');
     } catch (e) {
-      console.error(e);
       Alert.alert(t('common:error'), t('common:error_backup'));
     }
   };
 
   const handleImport = async () => {
+    haptics.impact('medium');
     try {
       const parsed = await BackupService.importJson<{ history: any[] }>();
       if (!parsed) return;
-      if (!parsed.history || !Array.isArray(parsed.history)) throw new Error('Invalid format');
 
       Alert.alert(
         t('common:restore'),
@@ -93,44 +81,36 @@ const SettingsScreen = () => {
             style: 'destructive',
             onPress: () => {
               useHistoryStore.setState({ readings: parsed.history });
+              haptics.notification('success');
               Alert.alert(t('common:success'), t('common:success_message_backup'));
             },
           },
         ]
       );
     } catch (e) {
-      console.error(e);
       Alert.alert(t('common:error'), t('common:error_invalid_file'));
     }
   };
 
-  const showDialog = () => {
+  const openAiConfig = () => {
     setTempApiKey(aiConfig.apiKey || '');
     setTempModelId(aiConfig.modelId || DEFAULTS.AI_MODEL);
     setTempBaseUrl(aiConfig.baseUrl || DEFAULTS.BASE_URL);
-    setVisible(true);
+    setAiVisible(true);
+    haptics.impact('light');
   };
 
-  const saveConfig = () => {
+  const saveAiConfig = () => {
     setAiConfig({
       apiKey: tempApiKey.trim(),
       modelId: tempModelId.trim() || DEFAULTS.AI_MODEL,
       baseUrl: tempBaseUrl.trim() || DEFAULTS.BASE_URL,
     });
-    setVisible(false);
+    setAiVisible(false);
+    haptics.notification('success');
   };
 
-  const getThemeLabel = (value: string) => {
-    switch (value) {
-      case 'light':
-        return t('common:theme_light', 'Light');
-      case 'dark':
-        return t('common:theme_dark', 'Dark');
-      default:
-        return t('common:theme_system', 'System');
-    }
-  };
-
+  // REUSABLE ROW COMPONENT
   const SettingRow = ({ title, description, right, onPress, icon }: any) => (
     <List.Item
       title={title}
@@ -138,7 +118,7 @@ const SettingsScreen = () => {
       onPress={onPress}
       titleStyle={styles.settingTitle}
       descriptionStyle={styles.settingDesc}
-      left={icon ? (props) => <List.Icon {...props} icon={icon} /> : undefined}
+      left={(props) => <List.Icon {...props} icon={icon} color={theme.colors.primary} />}
       right={right}
       style={styles.settingItem}
     />
@@ -149,315 +129,277 @@ const SettingsScreen = () => {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         {/* HEADER */}
         <View style={styles.headerContainer}>
-          <Text
-            variant="headlineMedium"
-            style={[styles.pageTitle, { color: theme.colors.onSurface }]}
-          >
+          <Text variant="headlineMedium" style={styles.pageTitle}>
             {t('common:settings', 'Settings')}
           </Text>
           <View style={[styles.accentLine, { backgroundColor: theme.colors.primary }]} />
         </View>
 
-        {/* READING PREFERENCES */}
+        {/* SECTION: ORACLE RULES */}
         <Text variant="labelLarge" style={[styles.sectionLabel, { color: theme.colors.primary }]}>
           {t('common:reading', 'ORACLE RULES')}
         </Text>
-        <Surface style={[styles.settingsCard, dynamicCardStyle]} elevation={0}>
+        <GlassSurface intensity={12} style={styles.settingsCard}>
           <SettingRow
             title={t('common:allow_reversed_cards', 'Allow Reversed Cards')}
             description={t('common:reversed_desc', 'Include inverted card meanings')}
+            icon="rotate-3d-variant"
             right={() => (
               <Switch
                 value={preferences.allowReversed}
-                onValueChange={(val) => updatePreferences({ allowReversed: val })}
+                onValueChange={(val) => {
+                  haptics.selection();
+                  updatePreferences({ allowReversed: val });
+                }}
               />
             )}
           />
-          <View style={[styles.divider, dynamicDivider]} />
+          <View style={styles.divider} />
           <SettingRow
             title={t('common:only_major_arcana', 'Only Major Arcana')}
             description={t('common:major_only_desc', 'Focus only on the 22 Greater Secrets')}
+            icon="star-shooting-outline"
             right={() => (
               <Switch
                 value={preferences.onlyMajorArcana}
-                onValueChange={(val) => updatePreferences({ onlyMajorArcana: val })}
+                onValueChange={(val) => {
+                  haptics.selection();
+                  updatePreferences({ onlyMajorArcana: val });
+                }}
               />
             )}
           />
-        </Surface>
+        </GlassSurface>
 
-        {/* APPEARANCE & LANGUAGE */}
+        {/* SECTION: AESTHETICS */}
         <Text variant="labelLarge" style={[styles.sectionLabel, { color: theme.colors.primary }]}>
           {t('common:appearance', 'AESTHETICS')}
         </Text>
-        <Surface style={[styles.settingsCard, dynamicCardStyle]} elevation={0}>
+        <GlassSurface intensity={12} style={styles.settingsCard}>
           <SettingRow
-            title={t('common:theme', 'Interface Theme')}
-            description={getThemeLabel(preferences.theme)}
+            title={t('common:theme', 'Theme')}
+            description={t(`common:theme_${preferences.theme}`)}
             icon="palette-outline"
-            onPress={() => setThemeDialogVisible(true)}
+            onPress={() => setThemeVisible(true)}
             right={(props: any) => <List.Icon {...props} icon="chevron-right" />}
           />
-          <View style={[styles.divider, dynamicDivider]} />
+          <View style={styles.divider} />
           <SettingRow
             title={t('common:language', 'Language')}
-            description={getLanguageLabel(preferences.language || i18n.language)}
+            description={preferences.language === 'it' ? 'Italiano' : 'English'}
             icon="translate"
-            onPress={() => setLanguageDialogVisible(true)}
+            onPress={() => setLangVisible(true)}
             right={(props: any) => <List.Icon {...props} icon="chevron-right" />}
           />
-          <View style={[styles.divider, dynamicDivider]} />
+          <View style={styles.divider} />
           <SettingRow
             title={t('common:haptics', 'Haptics')}
-            description={t('common:haptics_description', 'Haptics Feedback during usage')}
+            description={t('common:haptics_description', 'Tactile feedback')}
             icon="vibrate"
             right={() => (
               <Switch
                 value={preferences.hapticsEnabled}
-                onValueChange={(val) => updatePreferences({ hapticsEnabled: val })}
+                onValueChange={(val) => {
+                  if (val) haptics.impact('medium');
+                  updatePreferences({ hapticsEnabled: val });
+                }}
               />
             )}
           />
-        </Surface>
+        </GlassSurface>
 
-        {/* AI CONFIGURATION */}
+        {/* SECTION: AI */}
         <Text variant="labelLarge" style={[styles.sectionLabel, { color: theme.colors.primary }]}>
           {t('common:ai', 'DIVINE INTELLIGENCE')}
         </Text>
-        <Surface style={[styles.settingsCard, dynamicCardStyle]} elevation={0}>
+        <GlassSurface intensity={12} style={styles.settingsCard}>
           <SettingRow
-            title={t('common:ai_provider_config', 'AI Spirit Engine')}
-            description={`${aiConfig.modelId || 'Not set'}`}
+            title={t('common:ai_provider_config', 'Spirit Engine')}
+            description={aiConfig.modelId || 'Not set'}
             icon="auto-fix"
-            onPress={showDialog}
+            onPress={openAiConfig}
             right={(props: any) => <List.Icon {...props} icon="cog-outline" />}
           />
-          <View style={[styles.divider, dynamicDivider]} />
+          <View style={styles.divider} />
           <SettingRow
-            title={t('common:get_api_key_title', 'Acquire API Key')}
+            title={t('common:get_api_key_title', 'Acquire Key')}
             description="OpenRouter.ai"
             icon="key-outline"
             onPress={() => Linking.openURL('https://openrouter.ai/keys')}
             right={(props: any) => <List.Icon {...props} icon="open-in-new" />}
           />
-        </Surface>
+        </GlassSurface>
 
-        {/* DATA MANAGEMENT */}
+        {/* DATA */}
         <Text variant="labelLarge" style={[styles.sectionLabel, { color: theme.colors.primary }]}>
-          {t('common:chronicles', 'Chronicles')}
+          {t('common:chronicles', 'CHRONICLES')}
         </Text>
-        <Surface style={[styles.settingsCard, dynamicCardStyle]} elevation={0}>
+        <GlassSurface intensity={12} style={styles.settingsCard}>
           <SettingRow
             title={t('common:export_backup', 'Seal Memories')}
-            description={t('common:export_desc', 'Export journal to JSON')}
             icon="book-arrow-up-outline"
             onPress={handleExport}
           />
-          <View style={[styles.divider, dynamicDivider]} />
+          <View style={styles.divider} />
           <SettingRow
             title={t('common:import_backup', 'Restore Spirits')}
-            description={t('common:import_desc', 'Import journal from file')}
             icon="book-arrow-down-outline"
             onPress={handleImport}
           />
-        </Surface>
+        </GlassSurface>
 
-        <Text style={[styles.versionText, { color: theme.colors.onSurfaceVariant }]}>
-          Tarots AI — Version 1.0.0
-        </Text>
+        <Text style={styles.versionText}>Tarot AI — v1.0.0</Text>
       </ScrollView>
 
-      {/* LANGUAGE DIALOG */}
-      <Portal>
-        <Dialog
-          visible={languageDialogVisible}
-          onDismiss={() => setLanguageDialogVisible(false)}
-          style={[styles.dialog, { backgroundColor: dialogBgColor }]}
-        >
-          <Dialog.Title style={styles.dialogTitle}>
-            {t('common:select_language', 'Select Language')}
-          </Dialog.Title>
-          <Dialog.Content>
-            <RadioButton.Group
-              onValueChange={(v) => changeLanguage(v)}
-              value={preferences.language || i18n.language}
-            >
-              <RadioButton.Item label="Italiano" value="it" labelStyle={styles.radioLabel} />
-              <RadioButton.Item label="English" value="en" labelStyle={styles.radioLabel} />
-            </RadioButton.Group>
-          </Dialog.Content>
-        </Dialog>
-      </Portal>
+      {/* --- MODALS --- */}
 
-      {/* THEME DIALOG */}
-      <Portal>
-        <Dialog
-          visible={themeDialogVisible}
-          onDismiss={() => setThemeDialogVisible(false)}
-          style={[styles.dialog, { backgroundColor: dialogBgColor }]}
+      {/* Language Modal */}
+      <GlassyModal
+        visible={langVisible}
+        onClose={() => setLangVisible(false)}
+        title={t('common:select_language')}
+      >
+        <RadioButton.Group
+          onValueChange={changeLanguage}
+          value={preferences.language || i18n.language}
         >
-          <Dialog.Title style={styles.dialogTitle}>
-            {t('common:select_theme', 'Select Theme')}
-          </Dialog.Title>
-          <Dialog.Content>
-            <RadioButton.Group
-              onValueChange={(v) => {
-                updatePreferences({ theme: v as any });
-                setThemeDialogVisible(false);
-              }}
-              value={preferences.theme || 'system'}
-            >
-              <RadioButton.Item
-                label={t('common:theme_system', 'System')}
-                value="system"
-                labelStyle={styles.radioLabel}
-              />
-              <RadioButton.Item
-                label={t('common:theme_light', 'Light')}
-                value="light"
-                labelStyle={styles.radioLabel}
-              />
-              <RadioButton.Item
-                label={t('common:theme_dark', 'Dark')}
-                value="dark"
-                labelStyle={styles.radioLabel}
-              />
-            </RadioButton.Group>
-          </Dialog.Content>
-        </Dialog>
-      </Portal>
+          <RadioButton.Item
+            label="Italiano"
+            value="it"
+            color={theme.colors.primary}
+            labelStyle={styles.radioLabel}
+          />
+          <RadioButton.Item
+            label="English"
+            value="en"
+            color={theme.colors.primary}
+            labelStyle={styles.radioLabel}
+          />
+        </RadioButton.Group>
+      </GlassyModal>
 
-      {/* AI DIALOG */}
-      <Portal>
-        <Dialog
-          visible={visible}
-          onDismiss={() => setVisible(false)}
-          style={[styles.dialog, { backgroundColor: dialogBgColor }]}
+      {/* Theme Modal */}
+      <GlassyModal
+        visible={themeVisible}
+        onClose={() => setThemeVisible(false)}
+        title={t('common:select_theme')}
+      >
+        <RadioButton.Group
+          onValueChange={(v) => {
+            updatePreferences({ theme: v as any });
+            setThemeVisible(false);
+          }}
+          value={preferences.theme}
         >
-          <Dialog.Title style={styles.dialogTitle}>
-            {t('common:ai_config', 'AI Configuration')}
-          </Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              label="Base URL"
-              value={tempBaseUrl}
-              onChangeText={setTempBaseUrl}
-              mode="outlined"
-              style={styles.input}
-              placeholder="https://api.openai.com/v1"
-              autoCapitalize="none"
-              outlineColor={theme.dark ? 'rgba(255,255,255,0.2)' : undefined}
-            />
-            <TextInput
-              label="API Key"
-              value={tempApiKey}
-              onChangeText={setTempApiKey}
-              mode="outlined"
-              secureTextEntry
-              style={styles.input}
-              outlineColor={theme.dark ? 'rgba(255,255,255,0.2)' : undefined}
-            />
-            <TextInput
-              label="Model ID"
-              value={tempModelId}
-              onChangeText={setTempModelId}
-              mode="outlined"
-              placeholder={DEFAULTS.AI_MODEL}
-              style={styles.input}
-              autoCapitalize="none"
-              outlineColor={theme.dark ? 'rgba(255,255,255,0.2)' : undefined}
-            />
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button
-              onPress={() => setVisible(false)}
-              textColor={theme.dark ? '#fff' : theme.colors.primary}
-            >
-              {t('common:cancel', 'Cancel')}
-            </Button>
-            <Button mode="contained" onPress={saveConfig} style={{ marginLeft: 10 }}>
-              {t('common:save', 'Save')}
-            </Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
+          <RadioButton.Item
+            label={t('common:theme_system')}
+            value="system"
+            color={theme.colors.primary}
+            labelStyle={styles.radioLabel}
+          />
+          <RadioButton.Item
+            label={t('common:theme_light')}
+            value="light"
+            color={theme.colors.primary}
+            labelStyle={styles.radioLabel}
+          />
+          <RadioButton.Item
+            label={t('common:theme_dark')}
+            value="dark"
+            color={theme.colors.primary}
+            labelStyle={styles.radioLabel}
+          />
+        </RadioButton.Group>
+      </GlassyModal>
+
+      {/* AI Config Modal */}
+      <GlassyModal
+        visible={aiVisible}
+        onClose={() => setAiVisible(false)}
+        title={t('common:ai_config')}
+      >
+        <TextInput
+          label="Base URL"
+          value={tempBaseUrl}
+          onChangeText={setTempBaseUrl}
+          mode="flat"
+          style={styles.glassInput}
+          autoCapitalize="none"
+        />
+        <TextInput
+          label="API Key"
+          value={tempApiKey}
+          onChangeText={setTempApiKey}
+          mode="flat"
+          secureTextEntry
+          style={styles.glassInput}
+        />
+        <TextInput
+          label="Model ID"
+          value={tempModelId}
+          onChangeText={setTempModelId}
+          mode="flat"
+          style={styles.glassInput}
+          autoCapitalize="none"
+        />
+        <Button mode="contained" onPress={saveAiConfig} style={styles.saveBtn}>
+          {t('common:save')}
+        </Button>
+      </GlassyModal>
     </ScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    paddingBottom: 60,
-  },
-  headerContainer: {
-    marginTop: 20,
-    marginBottom: 30,
-  },
-  pageTitle: {
-    fontFamily: 'serif',
-    fontWeight: 'bold',
-  },
-  accentLine: {
-    height: 3,
-    width: 30,
-    marginTop: 8,
-    borderRadius: 2,
-  },
+  scrollContent: { paddingBottom: 100, paddingHorizontal: 16 },
+  headerContainer: { marginTop: 20, marginBottom: 30 },
+  pageTitle: { fontFamily: 'serif', fontWeight: 'bold' },
+  accentLine: { height: 1, width: 40, marginTop: 12, opacity: 0.5 },
   sectionLabel: {
-    letterSpacing: 1.5,
-    marginBottom: 10,
+    letterSpacing: 2,
+    marginBottom: 12,
     marginLeft: 4,
-    fontSize: 11,
-    fontWeight: '700',
-    opacity: 0.8,
+    fontSize: 10,
+    fontWeight: '900',
+    opacity: 0.6,
   },
   settingsCard: {
-    borderRadius: 20,
+    borderRadius: 24,
     borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     marginBottom: 24,
     overflow: 'hidden',
   },
-  settingItem: {
-    paddingVertical: 4,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  settingDesc: {
-    fontSize: 12,
-    opacity: 0.6,
-  },
-  divider: {
-    height: 1,
-    marginHorizontal: 16,
-  },
-  dialog: {
-    borderRadius: 28,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.05)',
-  },
-  dialogTitle: {
-    fontFamily: 'serif',
-    textAlign: 'center',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  radioLabel: {
-    fontSize: 16,
-  },
-  input: {
-    marginBottom: 12,
-    backgroundColor: 'transparent',
-  },
+  settingItem: { paddingVertical: 4 },
+  settingTitle: { fontSize: 16, fontWeight: '600' },
+  settingDesc: { fontSize: 12, opacity: 0.5 },
+  divider: { height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginHorizontal: 16 },
   versionText: {
     textAlign: 'center',
     fontSize: 10,
-    marginTop: 10,
-    letterSpacing: 1,
-    opacity: 0.5,
+    marginTop: 20,
+    letterSpacing: 2,
+    opacity: 0.3,
+    fontWeight: 'bold',
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalBlur: { width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' },
+  modalContent: {
+    width: '85%',
+    borderRadius: 32,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  modalTitle: { fontFamily: 'serif', fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
+  radioLabel: { fontSize: 16 },
+  glassInput: { backgroundColor: 'transparent', marginBottom: 12 },
+  saveBtn: { marginTop: 12, borderRadius: 12 },
 });
 
 export default SettingsScreen;

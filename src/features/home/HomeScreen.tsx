@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Avatar, Button, IconButton, Surface, Text, useTheme } from 'react-native-paper';
 
 import { CardFlip } from '../../components/CardFlip';
+import { GlassSurface } from '../../components/GlassSurface';
 import { InterpretationModal } from '../../components/InterpretationModal';
 import { AI_CONFIG } from '../../constants';
 import spreadsData from '../../data/spreads.json';
@@ -162,18 +163,20 @@ const HomeScreen = () => {
             style={[styles.mainAction, { backgroundColor: theme.colors.primaryContainer }]}
             onPress={() => navigation.navigate('SpreadSelection')}
           >
-            <Avatar.Icon
-              size={48}
-              icon="cards-playing-outline"
-              style={{ backgroundColor: 'transparent' }}
-              color={theme.colors.onPrimaryContainer}
-            />
-            <Text
-              variant="titleMedium"
-              style={{ fontWeight: 'bold', color: theme.colors.onPrimaryContainer }}
-            >
-              {t('common:new_reading', 'New Reading')}
-            </Text>
+            <GlassSurface style={styles.mainActionGlass}>
+              <Avatar.Icon
+                size={48}
+                icon="cards-playing-outline"
+                style={{ backgroundColor: 'transparent' }}
+                color={theme.colors.onPrimaryContainer}
+              />
+              <Text
+                variant="titleMedium"
+                style={{ fontWeight: 'bold', color: theme.colors.onPrimaryContainer }}
+              >
+                {t('common:new_reading', 'New Reading')}
+              </Text>
+            </GlassSurface>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -267,9 +270,6 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     paddingHorizontal: 16,
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
     marginBottom: 24,
   },
   focusHeader: {
@@ -366,6 +366,12 @@ const styles = StyleSheet.create({
     fontFamily: 'serif',
     fontWeight: 'bold',
     marginTop: 2,
+  },
+  mainActionGlass: {
+    height: 120,
+    borderRadius: 20,
+    padding: 16,
+    justifyContent: 'space-between',
   },
 });
 

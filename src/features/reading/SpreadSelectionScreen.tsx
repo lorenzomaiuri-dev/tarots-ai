@@ -5,10 +5,13 @@ import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { IconButton, Surface, Text, useTheme } from 'react-native-paper';
+import { IconButton, Text, useTheme } from 'react-native-paper';
 
+// Reusable Components
+import { GlassSurface } from '../../components/GlassSurface';
 import { IntentionModal } from '../../components/IntentionModal';
 import spreadsData from '../../data/spreads.json';
+import { useHaptics } from '../../hooks/useHaptics';
 import { RootStackParamList } from '../../types/navigation';
 import { Spread } from '../../types/reading';
 import { ScreenContainer } from '../ScreenContainer';
@@ -16,6 +19,7 @@ import { ScreenContainer } from '../ScreenContainer';
 const SpreadSelectionScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const haptics = useHaptics();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   // LOCAL
@@ -28,6 +32,7 @@ const SpreadSelectionScreen = () => {
 
   // 1. Open Modal
   const handleSpreadClick = (spread: Spread) => {
+    haptics.light();
     setSelectedSpread(spread);
     setModalVisible(true);
   };
@@ -47,20 +52,24 @@ const SpreadSelectionScreen = () => {
     return (
       <TouchableOpacity
         onPress={() => handleSpreadClick(item)}
-        activeOpacity={0.7}
+        activeOpacity={0.8}
         style={styles.cardContainer}
       >
-        <Surface style={styles.surface} elevation={1}>
+        <GlassSurface intensity={25} style={styles.glassWrapper}>
           <View style={styles.contentRow}>
             <View
-              style={[styles.iconContainer, { backgroundColor: theme.colors.primaryContainer }]}
+              style={[
+                styles.iconContainer,
+                { backgroundColor: theme.colors.primaryContainer + '40' },
+              ]}
             >
               <IconButton
                 icon={item.icon || 'cards-playing-outline'}
-                size={28}
-                iconColor={theme.colors.onPrimaryContainer}
+                size={26}
+                iconColor={theme.colors.primary}
               />
             </View>
+
             <View style={styles.textContainer}>
               <Text variant="titleMedium" style={styles.spreadName}>
                 {t(`spreads:${item.id}.name`, item.id)}
@@ -69,17 +78,24 @@ const SpreadSelectionScreen = () => {
                 {t(`spreads:${item.id}.description`)}
               </Text>
             </View>
+
             <View style={styles.badgeContainer}>
-              <View style={[styles.countBadge, { borderColor: theme.colors.outlineVariant }]}>
-                <Text style={styles.countText}>{item.slots.length}</Text>
+              <View
+                style={[
+                  styles.countBadge,
+                  { backgroundColor: theme.dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' },
+                ]}
+              >
+                <Text style={[styles.countText, { color: theme.colors.primary }]}>
+                  {item.slots.length}
+                </Text>
                 <Text style={styles.cardsLabel}>{t('common:cards', 'cards').toUpperCase()}</Text>
               </View>
             </View>
           </View>
-          <View
-            style={[styles.accentLine, { backgroundColor: theme.colors.primary, opacity: 0.3 }]}
-          />
-        </Surface>
+
+          <View style={[styles.accentLine, { backgroundColor: theme.colors.primary }]} />
+        </GlassSurface>
       </TouchableOpacity>
     );
   };
@@ -121,9 +137,9 @@ const SpreadSelectionScreen = () => {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    marginTop: 24,
-    marginBottom: 16,
-    paddingHorizontal: 4,
+    marginTop: 20,
+    marginBottom: 10,
+    paddingHorizontal: 8,
   },
   headerTitle: {
     fontFamily: 'serif',
@@ -132,23 +148,21 @@ const styles = StyleSheet.create({
   },
   headerDivider: {
     height: 3,
-    width: 40,
+    width: 32,
     marginTop: 8,
     borderRadius: 2,
+    opacity: 0.8,
   },
   listPadding: {
-    paddingVertical: 12,
-    paddingBottom: 40,
+    paddingVertical: 16,
+    paddingBottom: 60,
   },
   cardContainer: {
     marginBottom: 16,
+    marginHorizontal: 4,
   },
-  surface: {
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    overflow: 'hidden',
+  glassWrapper: {
+    borderRadius: 24,
   },
   contentRow: {
     flexDirection: 'row',
@@ -156,11 +170,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 12,
+    width: 52,
+    height: 52,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   textContainer: {
     flex: 1,
@@ -169,40 +185,44 @@ const styles = StyleSheet.create({
   spreadName: {
     fontFamily: 'serif',
     fontWeight: 'bold',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   spreadDesc: {
-    opacity: 0.6,
+    opacity: 0.7,
     lineHeight: 16,
+    fontSize: 12,
   },
   badgeContainer: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   countBadge: {
-    borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 12,
     paddingVertical: 6,
     paddingHorizontal: 10,
     alignItems: 'center',
-    minWidth: 50,
-    backgroundColor: 'rgba(0,0,0,0.2)',
+    minWidth: 48,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   countText: {
     fontWeight: '900',
-    fontSize: 16,
+    fontSize: 14,
   },
   cardsLabel: {
-    fontSize: 8,
+    fontSize: 7,
     fontWeight: 'bold',
     opacity: 0.5,
     marginTop: -2,
+    letterSpacing: 0.5,
   },
   accentLine: {
-    height: 2,
-    width: '100%',
+    height: 1,
+    width: '40%',
+    alignSelf: 'center',
     position: 'absolute',
     bottom: 0,
+    opacity: 0.2,
   },
 });
 

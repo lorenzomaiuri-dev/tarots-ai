@@ -11,9 +11,12 @@ import {
 } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
-import { IconButton, Surface, Text, useTheme } from 'react-native-paper';
+import { IconButton, Text, useTheme } from 'react-native-paper';
 
+// Components
 import { CardImage } from '../../components/CardImage';
+import { GlassSurface } from '../../components/GlassSurface';
+// Logic
 import { useHaptics } from '../../hooks/useHaptics';
 import { getAvailableDecks } from '../../services/deckRegistry';
 import { useSettingsStore } from '../../store/useSettingsStore';
@@ -36,14 +39,15 @@ const DeckSelectionScreen = () => {
   const decks = useMemo(() => getAvailableDecks(), []);
 
   const handleSelect = (id: string) => {
+    if (id === activeDeckId) return;
     setActiveDeckId(id);
-    haptics.medium();
+    haptics.impact('medium');
   };
 
   const toggleExpand = (id: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpandedId(expandedId === id ? null : id);
-    haptics.light();
+    haptics.selection();
   };
 
   const renderItem = ({ item }: { item: DeckInfo }) => {
@@ -52,78 +56,72 @@ const DeckSelectionScreen = () => {
 
     return (
       <View style={styles.cardWrapper}>
-        <Surface
-          style={[
-            styles.deckCard,
-            isActive && {
-              borderColor: theme.colors.primary,
-              backgroundColor: 'rgba(255,255,255,0.06)',
-            },
-          ]}
-          elevation={isActive ? 4 : 1}
-        >
-          {/* Main Selectable Area */}
-          <TouchableOpacity
-            onPress={() => handleSelect(item.id)}
-            activeOpacity={0.8}
-            style={styles.cardContent}
+        <TouchableOpacity onPress={() => handleSelect(item.id)} activeOpacity={0.9}>
+          <GlassSurface
+            intensity={isActive ? 40 : 15}
+            style={[styles.deckCard, isActive && { borderColor: theme.colors.primary + '60' }]}
           >
-            {/* LEFT: DECK PREVIEW */}
-            <View style={styles.imageFrame}>
-              <CardImage deckId={item.id} style={styles.deckPreviewImage} />
-              {isActive && (
-                <View style={[styles.activeIndicator, { backgroundColor: theme.colors.primary }]}>
-                  <IconButton icon="check" size={14} iconColor="white" />
-                </View>
-              )}
-            </View>
+            {/* Active Glow Effect */}
+            {isActive && (
+              <View style={[styles.activeGlow, { backgroundColor: theme.colors.primary }]} />
+            )}
 
-            {/* RIGHT: DECK DETAILS */}
-            <View style={styles.infoContainer}>
-              <View>
+            <View style={styles.cardContent}>
+              {/* LEFT: DECK PREVIEW (The Physical Artifact) */}
+              <View style={styles.imageFrame}>
+                <CardImage deckId={item.id} style={styles.deckPreviewImage} />
+                {isActive && (
+                  <View style={[styles.activeIndicator, { backgroundColor: theme.colors.primary }]}>
+                    <IconButton icon="check" size={14} iconColor="white" />
+                  </View>
+                )}
+              </View>
+
+              {/* RIGHT: DECK DETAILS */}
+              <View style={styles.infoContainer}>
                 <Text variant="titleMedium" style={styles.deckName}>
                   {t(`decks:${item.id}.info.name`)}
                 </Text>
-              </View>
 
-              <View>
-                <Text
-                  variant="bodySmall"
-                  numberOfLines={isExpanded ? undefined : 2}
-                  style={styles.deckDescription}
-                >
-                  {t(`decks:${item.id}.info.description`)}
-                </Text>
-
-                {/* Expand Toggle Button */}
-                <TouchableOpacity
-                  onPress={() => toggleExpand(item.id)}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
-                  <Text style={[styles.readMoreText, { color: theme.colors.primary }]}>
-                    {isExpanded
-                      ? t('common:show_less', 'Show Less')
-                      : t('common:read_more', 'Read More')}
+                <View>
+                  <Text
+                    variant="bodySmall"
+                    numberOfLines={isExpanded ? undefined : 2}
+                    style={[styles.deckDescription, isExpanded && { marginBottom: 10 }]}
+                  >
+                    {t(`decks:${item.id}.info.description`)}
                   </Text>
-                </TouchableOpacity>
-              </View>
 
-              <View style={styles.metaRow}>
-                <View style={styles.metaBadge}>
-                  <Text style={styles.metaText}>
-                    {item.totalCards} {t('common:cards', 'CARDS')}
-                  </Text>
+                  <TouchableOpacity
+                    onPress={() => toggleExpand(item.id)}
+                    style={styles.expandButton}
+                  >
+                    <Text style={[styles.readMoreText, { color: theme.colors.primary }]}>
+                      {isExpanded
+                        ? t('common:show_less', 'Show Less').toUpperCase()
+                        : t('common:read_more', 'Read More').toUpperCase()}
+                    </Text>
+                    <IconButton
+                      icon={isExpanded ? 'chevron-up' : 'chevron-down'}
+                      size={14}
+                      style={styles.expandIcon}
+                      iconColor={theme.colors.primary}
+                    />
+                  </TouchableOpacity>
                 </View>
-                <Text style={styles.authorText}> {item.author}</Text>
+
+                <View style={styles.metaRow}>
+                  <GlassSurface intensity={10} style={styles.metaBadge}>
+                    <Text style={styles.metaText}>
+                      {item.totalCards} {t('common:cards', 'CARDS')}
+                    </Text>
+                  </GlassSurface>
+                  <Text style={styles.authorText}>by {item.author}</Text>
+                </View>
               </View>
             </View>
-          </TouchableOpacity>
-
-          {/* DECORATIVE ACTIVE BAR */}
-          {isActive && (
-            <View style={[styles.activeAccentBar, { backgroundColor: theme.colors.primary }]} />
-          )}
-        </Surface>
+          </GlassSurface>
+        </TouchableOpacity>
       </View>
     );
   };
@@ -155,124 +153,137 @@ const styles = StyleSheet.create({
   header: {
     marginTop: 20,
     marginBottom: 24,
-    paddingHorizontal: 4,
+    paddingHorizontal: 8,
   },
   headerTitle: {
     fontFamily: 'serif',
     fontWeight: 'bold',
+    fontSize: 26,
   },
   headerSubtitle: {
     opacity: 0.5,
     fontStyle: 'italic',
-    marginTop: 2,
+    marginTop: 4,
+    fontSize: 13,
   },
   accentLine: {
-    height: 3,
-    width: 40,
-    marginTop: 12,
-    borderRadius: 2,
+    height: 1,
+    width: 50,
+    marginTop: 16,
+    opacity: 0.4,
   },
   listContent: {
-    paddingBottom: 40,
+    paddingBottom: 60,
+    paddingHorizontal: 16,
   },
   cardWrapper: {
     marginBottom: 20,
   },
   deckCard: {
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     overflow: 'hidden',
+  },
+  activeGlow: {
+    position: 'absolute',
+    top: -20,
+    right: -20,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    opacity: 0.15, // Subtle primary color glow
   },
   cardContent: {
     flexDirection: 'row',
-    padding: 16,
+    padding: 20,
     alignItems: 'flex-start',
   },
   imageFrame: {
-    width: 75,
-    height: 120,
+    width: 85,
+    height: 140,
     marginRight: 20,
-    borderRadius: 8,
+    borderRadius: 12,
     backgroundColor: '#000',
-    elevation: 8,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.5,
-    shadowRadius: 6,
+    shadowRadius: 10,
+    elevation: 10,
     position: 'relative',
   },
   deckPreviewImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 8,
-    opacity: 0.9,
+    borderRadius: 12,
   },
   activeIndicator: {
     position: 'absolute',
-    top: -8,
-    right: -8,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    top: -10,
+    right: -10,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#121212',
+    borderWidth: 3,
+    borderColor: 'rgba(18, 18, 18, 0.8)',
+    zIndex: 10,
   },
   infoContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    minHeight: 140,
   },
   deckName: {
     fontFamily: 'serif',
     fontWeight: 'bold',
-    fontSize: 18,
-    marginBottom: 4,
+    fontSize: 20,
+    marginBottom: 6,
   },
   deckDescription: {
     opacity: 0.7,
-    lineHeight: 20,
-    marginBottom: 4,
+    lineHeight: 18,
+    fontSize: 13,
+  },
+  expandButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+    marginLeft: -4,
   },
   readMoreText: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginBottom: 12,
-    textDecorationLine: 'underline',
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1,
+  },
+  expandIcon: {
+    margin: 0,
+    padding: 0,
   },
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    marginTop: 'auto', // Pushes to bottom of container
+    marginTop: 12,
   },
   metaBadge: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   metaText: {
     fontSize: 9,
-    fontWeight: 'bold',
+    fontWeight: '900',
     letterSpacing: 1,
-    opacity: 0.7,
+    opacity: 0.8,
   },
   authorText: {
-    fontSize: 10,
+    fontSize: 11,
     opacity: 0.4,
     fontStyle: 'italic',
-  },
-  activeAccentBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 3,
   },
 });
 

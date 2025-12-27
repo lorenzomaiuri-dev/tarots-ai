@@ -3,14 +3,26 @@ import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
-import { Avatar, ProgressBar, Surface, Text, useTheme } from 'react-native-paper';
+import { Avatar, ProgressBar, Text, useTheme } from 'react-native-paper';
 
 import { CardImage } from '../../components/CardImage';
+import { GlassSurface } from '../../components/GlassSurface';
 import { getDeck } from '../../services/deckRegistry';
 import { useHistoryStore } from '../../store/useHistoryStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { calculateStats } from '../../utils/statistics';
 import { ScreenContainer } from '../ScreenContainer';
+
+// Icon Map
+const GROUP_ICONS: Record<string, string> = {
+  swords: 'sword',
+  cups: 'cup-water',
+  wands: 'auto-fix',
+  pentacles: 'pentagram',
+  coins: 'pentagram',
+  major: 'star-shooting',
+  default: 'cards-diamond',
+};
 
 const StatsScreen = () => {
   const { t } = useTranslation();
@@ -18,42 +30,18 @@ const StatsScreen = () => {
   const { readings } = useHistoryStore();
   const { activeDeckId } = useSettingsStore();
 
-  // 1. Get the current deck configuration
   const deck = useMemo(() => getDeck(activeDeckId), [activeDeckId]);
-
-  // 2. Calculate stats (filtered by deckId inside the utility)
   const stats = useMemo(() => calculateStats(readings, activeDeckId), [readings, activeDeckId]);
 
-  // 3. CRASH PROTECTION: Ensure topCardId exists in the current deck's card list
-  // This prevents trying to translate/render a Card ID that doesn't exist in the active deck
   const isValidTopCard = useMemo(() => {
     if (!stats.topCardId || !deck) return false;
     return deck.cards.some((c) => c.id === stats.topCardId);
   }, [stats.topCardId, deck]);
 
-  // Map suit/group keys to mystical icons
-  const getGroupIcon = (key: string) => {
-    switch (key.toLowerCase()) {
-      case 'swords':
-        return 'sword';
-      case 'cups':
-        return 'cup-water';
-      case 'wands':
-        return 'auto-fix';
-      case 'pentacles':
-      case 'coins':
-        return 'pentagram';
-      case 'major':
-        return 'star-shooting';
-      default:
-        return 'cards-diamond';
-    }
-  };
-
   return (
     <ScreenContainer>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* HEADER */}
+        {/* HEADER SECTION */}
         <View style={styles.headerContainer}>
           <Text variant="headlineMedium" style={styles.headerTitle}>
             {t('common:insights', 'Your Patterns')}
@@ -66,36 +54,37 @@ const StatsScreen = () => {
           </Text>
         </View>
 
-        {/* TOP LEVEL STATS TILES */}
+        {/* SUMMARY TILES */}
         <View style={styles.summaryRow}>
-          <Surface style={styles.summaryTile} elevation={1}>
-            <Text variant="headlineMedium" style={styles.summaryNumber}>
+          <GlassSurface intensity={20} style={styles.summaryTile}>
+            <Text
+              variant="headlineMedium"
+              style={[styles.summaryNumber, { color: theme.colors.primary }]}
+            >
               {stats.totalReadings}
             </Text>
             <Text variant="labelSmall" style={styles.summaryLabel}>
               {t('common:readings', 'READINGS')}
             </Text>
-          </Surface>
+          </GlassSurface>
 
-          <Surface style={styles.summaryTile} elevation={1}>
+          <GlassSurface intensity={20} style={styles.summaryTile}>
             <Text variant="headlineMedium" style={styles.summaryNumber}>
               {stats.totalCards}
             </Text>
             <Text variant="labelSmall" style={styles.summaryLabel}>
               {t('common:cards', 'CARDS')}
             </Text>
-          </Surface>
+          </GlassSurface>
         </View>
 
-        {/* TOP CARD SPOTLIGHT */}
+        {/* SPOTLIGHT */}
         {isValidTopCard && stats.topCardId && (
-          <Surface style={styles.spotlightCard} elevation={2}>
+          <GlassSurface intensity={35} style={styles.spotlightCard}>
             <View
-              style={[
-                styles.spotlightGlow,
-                { backgroundColor: theme.colors.primary, opacity: 0.1 },
-              ]}
+              style={[styles.spotlightGlow, { backgroundColor: theme.colors.primary + '15' }]}
             />
+
             <Text variant="labelMedium" style={styles.spotlightHeader}>
               {t('common:recurring_card_title', 'THE RECURRING SHADOW')}
             </Text>
@@ -112,14 +101,14 @@ const StatsScreen = () => {
               <View style={styles.spotlightText}>
                 <Text variant="titleLarge" style={styles.topCardName}>
                   {t(`decks:${activeDeckId}.cards.${stats.topCardId}.name`, {
-                    defaultValue: 'Unknown Card',
+                    defaultValue: '???',
                   })}
                 </Text>
-                <View style={styles.countBadge}>
-                  <Text style={styles.countBadgeText}>
+                <GlassSurface intensity={10} style={styles.countBadge}>
+                  <Text style={[styles.countBadgeText, { color: theme.colors.primary }]}>
                     {stats.topCardCount} {t('common:times', 'times')}
                   </Text>
-                </View>
+                </GlassSurface>
                 <Text variant="bodySmall" style={styles.spotlightDesc}>
                   {t(
                     'common:recurring_card_message',
@@ -128,11 +117,11 @@ const StatsScreen = () => {
                 </Text>
               </View>
             </View>
-          </Surface>
+          </GlassSurface>
         )}
 
-        {/* ELEMENTAL BALANCE SECTION */}
-        <Surface style={styles.balanceSection} elevation={1}>
+        {/* ELEMENTAL BALANCE */}
+        <GlassSurface intensity={15} style={styles.balanceSection}>
           <Text variant="titleMedium" style={styles.sectionTitle}>
             {t('common:elemental_balance_title', 'Elemental Balance')}
           </Text>
@@ -141,6 +130,7 @@ const StatsScreen = () => {
             Object.entries(deck.info.groups).map(([groupKey, config]: [string, any]) => {
               const count = stats.suitCounts[groupKey] || 0;
               const percentage = stats.totalCards > 0 ? count / stats.totalCards : 0;
+              const iconName = GROUP_ICONS[groupKey.toLowerCase()] || GROUP_ICONS.default;
 
               return (
                 <View key={groupKey} style={styles.progressItem}>
@@ -148,7 +138,7 @@ const StatsScreen = () => {
                     <View style={styles.iconAndLabel}>
                       <Avatar.Icon
                         size={24}
-                        icon={getGroupIcon(groupKey)}
+                        icon={iconName}
                         style={{ backgroundColor: 'transparent' }}
                         color={config.color || theme.colors.onSurface}
                       />
@@ -156,25 +146,27 @@ const StatsScreen = () => {
                         {t(`common:${config.labelKey}`, groupKey)}
                       </Text>
                     </View>
-                    <Text variant="labelLarge" style={{ fontWeight: 'bold' }}>
+                    <Text variant="labelLarge" style={{ fontWeight: 'bold', opacity: 0.8 }}>
                       {Math.round(percentage * 100)}%
                     </Text>
                   </View>
-                  <ProgressBar
-                    progress={percentage}
-                    color={config.color}
-                    style={styles.progressBar}
-                  />
+                  <View style={styles.progressContainer}>
+                    <ProgressBar
+                      progress={percentage}
+                      color={config.color || theme.colors.primary}
+                      style={styles.progressBar}
+                    />
+                  </View>
                 </View>
               );
             })}
 
           {stats.totalReadings === 0 && (
-            <Text style={{ textAlign: 'center', opacity: 0.5, marginTop: 10 }}>
+            <Text style={styles.emptyText}>
               {t('common:no_data_yet', 'Your journey has just begun.')}
             </Text>
           )}
-        </Surface>
+        </GlassSurface>
       </ScrollView>
     </ScreenContainer>
   );
@@ -187,7 +179,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     marginTop: 20,
-    marginBottom: 30,
+    marginBottom: 25,
     paddingHorizontal: 4,
   },
   headerTitle: {
@@ -197,68 +189,71 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     letterSpacing: 2,
     marginTop: 4,
+    fontSize: 10,
+    fontWeight: 'bold',
   },
   summaryRow: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 12,
     marginBottom: 24,
   },
   summaryTile: {
     flex: 1,
     paddingVertical: 20,
-    borderRadius: 20,
+    borderRadius: 24,
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   summaryNumber: {
     fontWeight: '900',
     fontFamily: 'serif',
+    fontSize: 28,
   },
   summaryLabel: {
     opacity: 0.5,
-    letterSpacing: 1,
+    letterSpacing: 1.5,
     marginTop: 4,
+    fontSize: 9,
   },
   spotlightCard: {
     padding: 24,
-    borderRadius: 28,
+    borderRadius: 32,
     marginBottom: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
     overflow: 'hidden',
   },
   spotlightGlow: {
     position: 'absolute',
-    top: -50,
-    right: -50,
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    top: -40,
+    right: -40,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
   },
   spotlightHeader: {
     letterSpacing: 2,
     opacity: 0.6,
     marginBottom: 20,
     textAlign: 'center',
-    fontSize: 12,
+    fontSize: 11,
+    fontWeight: 'bold',
   },
   spotlightContent: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   cardFrame: {
-    elevation: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.5,
     shadowRadius: 10,
+    elevation: 12,
   },
   spotlightImage: {
-    width: 100,
-    height: 170,
+    width: 90,
+    height: 155,
     borderRadius: 12,
   },
   spotlightText: {
@@ -268,59 +263,76 @@ const styles = StyleSheet.create({
   topCardName: {
     fontFamily: 'serif',
     fontWeight: 'bold',
-    lineHeight: 28,
+    lineHeight: 26,
+    fontSize: 20,
   },
   countBadge: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
     alignSelf: 'flex-start',
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: 8,
-    marginVertical: 8,
+    borderRadius: 10,
+    marginVertical: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   countBadgeText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
+    letterSpacing: 0.5,
   },
   spotlightDesc: {
-    opacity: 0.5,
+    opacity: 0.6,
     fontStyle: 'italic',
     lineHeight: 18,
+    fontSize: 12,
   },
   balanceSection: {
     padding: 24,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 32,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   sectionTitle: {
     fontFamily: 'serif',
     fontWeight: 'bold',
     marginBottom: 24,
     textAlign: 'center',
+    letterSpacing: 1,
   },
   progressItem: {
-    marginBottom: 20,
+    marginBottom: 22,
   },
   progressLabelRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   iconAndLabel: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   groupName: {
-    marginLeft: 4,
-    fontWeight: '600',
+    marginLeft: 6,
+    fontWeight: '700',
+    fontSize: 14,
+    opacity: 0.9,
+  },
+  progressContainer: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    overflow: 'hidden',
   },
   progressBar: {
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    height: 8,
+    borderRadius: 4,
+  },
+  emptyText: {
+    textAlign: 'center',
+    opacity: 0.5,
+    marginTop: 10,
+    fontStyle: 'italic',
   },
 });
 

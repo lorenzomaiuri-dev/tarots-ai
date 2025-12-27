@@ -38,8 +38,8 @@ const MysticalDarkTheme = {
     background: '#121212',
     onBackground: '#E6E1E5',
 
-    surface: '#121212',
-    surfaceVariant: '#49454F',
+    surface: 'transparent',
+    surfaceVariant: 'rgba(255, 255, 255, 0.05)',
     onSurface: '#E6E1E5',
     onSurfaceVariant: '#CAC4D0',
 

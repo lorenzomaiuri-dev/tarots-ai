@@ -10,11 +10,17 @@ import {
   View,
 } from 'react-native';
 
-import { useTranslation } from 'react-i18next';
-import { Avatar, Button, IconButton, Searchbar, Surface, Text, useTheme } from 'react-native-paper';
+import { BlurView } from 'expo-blur';
 
+import { useTranslation } from 'react-i18next';
+import { Avatar, Button, IconButton, Searchbar, Text, useTheme } from 'react-native-paper';
+
+// Components
 import { CardImage } from '../../components/CardImage';
+import { GlassSurface } from '../../components/GlassSurface';
 import { InterpretationModal } from '../../components/InterpretationModal';
+import { useHaptics } from '../../hooks/useHaptics';
+// Logic & Types
 import { useInterpretation } from '../../hooks/useInterpretation';
 import { getDeck } from '../../services/deckRegistry';
 import { useSettingsStore } from '../../store/useSettingsStore';
@@ -22,15 +28,23 @@ import { Card, Deck } from '../../types/deck';
 import { ScreenContainer } from '../ScreenContainer';
 
 const { width, height } = Dimensions.get('window');
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 25;
+
+// Icons
+const TYPE_ICONS: Record<string, string> = {
+  major: 'star-shooting-outline',
+  swords: 'sword',
+  cups: 'cup-water',
+  wands: 'auto-fix',
+  pentacles: 'pentagram',
+  coins: 'pentagram',
+  default: 'cards-outline',
+};
 
 const groupCards = (cards: Card[], deck: Deck, t: any) => {
   const groupConfigs = deck.info.groups;
   const groupKeys = Object.keys(groupConfigs);
-
-  // 1. Initialize the structure based on the deck's defined groups
-  const groupsMap: Record<string, { title: string; type: string; color: string; data: Card[] }> =
-    {};
+  const groupsMap: Record<string, any> = {};
 
   groupKeys.forEach((key) => {
     groupsMap[key] = {
@@ -41,33 +55,26 @@ const groupCards = (cards: Card[], deck: Deck, t: any) => {
     };
   });
 
-  // 2. Distribute cards into buckets
   cards.forEach((card) => {
-    // Priority 1: Match by type (e.g., 'major')
-    if (groupsMap[card.meta.type]) {
-      groupsMap[card.meta.type].data.push(card);
-    }
-    // Priority 2: Match by suit (e.g., 'wands', 'coins')
-    else if (card.meta.suit && groupsMap[card.meta.suit]) {
-      groupsMap[card.meta.suit].data.push(card);
-    }
+    if (groupsMap[card.meta.type]) groupsMap[card.meta.type].data.push(card);
+    else if (card.meta.suit && groupsMap[card.meta.suit]) groupsMap[card.meta.suit].data.push(card);
   });
 
-  // 3. Convert back to array, preserving the order defined in deck.info.groups
   return groupKeys.map((key) => groupsMap[key]).filter((group) => group.data.length > 0);
 };
 
 const DeckExplorerScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const haptics = useHaptics();
   const { activeDeckId } = useSettingsStore();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [displayLimit, setDisplayLimit] = useState(PAGE_SIZE);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
   const { result, isLoading, error, interpretReading } = useInterpretation();
   const [aiModalVisible, setAiModalVisible] = useState(false);
-  const prompt = t('questions:symbolism_analysis', 'Analyze the visual symbolism...');
 
   const deck = useMemo(() => getDeck(activeDeckId), [activeDeckId]);
 
@@ -78,8 +85,6 @@ const DeckExplorerScreen = () => {
 
   const sections = useMemo(() => {
     if (!deck) return [];
-
-    // 1. FILTERING
     let filtered = [...deck.cards];
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
@@ -87,26 +92,7 @@ const DeckExplorerScreen = () => {
         t(`decks:${activeDeckId}.cards.${c.id}.name`).toLowerCase().includes(q)
       );
     }
-
-    // 2. ORDERING
-    const groupOrder = Object.keys(deck.info.groups);
-    filtered.sort((a, b) => {
-      const indexA =
-        groupOrder.indexOf(a.meta.type) !== -1
-          ? groupOrder.indexOf(a.meta.type)
-          : groupOrder.indexOf(a.meta?.suit ?? 'none');
-      const indexB =
-        groupOrder.indexOf(b.meta.type) !== -1
-          ? groupOrder.indexOf(b.meta.type)
-          : groupOrder.indexOf(b.meta?.suit ?? 'none');
-      return indexA - indexB;
-    });
-
-    // 3. PAGINATION
-    const paginatedCards = filtered.slice(0, displayLimit);
-
-    // 4. GROUPING
-    return groupCards(paginatedCards, deck, t);
+    return groupCards(filtered.slice(0, displayLimit), deck, t);
   }, [deck, searchQuery, activeDeckId, t, displayLimit]);
 
   const loadMore = useCallback(() => {
@@ -115,35 +101,15 @@ const DeckExplorerScreen = () => {
     }
   }, [displayLimit, deck]);
 
-  const getGroupIcon = (type: string) => {
-    switch (type) {
-      case 'major':
-        return 'star-shooting-outline';
-      case 'swords':
-        return 'sword';
-      case 'cups':
-        return 'cup-water';
-      case 'wands':
-        return 'auto-fix';
-      case 'pentacles':
-      case 'coins':
-        return 'pentagram';
-      default:
-        return 'cards-outline';
-    }
-  };
-
   const handleAnalyzeSymbolism = () => {
-    if (!selectedCard || !deck) return;
+    if (!selectedCard) return;
     setAiModalVisible(true);
-    if (!result) {
-      interpretReading(
-        activeDeckId,
-        { id: 'study', label: 'main', slots: [{ id: 'main', label: 'main' }] },
-        [{ cardId: selectedCard.id, deckId: activeDeckId, positionId: 'main', isReversed: false }],
-        prompt
-      );
-    }
+    interpretReading(
+      activeDeckId,
+      { id: 'study', slots: [{ id: 'main', label: 'main' }] } as any,
+      [{ cardId: selectedCard.id, deckId: activeDeckId, positionId: 'main', isReversed: false }],
+      t('questions:symbolism_analysis', 'Analyze the visual symbolism...')
+    );
   };
 
   if (!deck) return null;
@@ -164,24 +130,19 @@ const DeckExplorerScreen = () => {
         value={searchQuery}
         style={styles.searchBar}
         inputStyle={{ fontSize: 14 }}
+        mode="bar"
       />
 
       <SectionList
         sections={sections}
         keyExtractor={(item) => item.id}
         stickySectionHeadersEnabled={false}
-        showsVerticalScrollIndicator={false}
         onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
-        initialNumToRender={PAGE_SIZE}
-        maxToRenderPerBatch={PAGE_SIZE}
-        windowSize={PAGE_SIZE}
-        removeClippedSubviews={true}
         renderSectionHeader={({ section }) => (
           <View style={styles.sectionHeader}>
             <Avatar.Icon
-              size={24}
-              icon={getGroupIcon(section.type)}
+              size={20}
+              icon={TYPE_ICONS[section.type] || TYPE_ICONS.default}
               style={{ backgroundColor: 'transparent' }}
               color={section.color || theme.colors.primary}
             />
@@ -197,34 +158,43 @@ const DeckExplorerScreen = () => {
           </View>
         )}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => setSelectedCard(item)} activeOpacity={0.7}>
-            <Surface style={styles.cardItem} elevation={1}>
+          <TouchableOpacity
+            onPress={() => {
+              haptics.impact('light');
+              setSelectedCard(item);
+            }}
+            activeOpacity={0.8}
+          >
+            <GlassSurface intensity={10} style={styles.cardItem}>
               <CardImage deckId={activeDeckId} cardId={item.id} style={styles.thumbnail} />
               <View style={styles.itemInfo}>
                 <Text variant="titleMedium" style={styles.cardName}>
                   {t(`decks:${activeDeckId}.cards.${item.id}.name`)}
                 </Text>
                 <Text variant="labelSmall" style={styles.cardMeta}>
-                  {item.meta.type === 'major'
-                    ? t('common:major', 'Major')
-                    : item.meta.suit
-                      ? t(`common:${item.meta.suit}`, item.meta.suit)
-                      : ''}
+                  {item.meta.type === 'major' ? t('common:major') : t(`common:${item.meta.suit}`)}
                 </Text>
               </View>
-              <IconButton icon="chevron-right" size={20} />
-            </Surface>
+              <IconButton
+                icon="chevron-right"
+                size={18}
+                iconColor={theme.colors.onSurfaceDisabled}
+              />
+            </GlassSurface>
           </TouchableOpacity>
         )}
-        contentContainerStyle={{ paddingBottom: 40 }}
+        contentContainerStyle={{ paddingBottom: 100, paddingHorizontal: 4 }}
       />
 
-      {/* MODAL CARD STUDY */}
-      <Modal visible={!!selectedCard} animationType="slide" transparent>
-        <View style={[styles.modalOverlay, { backgroundColor: theme.colors.background }]}>
+      {/* FULL SCREEN DETAIL */}
+      <Modal visible={!!selectedCard} animationType="fade" transparent>
+        <BlurView
+          intensity={95}
+          tint={theme.dark ? 'dark' : 'light'}
+          style={StyleSheet.absoluteFill}
+        >
           {selectedCard && (
             <View style={{ flex: 1 }}>
-              {/* CLOSE BUTTON */}
               <IconButton
                 icon="close"
                 size={28}
@@ -232,7 +202,10 @@ const DeckExplorerScreen = () => {
                 onPress={() => setSelectedCard(null)}
               />
 
-              <ScrollView contentContainerStyle={styles.modalContent}>
+              <ScrollView
+                contentContainerStyle={styles.modalContent}
+                showsVerticalScrollIndicator={false}
+              >
                 <View style={styles.imageShadowFrame}>
                   <CardImage
                     deckId={activeDeckId}
@@ -246,37 +219,36 @@ const DeckExplorerScreen = () => {
                 </Text>
 
                 <View style={styles.badgeRow}>
-                  <View style={styles.tagBadge}>
+                  <GlassSurface intensity={20} style={styles.tagBadge}>
                     <Text style={styles.tagText}>{selectedCard.meta.type.toUpperCase()}</Text>
-                  </View>
+                  </GlassSurface>
                   {selectedCard.meta.suit && (
-                    <View style={styles.tagBadge}>
+                    <GlassSurface intensity={20} style={styles.tagBadge}>
                       <Text style={styles.tagText}>{selectedCard.meta.suit.toUpperCase()}</Text>
-                    </View>
+                    </GlassSurface>
                   )}
                 </View>
 
-                <Surface style={styles.keywordsBox} elevation={0}>
+                <GlassSurface intensity={15} style={styles.keywordsBox}>
                   <Text variant="bodyLarge" style={styles.keywordsText}>
                     {t(`decks:${activeDeckId}.cards.${selectedCard.id}.keywords`)}
                   </Text>
-                </Surface>
+                </GlassSurface>
 
                 <Button
                   mode="contained"
                   icon="creation"
                   onPress={handleAnalyzeSymbolism}
                   style={styles.studyButton}
-                  contentStyle={{ height: 54 }}
+                  contentStyle={{ height: 56 }}
                 >
                   {t('common:study_symbolism', 'Study Symbolism')}
                 </Button>
-
                 <View style={styles.footerSpacing} />
               </ScrollView>
             </View>
           )}
-        </View>
+        </BlurView>
       </Modal>
 
       <InterpretationModal
@@ -292,142 +264,82 @@ const DeckExplorerScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  header: {
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  title: {
-    fontFamily: 'serif',
-    fontWeight: 'bold',
-  },
-  accentLine: {
-    height: 3,
-    width: 30,
-    marginTop: 8,
-    borderRadius: 2,
-  },
+  header: { marginTop: 10, marginBottom: 20 },
+  title: { fontFamily: 'serif', fontWeight: 'bold' },
+  accentLine: { height: 1, width: 40, marginTop: 12, opacity: 0.5 },
   searchBar: {
-    marginBottom: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 12,
+    marginBottom: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: 16,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    marginTop: 8,
-    gap: 8,
-  },
-  sectionHeaderText: {
-    letterSpacing: 2,
-    fontWeight: 'bold',
-    opacity: 0.7,
-  },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, gap: 6 },
+  sectionHeaderText: { letterSpacing: 2, fontWeight: '900', fontSize: 10, opacity: 0.6 },
   cardItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
     padding: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    borderRadius: 16,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
-  thumbnail: {
-    width: 50,
-    height: 85,
-    borderRadius: 8,
-  },
-  itemInfo: {
-    flex: 1,
-    marginLeft: 16,
-  },
-  cardName: {
-    fontFamily: 'serif',
+  thumbnail: { width: 54, height: 90, borderRadius: 10 },
+  itemInfo: { flex: 1, marginLeft: 16 },
+  cardName: { fontFamily: 'serif', fontWeight: 'bold', fontSize: 17 },
+  cardMeta: {
+    opacity: 0.5,
+    marginTop: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    fontSize: 9,
     fontWeight: 'bold',
   },
-  cardMeta: {
-    opacity: 0.4,
-    marginTop: 2,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  modalOverlay: {
-    flex: 1,
-  },
-  closeBtn: {
-    position: 'absolute',
-    top: 40,
-    left: 10,
-    zIndex: 10,
-  },
-  modalContent: {
-    paddingTop: 80,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-  },
+  closeBtn: { position: 'absolute', top: 50, right: 20, zIndex: 10 },
+  modalContent: { paddingTop: 100, paddingHorizontal: 32, alignItems: 'center' },
   imageShadowFrame: {
-    elevation: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 15 },
+    shadowOffset: { width: 0, height: 20 },
     shadowOpacity: 0.6,
-    shadowRadius: 20,
-    marginBottom: 32,
+    shadowRadius: 25,
+    elevation: 20,
+    marginBottom: 40,
   },
-  largeImage: {
-    width: width * 0.65,
-    height: height * 0.5,
-    borderRadius: 20,
-  },
+  largeImage: { width: width * 0.65, height: height * 0.48, borderRadius: 24 },
   modalCardTitle: {
     fontWeight: 'bold',
     fontFamily: 'serif',
-    marginBottom: 12,
+    marginBottom: 16,
     textAlign: 'center',
+    fontSize: 32,
   },
-  badgeRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 24,
-  },
+  badgeRow: { flexDirection: 'row', gap: 12, marginBottom: 32 },
   tagBadge: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
   },
-  tagText: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-  },
+  tagText: { fontSize: 10, fontWeight: '900', letterSpacing: 1.5 },
   keywordsBox: {
-    padding: 20,
-    backgroundColor: 'rgba(255,255,255,0.02)',
-    borderRadius: 16,
+    padding: 24,
+    borderRadius: 28,
     width: '100%',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   keywordsText: {
     textAlign: 'center',
-    opacity: 0.7,
+    opacity: 0.8,
     fontStyle: 'italic',
     fontFamily: 'serif',
-    lineHeight: 24,
+    lineHeight: 26,
+    fontSize: 15,
   },
-  studyButton: {
-    marginTop: 32,
-    width: '100%',
-    borderRadius: 12,
-  },
-  footerSpacing: {
-    height: 60,
-  },
+  studyButton: { marginTop: 40, width: '100%', borderRadius: 16 },
+  footerSpacing: { height: 80 },
 });
 
 export default DeckExplorerScreen;

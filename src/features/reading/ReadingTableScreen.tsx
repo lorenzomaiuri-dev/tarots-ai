@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 
 import { Alert, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 
+import { BlurView } from 'expo-blur';
+
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { Button, SegmentedButtons, Surface, Text, useTheme } from 'react-native-paper';
+import { Button, SegmentedButtons, Text, useTheme } from 'react-native-paper';
 
 import { CardFlip } from '../../components/CardFlip';
+import { GlassSurface } from '../../components/GlassSurface';
 import { InterpretationModal } from '../../components/InterpretationModal';
 import { SpreadVisualizer } from '../../components/SpreadVisualizer';
 import spreadsData from '../../data/spreads.json';
@@ -22,7 +25,6 @@ import { DrawnCard, ReadingSession, Spread } from '../../types/reading';
 import { ScreenContainer } from '../ScreenContainer';
 
 type ReadingTableRouteProp = RouteProp<RootStackParamList, 'ReadingTable'>;
-
 const { width } = Dimensions.get('window');
 
 const ReadingTableScreen = () => {
@@ -44,9 +46,7 @@ const ReadingTableScreen = () => {
 
   useEffect(() => {
     const foundSpread = spreadsData.find((s) => s.id === route.params.spreadId);
-    if (foundSpread) {
-      setSpread(foundSpread as Spread);
-    }
+    if (foundSpread) setSpread(foundSpread as Spread);
   }, [route.params.spreadId]);
 
   const handleDrawCard = (slotId: string) => {
@@ -76,7 +76,7 @@ const ReadingTableScreen = () => {
       positionId: slotId,
       isReversed: results[0].isReversed,
     };
-    haptics.medium();
+    haptics.impact('medium');
     setDrawnCards((prev) => [...prev, newCard]);
   };
 
@@ -84,16 +84,11 @@ const ReadingTableScreen = () => {
     if (!spread) return;
     setModalVisible(true);
     if (!result) {
-      let questionToAsk = route.params.customQuestion;
-
-      if (!questionToAsk && spread.defaultQuestionKey) {
-        questionToAsk = t(`prompts:${spread.defaultQuestionKey}`);
-      }
-
-      if (!questionToAsk) {
-        questionToAsk = t('prompts:general_guidance', 'Please interpret this reading.');
-      }
-
+      let questionToAsk =
+        route.params.customQuestion ||
+        (spread.defaultQuestionKey
+          ? t(`prompts:${spread.defaultQuestionKey}`)
+          : t('prompts:general_guidance'));
       await interpretReading(activeDeckId, spread, drawnCards, questionToAsk);
     }
   };
@@ -108,22 +103,21 @@ const ReadingTableScreen = () => {
       aiInterpretation: result || undefined,
     };
     addReading(session);
+    haptics.notification('success');
     navigation.navigate('MainTabs', { screen: 'HomeTab' });
   };
 
   if (!spread) return null;
-
   const isReadingComplete = drawnCards.length === spread.slots.length;
 
   return (
     <ScreenContainer style={{ paddingHorizontal: 0 }}>
-      {/* HEADER */}
+      {/* HEADER: GLASSY SEGMENTED CONTROL */}
       <View style={styles.header}>
         <Text variant="headlineSmall" style={styles.title}>
           {t(`spreads:${spread.id}.name`)}
         </Text>
-
-        <View style={{ marginTop: 12, width: 220 }}>
+        <View style={styles.segmentedWrapper}>
           <SegmentedButtons
             value={viewMode}
             onValueChange={setViewMode}
@@ -132,6 +126,7 @@ const ReadingTableScreen = () => {
               { value: 'list', label: t('common:list', 'List'), icon: 'format-list-bulleted' },
             ]}
             density="small"
+            style={styles.segmentedInner}
           />
         </View>
       </View>
@@ -152,11 +147,9 @@ const ReadingTableScreen = () => {
           >
             {spread.slots.map((slot, index) => {
               const drawn = drawnCards.find((c) => c.positionId === slot.id);
-
               return (
                 <View key={slot.id} style={styles.slotContainer}>
-                  {/* ENHANCED TEXT SECTION */}
-                  <Surface style={styles.slotTextCard} elevation={1}>
+                  <GlassSurface intensity={20} style={styles.slotTextCard}>
                     <Text
                       variant="labelLarge"
                       style={[styles.slotLabel, { color: theme.colors.primary }]}
@@ -166,7 +159,7 @@ const ReadingTableScreen = () => {
                     <Text variant="bodyMedium" style={styles.slotDesc}>
                       {t(`spreads:${spread.id}.positions.${slot.id}.description`)}
                     </Text>
-                  </Surface>
+                  </GlassSurface>
 
                   <View style={styles.cardWrapper}>
                     <CardFlip
@@ -174,15 +167,9 @@ const ReadingTableScreen = () => {
                       cardId={drawn?.cardId || null}
                       isReversed={drawn?.isReversed}
                       onFlip={() => !drawn && handleDrawCard(slot.id)}
-                      width={140}
-                      height={230}
+                      width={160}
+                      height={260}
                     />
-
-                    {!drawn && (
-                      <View style={styles.tapHint}>
-                        <Text style={styles.tapHintText}>{t('common:tap', 'TAP TO DRAW')}</Text>
-                      </View>
-                    )}
                   </View>
 
                   {drawn && (
@@ -199,15 +186,30 @@ const ReadingTableScreen = () => {
         )}
       </View>
 
-      {/* BOTTOM ACTION BAR */}
+      {/* FLOATING ACTION DOCK */}
       {isReadingComplete && (
-        <View style={[styles.actionBar, { backgroundColor: theme.colors.elevation.level2 }]}>
-          <Button mode="outlined" onPress={handleSaveAndExit} style={{ flex: 1, marginRight: 8 }}>
-            {t('common:save', 'Save')}
-          </Button>
-          <Button mode="contained" icon="creation" onPress={handleInterpret} style={{ flex: 1 }}>
-            {t('common:ai', 'AI Reading')}
-          </Button>
+        <View style={styles.dockContainer}>
+          <BlurView intensity={80} tint={theme.dark ? 'dark' : 'light'} style={styles.dockBlur}>
+            <Button
+              mode="text"
+              onPress={handleSaveAndExit}
+              style={styles.dockButton}
+              textColor={theme.colors.onSurfaceVariant}
+            >
+              {t('common:save', 'Save')}
+            </Button>
+            <View style={styles.dockDivider} />
+            <Button
+              mode="text"
+              icon="creation"
+              onPress={handleInterpret}
+              style={styles.dockButton}
+              textColor={theme.colors.primary}
+              labelStyle={{ fontWeight: 'bold' }}
+            >
+              {t('common:ai', 'Deep Insight')}
+            </Button>
+          </BlurView>
         </View>
       )}
 
@@ -224,94 +226,104 @@ const ReadingTableScreen = () => {
 
 const styles = StyleSheet.create({
   header: {
-    paddingVertical: 20,
+    paddingVertical: 15,
     alignItems: 'center',
+    zIndex: 10,
   },
   title: {
     fontWeight: 'bold',
     fontFamily: 'serif',
     letterSpacing: 1,
+    fontSize: 20,
+  },
+  segmentedWrapper: {
+    marginTop: 12,
+    width: width * 0.7,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  segmentedInner: {
+    backgroundColor: 'rgba(255,255,255,0.05)',
   },
   scrollContent: {
-    paddingBottom: 120,
+    paddingBottom: 150,
     paddingTop: 10,
     alignItems: 'center',
   },
   slotContainer: {
-    marginBottom: 50,
+    marginBottom: 60,
     alignItems: 'center',
     width: '100%',
   },
   slotTextCard: {
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 24,
     marginBottom: 20,
-    width: width * 0.85,
+    width: width * 0.9,
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   slotLabel: {
     fontWeight: '900',
     textTransform: 'uppercase',
-    letterSpacing: 2,
-    marginBottom: 6,
-    fontSize: 13,
+    letterSpacing: 3,
+    marginBottom: 8,
+    fontSize: 11,
   },
   slotDesc: {
     textAlign: 'center',
-    opacity: 0.7,
+    opacity: 0.8,
     fontStyle: 'italic',
     fontFamily: 'serif',
-    lineHeight: 20,
+    lineHeight: 22,
+    fontSize: 14,
   },
   cardWrapper: {
-    position: 'relative',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.44,
-    shadowRadius: 10.32,
-    elevation: 16,
-  },
-  tapHint: {
-    position: 'absolute',
-    bottom: 15,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingVertical: 4,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  tapHintText: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: 'bold',
-    letterSpacing: 1,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    elevation: 20,
   },
   cardName: {
-    marginTop: 16,
+    marginTop: 18,
     fontWeight: 'bold',
     fontFamily: 'serif',
+    fontSize: 18,
+    letterSpacing: 0.5,
+  },
+  dockContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    right: 20,
+    height: 64,
+    borderRadius: 32,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  dockBlur: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  dockButton: {
+    flex: 1,
+  },
+  dockDivider: {
+    width: 1,
+    height: '40%',
+    backgroundColor: 'rgba(255,255,255,0.1)',
   },
   footerSpace: {
-    height: 100,
-  },
-  actionBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 20,
-    paddingBottom: 34,
-    flexDirection: 'row',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    height: 120,
   },
 });
 
