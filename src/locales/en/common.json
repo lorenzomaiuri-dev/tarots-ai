@@ -124,5 +124,7 @@
   "set_intention": "Your Intention",
   "intention_desc": "Focus on your question. Be specific, but open to guidance",
   "question_placeholder": "What do I need to know about...",
-  "begin_reading": "Begin Reading"  
+  "begin_reading": "Begin Reading",
+  "haptics": "Haptics",
+  "haptics_description": "Haptics Feedback during usage"
 }

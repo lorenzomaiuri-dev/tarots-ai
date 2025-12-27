@@ -19,10 +19,12 @@ export const useSettingsStore = create<SettingsState>()(
       },
 
       preferences: {
+        hapticsEnabled: true,
         allowReversed: true,
         onlyMajorArcana: false,
         animationEnabled: true,
-        theme: 'system'
+        theme: 'system',
+        language: 'en'
       },
 
       // --- Actions ---

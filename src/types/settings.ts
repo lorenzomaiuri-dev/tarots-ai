@@ -2,6 +2,7 @@ import { AIModelConfig } from './ai';
 
 export interface AppPreferences {
   allowReversed: boolean;
+  hapticsEnabled: boolean;
   onlyMajorArcana: boolean;
   animationEnabled: boolean;
   theme: 'light' | 'dark' | 'system';

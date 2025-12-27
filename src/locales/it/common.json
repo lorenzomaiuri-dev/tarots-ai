@@ -124,5 +124,7 @@
   "set_intention": "La Tua Intenzione",
   "intention_desc": "Concentrati sulla domanda. Sii specifico, ma aperto",
   "question_placeholder": "Cosa devo sapere riguardo a...",
-  "begin_reading": "Inizia Lettura"
+  "begin_reading": "Inizia Lettura",
+  "haptics": "Vibrazione",
+  "haptics_description": "Feedback tattile durante l'uso"
 }

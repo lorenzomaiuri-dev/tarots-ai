@@ -193,6 +193,18 @@ const SettingsScreen = () => {
                 onPress={() => setLanguageDialogVisible(true)}
                 right={(props: any) => <List.Icon {...props} icon="chevron-right" />}
             />
+            <View style={[styles.divider, dynamicDivider]} />
+            <SettingRow 
+                title={t('common:haptics', "Haptics")}
+                description={t('common:haptics_description', "Haptics Feedback during usage")}
+                icon="vibrate"
+                right={() => (
+                    <Switch 
+                        value={preferences.hapticsEnabled} 
+                        onValueChange={(val) => updatePreferences({ hapticsEnabled: val })} 
+                    />
+                )}
+            />
         </Surface>
 
         {/* AI CONFIGURATION */}
