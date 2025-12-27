@@ -7,7 +7,8 @@ import {
   MD3DarkTheme, 
   MD3LightTheme, 
   Provider as PaperProvider, 
-  adaptNavigationTheme 
+  adaptNavigationTheme,
+  configureFonts
 } from 'react-native-paper';
 import { 
   DarkTheme as NavigationDarkTheme, 
@@ -16,21 +17,43 @@ import {
 
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { useSettingsStore } from './src/store/useSettingsStore';
-import './src/locales/i18n'; // Initialize i18n
+import './src/locales/i18n'; 
 
-// custom Mystical Theme based on Material 3
 const MysticalDarkTheme = {
   ...MD3DarkTheme,
   colors: {
     ...MD3DarkTheme.colors,
-    primary: '#D0BCFF', // Soft Purple
+    primary: '#D0BCFF',
+    onPrimary: '#381E72',
+    primaryContainer: '#4F378B',
+    onPrimaryContainer: '#EADDFF',
+    
     secondary: '#CCC2DC',
-    tertiary: '#EFB8C8',
-    background: '#121212', // Deep black/grey
-    surface: '#1E1E1E',
+    onSecondary: '#332D41',
+    secondaryContainer: '#4A4458',
+    onSecondaryContainer: '#E8DEF8',
+
+    background: '#121212',
+    onBackground: '#E6E1E5',
+
+    surface: '#121212', 
+    surfaceVariant: '#49454F',
+    onSurface: '#E6E1E5',
+    onSurfaceVariant: '#CAC4D0',
+
+    outline: '#938F99',
+    outlineVariant: '#49454F',
+
     elevation: {
-      level1: '#252525',
-    }
+      level0: 'transparent',
+      level1: '#1E1E1E',
+      level2: '#232323',
+      level3: '#282828',
+      level4: '#2C2C2C',
+      level5: '#313131',
+    },
+    
+    backdrop: 'rgba(0, 0, 0, 0.7)', 
   },
 };
 
@@ -39,24 +62,35 @@ const { LightTheme: NavLightTheme, DarkTheme: NavDarkTheme } = adaptNavigationTh
   reactNavigationDark: NavigationDarkTheme,
 });
 
+const MyNavDarkTheme = {
+  ...NavDarkTheme,
+  colors: {
+    ...NavDarkTheme.colors,
+    background: MysticalDarkTheme.colors.background,
+    card: MysticalDarkTheme.colors.elevation.level1,
+    border: MysticalDarkTheme.colors.outlineVariant,
+  }
+};
+
 export default function App() {
   const systemColorScheme = useColorScheme();
   
-  const { preferences } = useSettingsStore();
-  const themeSetting = preferences?.theme || 'system';
+  const { preferences } = useSettingsStore(); 
+  const currentTheme = preferences.theme;
+
   const isDark = 
-    themeSetting === 'dark' || 
-    (themeSetting === 'system' && systemColorScheme === 'dark');
+    currentTheme === 'dark' || 
+    (currentTheme === 'system' && systemColorScheme === 'dark');
 
   const paperTheme = isDark ? MysticalDarkTheme : MD3LightTheme;
-  const navTheme = isDark ? NavDarkTheme : NavLightTheme;
+  const navTheme = isDark ? MyNavDarkTheme : NavLightTheme;
 
   return (
     <SafeAreaProvider>
       <PaperProvider theme={paperTheme}>
         <NavigationContainer theme={navTheme}>
           <AppNavigator />
-          <StatusBar style={isDark ? 'light' : 'dark'} />
+          <StatusBar style={isDark ? 'light' : 'dark'} backgroundColor={paperTheme.colors.background} />
         </NavigationContainer>
       </PaperProvider>
     </SafeAreaProvider>

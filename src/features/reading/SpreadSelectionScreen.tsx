@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, View, Dimensions } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Text, Surface, useTheme, IconButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -8,30 +8,47 @@ import { RootStackParamList } from '../../types/navigation';
 import { ScreenContainer } from '../ScreenContainer';
 import spreadsData from '../../data/spreads.json';
 import { Spread } from '../../types/reading';
+import { IntentionModal } from '../../components/IntentionModal';
 
 const SpreadSelectionScreen = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+  // LOCAL
+  const [selectedSpread, setSelectedSpread] = useState<Spread | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
   const selectableSpreads = useMemo(() => {
     return spreadsData.filter(s => s.id !== 'daily');
   }, []);
 
-  const handleSelect = (spread: Spread) => {
-    navigation.navigate('ReadingTable', { spreadId: spread.id });
+  // 1. Open Modal
+  const handleSpreadClick = (spread: Spread) => {
+    setSelectedSpread(spread);
+    setModalVisible(true);
+  };
+
+  // 2. Navigation after confirm
+  const handleConfirmIntent = (customQuestion: string) => {
+    setModalVisible(false);
+    if (selectedSpread) {
+      navigation.navigate('ReadingTable', { 
+        spreadId: selectedSpread.id,
+        customQuestion: customQuestion
+      });
+    }
   };
 
   const renderItem = ({ item }: { item: Spread }) => {
     return (
       <TouchableOpacity 
-        onPress={() => handleSelect(item)} 
+        onPress={() => handleSpreadClick(item)}
         activeOpacity={0.7}
         style={styles.cardContainer}
       >
         <Surface style={styles.surface} elevation={1}>
           <View style={styles.contentRow}>
-            {/* LEFT: ICON/ILLUSTRATION */}
             <View style={[styles.iconContainer, { backgroundColor: theme.colors.primaryContainer }]}>
               <IconButton 
                 icon={item.icon || 'cards-playing-outline'} 
@@ -39,8 +56,6 @@ const SpreadSelectionScreen = () => {
                 iconColor={theme.colors.onPrimaryContainer}
               />
             </View>
-
-            {/* MIDDLE: TEXT INFO */}
             <View style={styles.textContainer}>
               <Text variant="titleMedium" style={styles.spreadName}>
                 {t(`spreads:${item.id}.name`, item.id)}
@@ -49,8 +64,6 @@ const SpreadSelectionScreen = () => {
                 {t(`spreads:${item.id}.description`)}
               </Text>
             </View>
-
-            {/* RIGHT: CARD COUNT BADGE */}
             <View style={styles.badgeContainer}>
                <View style={[styles.countBadge, { borderColor: theme.colors.outlineVariant }]}>
                   <Text style={styles.countText}>{item.slots.length}</Text>
@@ -58,12 +71,16 @@ const SpreadSelectionScreen = () => {
                </View>
             </View>
           </View>
-          
-          {/* DECORATIVE BOTTOM LINE */}
           <View style={[styles.accentLine, { backgroundColor: theme.colors.primary, opacity: 0.3 }]} />
         </Surface>
       </TouchableOpacity>
     );
+  };
+
+  // Get Default Question
+  const getDefaultQuestion = () => {
+    if (!selectedSpread?.defaultQuestionKey) return '';
+    return t(`prompts:${selectedSpread.defaultQuestionKey}`, '');
   };
 
   return (
@@ -82,6 +99,16 @@ const SpreadSelectionScreen = () => {
         contentContainerStyle={styles.listPadding}
         showsVerticalScrollIndicator={false}
       />
+
+      {/* MODAL */}
+      <IntentionModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        onConfirm={handleConfirmIntent}
+        defaultQuestion={getDefaultQuestion()}
+        spreadName={selectedSpread ? t(`spreads:${selectedSpread.id}.name`) : ''}
+      />
+
     </ScreenContainer>
   );
 };

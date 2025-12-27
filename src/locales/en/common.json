@@ -120,5 +120,9 @@
   "loading_desc": "Searching the infinite threads of destiny",
   "study_symbolism": "Study Symbolism",
   "past_readings": "RECENT MEMORIES",
-  "no_history_yet": "No memories recorded yet..."
+  "no_history_yet": "No memories recorded yet...",
+  "set_intention": "Your Intention",
+  "intention_desc": "Focus on your question. Be specific, but open to guidance",
+  "question_placeholder": "What do I need to know about...",
+  "begin_reading": "Begin Reading"  
 }

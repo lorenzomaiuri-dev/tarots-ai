@@ -120,5 +120,9 @@
   "loading_desc": "Cercando tra i fili infiniti del destino",
   "study_symbolism": "Studia il Simbolismo",
   "past_readings": "RICORDI RECENTI",
-  "no_history_yet": "Non ci sono ancora ricordi registrati..."
+  "no_history_yet": "Non ci sono ancora ricordi registrati...",
+  "set_intention": "La Tua Intenzione",
+  "intention_desc": "Concentrati sulla domanda. Sii specifico, ma aperto",
+  "question_placeholder": "Cosa devo sapere riguardo a...",
+  "begin_reading": "Inizia Lettura"
 }
