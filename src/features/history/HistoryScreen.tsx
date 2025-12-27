@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { FlatList, View, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Text, Surface, useTheme, Searchbar, Avatar } from 'react-native-paper';
+import { Text, Surface, useTheme, Searchbar, Avatar, IconButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -126,11 +126,21 @@ const HistoryScreen = () => {
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <>
-              <View style={styles.headerContainer}>
-                <Text variant="headlineMedium" style={[styles.pageTitle, { color: theme.colors.onSurface }]}>
-                  {t('common:journal_title', 'Chronicles')}
-                </Text>
-                <View style={[styles.accentLine, { backgroundColor: theme.colors.primary }]} />
+              {/* STATS */}
+              <View style={styles.headerRow}>
+                <View>
+                  <Text variant="headlineMedium" style={[styles.pageTitle, { color: theme.colors.onSurface }]}>
+                    {t('common:journal_title', 'Chronicles')}
+                  </Text>
+                  <View style={[styles.accentLine, { backgroundColor: theme.colors.primary }]} />
+                </View>
+                <IconButton 
+                  icon="chart-timeline-variant" 
+                  mode="contained-tonal"
+                  size={24}
+                  onPress={() => navigation.navigate('Stats')}
+                  style={styles.statsButton}
+                />
               </View>
 
               <Searchbar
@@ -163,7 +173,10 @@ const styles = StyleSheet.create({
   listPadding: {
     paddingBottom: 40,
   },
-  headerContainer: {
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginTop: 20,
     marginBottom: 24,
     paddingHorizontal: 4,
@@ -177,6 +190,10 @@ const styles = StyleSheet.create({
     width: 30,
     marginTop: 8,
     borderRadius: 2,
+  },
+  statsButton: {
+    margin: 0,
+    borderRadius: 12,
   },
   sectionLabel: {
     letterSpacing: 1.5,
