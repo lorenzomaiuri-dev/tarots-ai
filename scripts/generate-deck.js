@@ -1,11 +1,13 @@
+/* eslint-env node */
+/* eslint-disable no-console */
 /**
  * scripts/generate-deck.js
- * 
+ *
  * Usage: node scripts/generate-deck.js <deck-id>
  * Example: node scripts/generate-deck.js rider-waite
- * 
+ *
  * Pre-requisite: Images must be in /assets/decks/<deck-id>/
- * Output: 
+ * Output:
  *  - src/data/decks/<deck-id>/deck.json (Structure)
  *  - src/data/decks/<deck-id>/images.ts (Static Requires)
  *  - src/data/decks/<deck-id>/locales_template.json (Translation keys)
@@ -40,7 +42,7 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 console.log(`Processing deck: ${DECK_ID}...`);
 
 // --- 1. SCAN FILES ---
-const files = fs.readdirSync(ASSETS_DIR).filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f));
+const files = fs.readdirSync(ASSETS_DIR).filter((f) => /\.(jpg|jpeg|png|webp)$/i.test(f));
 const cards = [];
 const imageImports = [];
 const translationKeys = {};
@@ -74,13 +76,13 @@ const parseFile = (filename) => {
   return {
     id,
     filename,
-    meta: { type, suit, number }
+    meta: { type, suit, number },
   };
 };
 
-files.forEach(file => {
+files.forEach((file) => {
   const data = parseFile(file);
-  
+
   if (data.isBack) {
     imageImports.push(`  'back_image': require('../../../../assets/${DECK_ID}/${file}'),`);
     return;
@@ -90,8 +92,8 @@ files.forEach(file => {
   cards.push({
     id: data.id,
     // image key for the images.ts map
-    image: data.id, 
-    meta: data.meta
+    image: data.id,
+    meta: data.meta,
   });
 
   // Add to Image Imports Map
@@ -101,18 +103,18 @@ files.forEach(file => {
   // Add to Translation Template
   translationKeys[data.id] = {
     name: `Card Name (${data.id})`,
-    keywords: "keyword1, keyword2"
+    keywords: 'keyword1, keyword2',
   };
 });
 
 // --- 2. SORT CARDS ---
 // Order: Majors (0-21) -> Wands -> Cups -> Swords -> Pentacles
-const suitOrder = { 'wands': 1, 'cups': 2, 'swords': 3, 'pentacles': 4 };
+const suitOrder = { wands: 1, cups: 2, swords: 3, pentacles: 4 };
 
 cards.sort((a, b) => {
   if (a.meta.type === 'major' && b.meta.type !== 'major') return -1;
   if (a.meta.type !== 'major' && b.meta.type === 'major') return 1;
-  
+
   if (a.meta.type === 'major') {
     return a.meta.number - b.meta.number;
   } else {
@@ -133,15 +135,12 @@ cards.forEach((card, index) => {
 const deckJson = {
   info: {
     id: DECK_ID,
-    totalCards: cards.length
+    totalCards: cards.length,
   },
-  cards: cards
+  cards: cards,
 };
 
-fs.writeFileSync(
-  path.join(OUTPUT_DIR, 'deck.json'), 
-  JSON.stringify(deckJson, null, 2)
-);
+fs.writeFileSync(path.join(OUTPUT_DIR, 'deck.json'), JSON.stringify(deckJson, null, 2));
 console.log(`✅ Generated deck.json (${cards.length} cards)`);
 
 // --- 4. GENERATE IMAGES.TS ---
@@ -154,23 +153,20 @@ ${imageImports.join('\n')}
 export default images;
 `;
 
-fs.writeFileSync(
-  path.join(OUTPUT_DIR, 'images.ts'), 
-  imagesTsContent.trim()
-);
+fs.writeFileSync(path.join(OUTPUT_DIR, 'images.ts'), imagesTsContent.trim());
 console.log(`✅ Generated images.ts`);
 
 // --- 5. GENERATE TRANSLATION TEMPLATE ---
 const translationTemplate = {
   info: {
-    name: "Deck Name",
-    description: "Deck Description"
+    name: 'Deck Name',
+    description: 'Deck Description',
   },
-  cards: translationKeys
+  cards: translationKeys,
 };
 
 fs.writeFileSync(
-  path.join(OUTPUT_DIR, 'locales_template.json'), 
+  path.join(OUTPUT_DIR, 'locales_template.json'),
   JSON.stringify(translationTemplate, null, 2)
 );
 console.log(`✅ Generated locales_template.json (Copy this content to src/locales/...)`);

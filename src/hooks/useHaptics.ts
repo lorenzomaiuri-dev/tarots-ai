@@ -13,19 +13,19 @@ export const useHaptics = () => {
     if (isEnabled && Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-  }, []);
+  }, [isEnabled]);
 
   const medium = useCallback(() => {
     if (isEnabled && Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
-  }, []);
+  }, [isEnabled]);
 
   const heavy = useCallback(() => {
     if (isEnabled && Platform.OS !== 'web') {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
-  }, []);
+  }, [isEnabled]);
 
   return { light, medium, heavy };
 };

@@ -1,6 +1,6 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
-import { Dimensions, ImageStyle, ScrollView, StyleProp, StyleSheet, View } from 'react-native';
+import { ImageStyle, ScrollView, StyleProp, StyleSheet, View } from 'react-native';
 
 import * as Sharing from 'expo-sharing';
 
@@ -17,7 +17,6 @@ import { RootStackParamList } from '../../types/navigation';
 import { ScreenContainer } from '../ScreenContainer';
 
 type DetailRouteProp = RouteProp<RootStackParamList, 'ReadingDetail'>;
-const { width } = Dimensions.get('window');
 
 const ReadingDetailScreen = () => {
   const { t } = useTranslation();
@@ -29,32 +28,13 @@ const ReadingDetailScreen = () => {
   const reading = readings.find((r) => r.id === route.params.readingId);
 
   const viewShotRef = useRef(null);
+
+  // Local state for notes
   const [notes, setNotes] = useState(reading?.userNotes || '');
   const [isEditing, setIsEditing] = useState(false);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => <IconButton icon="share-variant-outline" onPress={handleShare} />,
-    });
-  }, [navigation]);
-
-  if (!reading) return null;
-
-  const dateStr = new Date(reading.timestamp)
-    .toLocaleDateString(undefined, {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    })
-    .toUpperCase();
-
-  const handleSaveNotes = () => {
-    updateUserNotes(reading.id, notes);
-    setIsEditing(false);
-  };
-
-  const handleShare = async () => {
+  // Wrap handleShare in useCallback to stabilize it
+  const handleShare = useCallback(async () => {
     try {
       if (viewShotRef.current) {
         const uri = await captureRef(viewShotRef.current, {
@@ -73,6 +53,30 @@ const ReadingDetailScreen = () => {
     } catch (e) {
       console.error('Error sharing', e);
     }
+  }, [t]);
+
+  // Setup Header Button
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <IconButton icon="share-variant-outline" onPress={handleShare} />,
+    });
+  }, [navigation, handleShare]);
+
+  // Early return if reading not found
+  if (!reading) return null;
+
+  const dateStr = new Date(reading.timestamp)
+    .toLocaleDateString(undefined, {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+    .toUpperCase();
+
+  const handleSaveNotes = () => {
+    updateUserNotes(reading.id, notes);
+    setIsEditing(false);
   };
 
   return (

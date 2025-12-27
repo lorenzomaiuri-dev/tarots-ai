@@ -72,6 +72,7 @@ const SettingsScreen = () => {
       };
       await BackupService.exportJson(data, 'tarot_journal_backup.json');
     } catch (e) {
+      console.error(e);
       Alert.alert(t('common:error'), t('common:error_backup'));
     }
   };
@@ -98,6 +99,7 @@ const SettingsScreen = () => {
         ]
       );
     } catch (e) {
+      console.error(e);
       Alert.alert(t('common:error'), t('common:error_invalid_file'));
     }
   };

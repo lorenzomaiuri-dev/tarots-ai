@@ -14,7 +14,6 @@ import {
   MD3LightTheme,
   Provider as PaperProvider,
   adaptNavigationTheme,
-  configureFonts,
 } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 

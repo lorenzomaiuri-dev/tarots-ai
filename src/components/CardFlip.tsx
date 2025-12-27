@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Animated, Platform, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
+import { Animated, Platform, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 
 import { CardImage } from './CardImage';
 
@@ -56,7 +56,7 @@ export const CardFlip: React.FC<Props> = ({
     ]).start(() => {
       setIsFlipped(shouldBeFlipped);
     });
-  }, [cardId]);
+  }, [cardId, flipAnim, scaleAnim]);
 
   // Front Interpolation
   const frontAnimatedStyle = {

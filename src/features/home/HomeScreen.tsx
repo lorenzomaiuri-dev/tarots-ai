@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import { Alert, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +30,7 @@ const HomeScreen = () => {
   const { activeDeckId } = useSettingsStore();
   const { addReading } = useHistoryStore();
   const haptics = useHaptics();
-  const { dailyCard, drawNow, isLoading: isDrawLoading } = useDailyDraw();
+  const { dailyCard, drawNow } = useDailyDraw();
   const [modalVisible, setModalVisible] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const { result, isLoading: isAiLoading, error, interpretReading } = useInterpretation();
@@ -60,7 +61,7 @@ const HomeScreen = () => {
       aiInterpretation: result,
       userNotes: '',
     };
-
+    haptics.light();
     addReading(session);
     setIsSaved(true);
     Alert.alert(t('common:saved', 'Saved'), t('common:saved_to_journal', 'Saved to journal'));
@@ -236,9 +237,6 @@ const HomeScreen = () => {
     </ScreenContainer>
   );
 };
-
-// Helper for the grid buttons
-const TouchableOpacity = require('react-native').TouchableOpacity;
 
 const styles = StyleSheet.create({
   header: {

@@ -1,6 +1,6 @@
 import seedrandom from 'seedrandom';
 
-import { Card, Deck } from '../types/deck';
+import { Deck } from '../types/deck';
 
 /**
  * Generate standard random seed

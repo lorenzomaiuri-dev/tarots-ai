@@ -1,4 +1,5 @@
-import i18n, { loadDeckTranslations } from '../locales/i18n';
+/* eslint-disable @typescript-eslint/no-require-imports */
+import { loadDeckTranslations } from '../locales/i18n';
 import { Deck, DeckInfo } from '../types/deck';
 
 // 1. Define the structure of our deck loader

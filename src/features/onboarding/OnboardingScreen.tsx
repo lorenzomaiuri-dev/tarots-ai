@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 
-import { Dimensions, LayoutAnimation, Platform, StyleSheet, UIManager, View } from 'react-native';
+import { LayoutAnimation, Platform, StyleSheet, UIManager, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 import { Button, IconButton, Surface, Text, TextInput, useTheme } from 'react-native-paper';
 
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { ScreenContainer } from '../ScreenContainer';
-
-const { width } = Dimensions.get('window');
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {

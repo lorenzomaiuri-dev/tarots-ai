@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-import { ActivityIndicator, Animated, Modal, ScrollView, StyleSheet, View } from 'react-native';
+import { Animated, Modal, ScrollView, StyleSheet, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 import Markdown from 'react-native-markdown-display';
@@ -43,7 +43,7 @@ export const InterpretationModal: React.FC<Props> = ({
     } else {
       pulseAnim.setValue(1);
     }
-  }, [isLoading]);
+  }, [isLoading, pulseAnim]);
 
   const modalTitle = title || t('common:interpretation_title', 'Oracle Insight');
 

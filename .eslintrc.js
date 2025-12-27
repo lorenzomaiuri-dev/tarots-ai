@@ -6,7 +6,7 @@ module.exports = {
     'prettier/prettier': 'error', // Treat formatting issues as errors
     'react/react-in-jsx-scope': 'off', // Not needed in React Native
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }], // Allow _vars
-    'no-console': 'warn', // Warn if you leave console.log
+    'no-console': ['warn', { allow: ['warn', 'error'] }],
   },
   ignorePatterns: ['/dist/*', '/node_modules/*'],
 };

@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 
 import {
-  Dimensions,
   FlatList,
   LayoutAnimation,
   Platform,
@@ -12,7 +11,7 @@ import {
 } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
-import { Button, IconButton, Surface, Text, useTheme } from 'react-native-paper';
+import { IconButton, Surface, Text, useTheme } from 'react-native-paper';
 
 import { CardImage } from '../../components/CardImage';
 import { useHaptics } from '../../hooks/useHaptics';

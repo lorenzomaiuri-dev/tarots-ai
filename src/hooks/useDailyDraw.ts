@@ -63,7 +63,7 @@ export const useDailyDraw = () => {
 
     setDailyCard(newDailyCard);
     await StorageService.setItem(todayKey, newDailyCard);
-  }, [activeDeckId, preferences, todayKey]);
+  }, [activeDeckId, preferences, todayKey, personalSeed]);
 
   return {
     dailyCard,
