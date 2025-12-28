@@ -15,8 +15,8 @@ import { BlurView } from 'expo-blur';
 
 import { Text, useTheme } from 'react-native-paper';
 
-import { useHaptics } from '../hooks/useHaptics';
-import { GlassSurface } from './GlassSurface';
+import { useHaptics } from '../../hooks/useHaptics';
+import { GlassSurface } from '../GlassSurface';
 
 interface GlassyModalProps {
   visible: boolean;
