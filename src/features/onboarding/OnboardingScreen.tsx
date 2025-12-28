@@ -52,14 +52,14 @@ const OnboardingScreen = () => {
         style={styles.mainIcon}
       />
       <Text variant="displaySmall" style={styles.title}>
-        {t('onboarding:welcome_title', 'Tarots OS')}
+        {t('common:welcome_title', 'Tarots OS')}
       </Text>
       <Text variant="titleMedium" style={styles.subtitle}>
-        {t('onboarding:welcome_subtitle', 'Introspection, not prediction.')}
+        {t('common:welcome_subtitle', 'Introspection, not prediction.')}
       </Text>
       <Text variant="bodyLarge" style={styles.description}>
         {t(
-          'onboarding:welcome_description',
+          'common:welcome_description',
           'Explore the archetypes and connect with yourself through the Tarots language.'
         )}
       </Text>
@@ -72,20 +72,17 @@ const OnboardingScreen = () => {
       <IconButton icon="account-circle-outline" size={80} iconColor={theme.colors.primary} />
 
       <Text variant="headlineMedium" style={styles.title}>
-        {t('onboarding:who_are_you', 'Who is seeking?')}
+        {t('common:who_are_you', 'Who is seeking?')}
       </Text>
 
       <Text variant="bodyLarge" style={styles.description}>
-        {t(
-          'onboarding:name_desc',
-          'Enter your name to personalize the energy of your daily draws.'
-        )}
+        {t('common:name_desc', 'Enter your name to personalize the energy of your daily draws.')}
       </Text>
 
       <TextInput
         mode="outlined"
-        label={t('onboarding:name_label', 'Your Name')}
-        placeholder={t('onboarding:name_placeholder', 'e.g. Alex')}
+        label={t('common:name_label', 'Your Name')}
+        placeholder={t('common:name_placeholder', 'e.g. Seeker')}
         value={nameInput}
         onChangeText={setNameInput}
         style={styles.input}
@@ -93,7 +90,7 @@ const OnboardingScreen = () => {
       />
 
       <Text variant="bodySmall" style={styles.smallNote}>
-        {t('onboarding:name_note', 'This affects the random seed unique to you.')}
+        {t('common:name_note', 'This affects the random seed unique to you.')}
       </Text>
     </View>
   );
@@ -104,12 +101,12 @@ const OnboardingScreen = () => {
       <IconButton icon="tune-vertical" size={80} iconColor={theme.colors.secondary} />
 
       <Text variant="headlineMedium" style={styles.title}>
-        {t('onboarding:engine_title', 'Power the Engine')}
+        {t('common:engine_title', 'Power the Engine')}
       </Text>
 
       <Text variant="bodyLarge" style={styles.description}>
         {t(
-          'onboarding:engine_desc',
+          'common:engine_desc',
           'This app uses intelligent AI models to interpret the cards. To enable this feature, you will need to connect a provider.'
         )}
       </Text>
@@ -122,7 +119,7 @@ const OnboardingScreen = () => {
           <IconButton icon="cog" size={24} iconColor={theme.colors.onSurface} />
           <Text style={{ flex: 1, lineHeight: 20 }}>
             {t(
-              'onboarding:engine_instruction',
+              'common:engine_instruction',
               'Once inside, go to Settings > AI Configuration to insert your API Key.'
             )}
           </Text>
@@ -132,7 +129,7 @@ const OnboardingScreen = () => {
           <IconButton icon="shield-check-outline" size={24} iconColor={theme.colors.onSurface} />
           <Text style={{ flex: 1, lineHeight: 20 }}>
             {t(
-              'onboarding:engine_note',
+              'common:engine_note',
               'Your key is stored securely on your device and never shared.'
             )}
           </Text>
@@ -146,7 +143,7 @@ const OnboardingScreen = () => {
     <View style={styles.slide}>
       <IconButton icon="cards-playing-outline" size={100} iconColor={theme.colors.tertiary} />
       <Text variant="headlineMedium" style={styles.title}>
-        {t('onboarding:ready_title', 'All ready!')}
+        {t('common:ready_title', 'All ready!')}
       </Text>
       <View style={styles.readyTextContainer}>
         {nameInput ? (
@@ -154,18 +151,18 @@ const OnboardingScreen = () => {
             variant="titleLarge"
             style={[styles.italicText, { marginBottom: 12, color: theme.colors.primary }]}
           >
-            {t('onboarding:welcome_user', 'Welcome, {{name}}', { name: nameInput })}
+            {t('common:welcome_user', 'Welcome, {{name}}', { name: nameInput })}
           </Text>
         ) : null}
         <Text variant="headlineSmall" style={styles.italicText}>
-          {t('onboarding:ready_msg_1', 'The deck has been shuffled.')}
+          {t('common:ready_msg_1', 'The deck has been shuffled.')}
         </Text>
         <Text variant="headlineSmall" style={styles.italicText}>
-          {t('onboarding:ready_msg_2', 'The Journal is open.')}
+          {t('common:ready_msg_2', 'The Journal is open.')}
         </Text>
       </View>
       <Text variant="bodyLarge" style={[styles.description, { marginTop: 20 }]}>
-        {t('onboarding:ready_action', 'Get ready to extract your first card.')}
+        {t('common:ready_action', 'Get ready to extract your first card.')}
       </Text>
     </View>
   );
@@ -195,7 +192,7 @@ const OnboardingScreen = () => {
             style={[styles.navButton, styles.nextButton]}
             contentStyle={{ height: 50 }}
           >
-            {step === stepsCount - 1 ? t('onboarding:start', 'Begin') : t('common:next', 'Next')}
+            {step === stepsCount - 1 ? t('common:start', 'Start') : t('common:next', 'Next')}
           </Button>
         </View>
 
