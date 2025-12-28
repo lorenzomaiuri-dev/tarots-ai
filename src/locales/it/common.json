@@ -153,5 +153,9 @@
   "ready_msg_2": "Il diario è aperto.",
   "ready_action": "Preparati ad estrarre la tua prima carta.",
   "start": "Inizia",
-  "next": "Prossimo"
+  "next": "Prossimo",
+  "app_name": "Tarots OS",
+  "about_title": "Sacre Pergamene",
+  "latest_changes": "ULTIME RIVELAZIONI",
+  "privacy_policy": "Privacy Policy"
 }

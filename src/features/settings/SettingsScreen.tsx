@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 
-import { Alert, Linking, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { useTranslation } from 'react-i18next';
 import {
+  ActivityIndicator,
   Avatar,
   Button,
   List,
@@ -21,6 +22,7 @@ import { GlassyModal } from '../../components/GlassyModal';
 import { DEFAULTS } from '../../constants';
 import { useHaptics } from '../../hooks/useHaptics';
 import i18n from '../../locales/i18n';
+import { AppInfoService, ChangelogEntry } from '../../services/appInfo';
 import { BackupService } from '../../services/backup';
 import { useHistoryStore } from '../../store/useHistoryStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
@@ -39,11 +41,27 @@ const SettingsScreen = () => {
   const [themeVisible, setThemeVisible] = useState(false);
   const [langVisible, setLangVisible] = useState(false);
   const [resetVisible, setResetVisible] = useState(false);
+  const [aboutVisible, setAboutVisible] = useState(false);
+  const [changelog, setChangelog] = useState<ChangelogEntry[]>([]);
+  const [isChangelogLoading, setIsChangelogLoading] = useState(false);
 
   // Temp AI States
   const [tempApiKey, setTempApiKey] = useState('');
   const [tempModelId, setTempModelId] = useState('');
   const [tempBaseUrl, setTempBaseUrl] = useState('');
+
+  const handleOpenAbout = async () => {
+    haptics.impact('light');
+    setAboutVisible(true);
+
+    // Solo se il changelog non è ancora stato caricato
+    if (changelog.length === 0) {
+      setIsChangelogLoading(true);
+      const data = await AppInfoService.getChangelog();
+      setChangelog(data);
+      setIsChangelogLoading(false);
+    }
+  };
 
   const changeLanguage = (lang: string) => {
     haptics.selection();
@@ -294,8 +312,12 @@ const SettingsScreen = () => {
           />
         </GlassSurface>
 
-        {/* TODO: VERSION MANAGEMENT */}
-        <Text style={styles.versionText}>Tarots OS — v1.0.0</Text>
+        {/* REFINED FOOTER */}
+        <TouchableOpacity onPress={handleOpenAbout} style={styles.versionFooter}>
+          <Text style={styles.versionText}>
+            {t('common:app_name')} — {AppInfoService.getFullVersionString()}
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
 
       {/* --- MODALS --- */}
@@ -430,6 +452,59 @@ const SettingsScreen = () => {
           </Button>
         </View>
       </GlassyModal>
+
+      {/* ABOUT / CHANGELOG MODAL */}
+      <GlassyModal
+        visible={aboutVisible}
+        onClose={() => setAboutVisible(false)}
+        title={t('common:about_title', 'Sacred Scrolls')}
+      >
+        <View style={styles.aboutContent}>
+          {/* Logo & Version */}
+          <Avatar.Image
+            size={80}
+            source={require('../../../assets/icon.png')}
+            style={styles.aboutLogo}
+          />
+          <Text variant="titleMedium" style={styles.aboutAppName}>
+            {t('common:app_name')}
+          </Text>
+          <Text variant="labelSmall" style={styles.aboutVersion}>
+            {AppInfoService.getFullVersionString()}
+          </Text>
+
+          <View style={styles.changelogSection}>
+            <Text variant="labelLarge" style={styles.changelogHeader}>
+              {t('common:latest_changes', 'LATEST REVELATIONS')}
+            </Text>
+
+            {isChangelogLoading ? (
+              <ActivityIndicator
+                animating
+                color={theme.colors.primary}
+                style={{ marginVertical: 20 }}
+              />
+            ) : (
+              changelog[0]?.changes.map((change, i) => (
+                <View key={i} style={styles.changeItem}>
+                  <View style={[styles.bullet, { backgroundColor: theme.colors.primary }]} />
+                  <Text variant="bodySmall" style={styles.changeText}>
+                    {change}
+                  </Text>
+                </View>
+              ))
+            )}
+          </View>
+
+          <Button
+            mode="text"
+            onPress={() => Linking.openURL('https://...')}
+            textColor={theme.colors.primary}
+          >
+            {t('common:privacy_policy', 'Privacy Policy')}
+          </Button>
+        </View>
+      </GlassyModal>
     </ScreenContainer>
   );
 };
@@ -458,14 +533,6 @@ const styles = StyleSheet.create({
   settingTitle: { fontSize: 16, fontWeight: '600' },
   settingDesc: { fontSize: 12, opacity: 0.5 },
   divider: { height: 1, backgroundColor: 'rgba(255,255,255,0.05)', marginHorizontal: 16 },
-  versionText: {
-    textAlign: 'center',
-    fontSize: 10,
-    marginTop: 20,
-    letterSpacing: 2,
-    opacity: 0.3,
-    fontWeight: 'bold',
-  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.3)',
@@ -498,6 +565,67 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 12,
     marginBottom: 10,
+  },
+  versionFooter: {
+    marginTop: 30,
+    alignItems: 'center',
+    paddingBottom: 20,
+  },
+  versionText: {
+    fontSize: 10,
+    letterSpacing: 2,
+    opacity: 0.4,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+  },
+  copyrightText: {
+    fontSize: 9,
+    opacity: 0.2,
+    marginTop: 4,
+  },
+  aboutContent: {
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  aboutLogo: {
+    backgroundColor: 'transparent',
+    marginBottom: 16,
+  },
+  aboutAppName: {
+    fontFamily: 'serif',
+    fontWeight: 'bold',
+  },
+  aboutVersion: {
+    opacity: 0.5,
+    marginBottom: 24,
+  },
+  changelogSection: {
+    width: '100%',
+    backgroundColor: 'rgba(255,255,255,0.03)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 20,
+  },
+  changelogHeader: {
+    fontSize: 10,
+    fontWeight: '900',
+    letterSpacing: 1,
+    marginBottom: 12,
+    opacity: 0.7,
+  },
+  changeItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  bullet: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    marginRight: 10,
+  },
+  changeText: {
+    opacity: 0.8,
   },
 });
 

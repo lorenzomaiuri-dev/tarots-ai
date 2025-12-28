@@ -153,5 +153,9 @@
   "ready_msg_2": "The Journal is open.",
   "ready_action": "Get ready to extract your first card.",
   "start": "Start",
-  "next": "Next"
+  "next": "Next",
+  "app_name": "Tarots OS",
+  "about_title": "Sacred Scrolls",
+  "latest_changes": "LATEST REVELATIONS",
+  "privacy_policy": "Privacy Policy"
 }
