@@ -174,5 +174,6 @@
   "permissions_denied": "Permessi Negati",
   "enable_notifications_prompt": "Abilita le notifiche nelle impostazioni del telefono",
   "morning_ritual": "Rituale Mattutino",
-  "ritual_desc": "Promemoria giornalieri per estrarre la tua carta"
+  "ritual_desc": "Promemoria giornalieri per estrarre la tua carta",
+  "backup_no_data": "Nessun dato da esportare"
 }

@@ -61,11 +61,20 @@ export const useSettingsLogic = () => {
   const handleExport = async () => {
     haptics.impact('medium');
     try {
+      const currentReadings = useHistoryStore.getState().readings;
+
+      // Check if there is actually data to export
+      if (!currentReadings || currentReadings.length === 0) {
+        Alert.alert(t('common:error'), t('common:backup_no_data'));
+        return;
+      }
+
       const data = {
-        history: useHistoryStore.getState().readings,
+        history: currentReadings,
         version: 1,
         exportDate: new Date().toISOString(),
       };
+
       await BackupService.exportJson(data, 'tarot_journal_backup.json');
       haptics.notification('success');
     } catch (e) {

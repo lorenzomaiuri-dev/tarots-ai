@@ -174,5 +174,6 @@
   "permissions_denied": "Permissions Denied",
   "enable_notifications_prompt": "Enable notifications in your phone settings",
   "morning_ritual": "Morning Ritual",
-  "ritual_desc": "Daily reminder to draw your card"
+  "ritual_desc": "Daily reminder to draw your card",
+  "backup_no_data": "No data to export"
 }
