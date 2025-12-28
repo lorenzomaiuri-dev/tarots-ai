@@ -13,6 +13,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Button, IconButton, Surface, Text, TextInput, useTheme } from 'react-native-paper';
 
+import { useHaptics } from '../hooks/useHaptics';
+
 interface Props {
   visible: boolean;
   onClose: () => void;
@@ -32,6 +34,8 @@ export const IntentionModal: React.FC<Props> = ({
   const theme = useTheme();
   const [question, setQuestion] = useState(defaultQuestion);
 
+  const haptics = useHaptics();
+
   useEffect(() => {
     if (visible) {
       setQuestion(defaultQuestion);
@@ -39,6 +43,7 @@ export const IntentionModal: React.FC<Props> = ({
   }, [visible, defaultQuestion]);
 
   const handleConfirm = () => {
+    haptics.notification('success');
     onConfirm(question);
     setQuestion('');
   };
