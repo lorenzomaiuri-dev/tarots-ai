@@ -245,7 +245,7 @@ const HomeScreen = () => {
               style={{ width: '100%', borderColor: theme.colors.primary }}
               textColor={theme.colors.primary}
             >
-              {t('common:saved', 'Salvato')}
+              {t('common:saved', 'Saved')}
             </Button>
           )
         }

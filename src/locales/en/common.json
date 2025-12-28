@@ -179,5 +179,6 @@
   "backup_no_data": "No data to export",
   "app_footer": "CHRONICLED BY TAROTS OS",
   "share_reading": "Share your destiny",
-  "error_sharing": "Failed to generate image"
+  "error_sharing": "Failed to generate image",
+  "saved": "Saved"
 }
