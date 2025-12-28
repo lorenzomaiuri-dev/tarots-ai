@@ -19,6 +19,7 @@ import { useHistoryStore } from '../../store/useHistoryStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { RootStackParamList } from '../../types/navigation';
 import { ReadingSession, Spread } from '../../types/reading';
+import { CelestialService } from '../../utils/celestial';
 import { ScreenContainer } from '../ScreenContainer';
 
 const { width } = Dimensions.get('window');
@@ -35,6 +36,7 @@ const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const { result, isLoading: isAiLoading, error, interpretReading } = useInterpretation();
+  const moon = CelestialService.getMoonPhase();
 
   const DAILY_SPREAD: Spread = spreadsData.find((s) => s.id === 'daily') || {
     id: 'daily',
@@ -84,6 +86,17 @@ const HomeScreen = () => {
           <Text variant="labelMedium" style={[styles.dateText, { color: theme.colors.primary }]}>
             {formattedDate}
           </Text>
+          <View style={styles.celestialRow}>
+            <IconButton
+              icon={moon.icon}
+              size={16}
+              iconColor={theme.colors.primary}
+              style={{ margin: 0 }}
+            />
+            <Text variant="labelSmall" style={styles.moonText}>
+              {moon.phase.toUpperCase()}
+            </Text>
+          </View>
           <Text variant="headlineMedium" style={styles.appName}>
             {AI_CONFIG.APP_NAME}
           </Text>
@@ -372,6 +385,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 16,
     justifyContent: 'space-between',
+  },
+  celestialRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: -8,
+    marginBottom: -4,
+    opacity: 0.6,
+  },
+  moonText: {
+    fontSize: 9,
+    letterSpacing: 1.5,
+    fontWeight: 'bold',
   },
 });
 
