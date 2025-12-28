@@ -13,7 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Button, IconButton, Surface, Text, TextInput, useTheme } from 'react-native-paper';
 
-import { useHaptics } from '../hooks/useHaptics';
+import { useHaptics } from '../../hooks/useHaptics';
 
 interface Props {
   visible: boolean;

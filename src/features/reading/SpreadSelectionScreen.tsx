@@ -9,7 +9,7 @@ import { IconButton, Text, useTheme } from 'react-native-paper';
 
 // Reusable Components
 import { GlassSurface } from '../../components/GlassSurface';
-import { IntentionModal } from '../../components/IntentionModal';
+import { IntentionModal } from '../../components/modals/IntentionModal';
 import spreadsData from '../../data/spreads.json';
 import { useHaptics } from '../../hooks/useHaptics';
 import { RootStackParamList } from '../../types/navigation';

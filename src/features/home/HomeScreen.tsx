@@ -9,7 +9,7 @@ import { Avatar, Button, IconButton, Surface, Text, useTheme } from 'react-nativ
 
 import { CardFlip } from '../../components/CardFlip';
 import { GlassSurface } from '../../components/GlassSurface';
-import { InterpretationModal } from '../../components/InterpretationModal';
+import { InterpretationModal } from '../../components/modals/InterpretationModal';
 import { AI_CONFIG } from '../../constants';
 import spreadsData from '../../data/spreads.json';
 import { useDailyDraw } from '../../hooks/useDailyDraw';

@@ -18,7 +18,7 @@ import { Avatar, Button, IconButton, Searchbar, Text, useTheme } from 'react-nat
 // Components
 import { CardImage } from '../../components/CardImage';
 import { GlassSurface } from '../../components/GlassSurface';
-import { InterpretationModal } from '../../components/InterpretationModal';
+import { InterpretationModal } from '../../components/modals/InterpretationModal';
 import { useHaptics } from '../../hooks/useHaptics';
 // Logic & Types
 import { useInterpretation } from '../../hooks/useInterpretation';

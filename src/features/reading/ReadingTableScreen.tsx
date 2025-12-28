@@ -11,8 +11,8 @@ import { Button, SegmentedButtons, Text, useTheme } from 'react-native-paper';
 
 import { CardFlip } from '../../components/CardFlip';
 import { GlassSurface } from '../../components/GlassSurface';
-import { InterpretationModal } from '../../components/InterpretationModal';
 import { SpreadVisualizer } from '../../components/SpreadVisualizer';
+import { InterpretationModal } from '../../components/modals/InterpretationModal';
 import spreadsData from '../../data/spreads.json';
 import { useHaptics } from '../../hooks/useHaptics';
 import { useInterpretation } from '../../hooks/useInterpretation';
