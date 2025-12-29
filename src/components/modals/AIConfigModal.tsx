@@ -31,7 +31,7 @@ export const AIConfigModal = ({ visible, onClose, config, onSave }: AIConfigModa
   }, [visible, config]);
 
   return (
-    <GlassyModal visible={visible} onClose={onClose} title={t('common:ai_config')}>
+    <GlassyModal visible={visible} onClose={onClose} title={t('common:ai_configuration_title')}>
       <TextInput
         label="Base URL"
         value={tempBaseUrl}
