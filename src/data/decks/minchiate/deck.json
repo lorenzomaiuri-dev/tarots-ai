@@ -292,7 +292,7 @@
       "sortIndex": 27
     },
     {
-      "id": "maj00_fool",
+      "id": "maj00",
       "image": "maj00_fool",
       "meta": {
         "type": "major",
@@ -302,7 +302,7 @@
       "sortIndex": 28
     },
     {
-      "id": "maj01_popeone",
+      "id": "maj01",
       "image": "maj01_popeone",
       "meta": {
         "type": "major",
@@ -312,7 +312,7 @@
       "sortIndex": 29
     },
     {
-      "id": "maj02_grandduke",
+      "id": "maj02",
       "image": "maj02_grandduke",
       "meta": {
         "type": "major",
@@ -322,7 +322,7 @@
       "sortIndex": 30
     },
     {
-      "id": "maj03_westernemperor",
+      "id": "maj03",
       "image": "maj03_westernemperor",
       "meta": {
         "type": "major",
@@ -332,7 +332,7 @@
       "sortIndex": 31
     },
     {
-      "id": "maj04_easternemperor",
+      "id": "maj04",
       "image": "maj04_easternemperor",
       "meta": {
         "type": "major",
@@ -342,7 +342,7 @@
       "sortIndex": 32
     },
     {
-      "id": "maj05_love",
+      "id": "maj05",
       "image": "maj05_love",
       "meta": {
         "type": "major",
@@ -352,7 +352,7 @@
       "sortIndex": 33
     },
     {
-      "id": "maj06_temperance",
+      "id": "maj06",
       "image": "maj06_temperance",
       "meta": {
         "type": "major",
@@ -362,7 +362,7 @@
       "sortIndex": 34
     },
     {
-      "id": "maj07_fortitude",
+      "id": "maj07",
       "image": "maj07_fortitude",
       "meta": {
         "type": "major",
@@ -372,7 +372,7 @@
       "sortIndex": 35
     },
     {
-      "id": "maj08_justice",
+      "id": "maj08",
       "image": "maj08_justice",
       "meta": {
         "type": "major",
@@ -382,7 +382,7 @@
       "sortIndex": 36
     },
     {
-      "id": "maj09_wheelfortune",
+      "id": "maj09",
       "image": "maj09_wheelfortune",
       "meta": {
         "type": "major",
@@ -392,7 +392,7 @@
       "sortIndex": 37
     },
     {
-      "id": "maj10_chariot",
+      "id": "maj10",
       "image": "maj10_chariot",
       "meta": {
         "type": "major",
@@ -402,7 +402,7 @@
       "sortIndex": 38
     },
     {
-      "id": "maj11_time",
+      "id": "maj11",
       "image": "maj11_time",
       "meta": {
         "type": "major",
@@ -412,7 +412,7 @@
       "sortIndex": 39
     },
     {
-      "id": "maj12_hangedman",
+      "id": "maj12",
       "image": "maj12_hangedman",
       "meta": {
         "type": "major",
@@ -422,7 +422,7 @@
       "sortIndex": 40
     },
     {
-      "id": "maj13_death",
+      "id": "maj13",
       "image": "maj13_death",
       "meta": {
         "type": "major",
@@ -432,7 +432,7 @@
       "sortIndex": 41
     },
     {
-      "id": "maj14_devil",
+      "id": "maj14",
       "image": "maj14_devil",
       "meta": {
         "type": "major",
@@ -442,7 +442,7 @@
       "sortIndex": 42
     },
     {
-      "id": "maj15_houseofdevil",
+      "id": "maj15",
       "image": "maj15_houseofdevil",
       "meta": {
         "type": "major",
@@ -452,7 +452,7 @@
       "sortIndex": 43
     },
     {
-      "id": "maj16_hope",
+      "id": "maj16",
       "image": "maj16_hope",
       "meta": {
         "type": "major",
@@ -462,7 +462,7 @@
       "sortIndex": 44
     },
     {
-      "id": "maj17_prudence",
+      "id": "maj17",
       "image": "maj17_prudence",
       "meta": {
         "type": "major",
@@ -472,7 +472,7 @@
       "sortIndex": 45
     },
     {
-      "id": "maj18_faith",
+      "id": "maj18",
       "image": "maj18_faith",
       "meta": {
         "type": "major",
@@ -482,7 +482,7 @@
       "sortIndex": 46
     },
     {
-      "id": "maj19_charity",
+      "id": "maj19",
       "image": "maj19_charity",
       "meta": {
         "type": "major",
@@ -492,7 +492,7 @@
       "sortIndex": 47
     },
     {
-      "id": "maj20_fire",
+      "id": "maj20",
       "image": "maj20_fire",
       "meta": {
         "type": "major",
@@ -502,7 +502,7 @@
       "sortIndex": 48
     },
     {
-      "id": "maj21_water",
+      "id": "maj21",
       "image": "maj21_water",
       "meta": {
         "type": "major",
@@ -512,7 +512,7 @@
       "sortIndex": 49
     },
     {
-      "id": "maj22_earth",
+      "id": "maj22",
       "image": "maj22_earth",
       "meta": {
         "type": "major",
@@ -522,7 +522,7 @@
       "sortIndex": 50
     },
     {
-      "id": "maj23_air",
+      "id": "maj23",
       "image": "maj23_air",
       "meta": {
         "type": "major",
@@ -532,7 +532,7 @@
       "sortIndex": 51
     },
     {
-      "id": "maj24_libra",
+      "id": "maj24",
       "image": "maj24_libra",
       "meta": {
         "type": "major",
@@ -542,7 +542,7 @@
       "sortIndex": 52
     },
     {
-      "id": "maj25_virgo",
+      "id": "maj25",
       "image": "maj25_virgo",
       "meta": {
         "type": "major",
@@ -552,7 +552,7 @@
       "sortIndex": 53
     },
     {
-      "id": "maj26_scorpio",
+      "id": "maj26",
       "image": "maj26_scorpio",
       "meta": {
         "type": "major",
@@ -562,7 +562,7 @@
       "sortIndex": 54
     },
     {
-      "id": "maj27_aries",
+      "id": "maj27",
       "image": "maj27_aries",
       "meta": {
         "type": "major",
@@ -572,7 +572,7 @@
       "sortIndex": 55
     },
     {
-      "id": "maj28_capricorn",
+      "id": "maj28",
       "image": "maj28_capricorn",
       "meta": {
         "type": "major",
@@ -582,7 +582,7 @@
       "sortIndex": 56
     },
     {
-      "id": "maj29_sagittarius",
+      "id": "maj29",
       "image": "maj29_sagittarius",
       "meta": {
         "type": "major",
@@ -592,7 +592,7 @@
       "sortIndex": 57
     },
     {
-      "id": "maj30_cancer",
+      "id": "maj30",
       "image": "maj30_cancer",
       "meta": {
         "type": "major",
@@ -602,7 +602,7 @@
       "sortIndex": 58
     },
     {
-      "id": "maj31_pisces",
+      "id": "maj31",
       "image": "maj31_pisces",
       "meta": {
         "type": "major",
@@ -612,7 +612,7 @@
       "sortIndex": 59
     },
     {
-      "id": "maj32_aquarius",
+      "id": "maj32",
       "image": "maj32_aquarius",
       "meta": {
         "type": "major",
@@ -622,7 +622,7 @@
       "sortIndex": 60
     },
     {
-      "id": "maj33_leo",
+      "id": "maj33",
       "image": "maj33_leo",
       "meta": {
         "type": "major",
@@ -632,7 +632,7 @@
       "sortIndex": 61
     },
     {
-      "id": "maj34_taurus",
+      "id": "maj34",
       "image": "maj34_taurus",
       "meta": {
         "type": "major",
@@ -642,7 +642,7 @@
       "sortIndex": 62
     },
     {
-      "id": "maj35_gemini",
+      "id": "maj35",
       "image": "maj35_gemini",
       "meta": {
         "type": "major",
@@ -652,7 +652,7 @@
       "sortIndex": 63
     },
     {
-      "id": "maj36_star",
+      "id": "maj36",
       "image": "maj36_star",
       "meta": {
         "type": "major",
@@ -662,7 +662,7 @@
       "sortIndex": 64
     },
     {
-      "id": "maj37_moon",
+      "id": "maj37",
       "image": "maj37_moon",
       "meta": {
         "type": "major",
@@ -672,7 +672,7 @@
       "sortIndex": 65
     },
     {
-      "id": "maj38_sun",
+      "id": "maj38",
       "image": "maj38_sun",
       "meta": {
         "type": "major",
@@ -682,7 +682,7 @@
       "sortIndex": 66
     },
     {
-      "id": "maj39_world",
+      "id": "maj39",
       "image": "maj39_world",
       "meta": {
         "type": "major",
@@ -692,7 +692,7 @@
       "sortIndex": 67
     },
     {
-      "id": "maj40_trumpets",
+      "id": "maj40",
       "image": "maj40_trumpets",
       "meta": {
         "type": "major",
