@@ -146,11 +146,13 @@ const SettingsScreen = () => {
         <SettingSection label={t('common:chronicles')}>
           <SettingRow
             title={t('common:export_backup')}
+            description={t('common:export_desc')}
             leftIcon="book-arrow-up-outline"
             onPress={handleExport}
           />
           <SettingRow
             title={t('common:import_backup')}
+            description={t('common:import_desc')}
             leftIcon="book-arrow-down-outline"
             onPress={handleImport}
           />
