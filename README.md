@@ -1,7 +1,7 @@
 # 🌌 Tarots OS: The Mystical Tarot Journal
 
 <div align="center">
-  <img src="./screenshots/icon.png" alt="Tarots OS Logo" width="120" height="120" />
+  <img src="./assets/icon.png" alt="Tarots OS Logo" width="120" height="120" />
   <br />
   
   [![MIT License](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
