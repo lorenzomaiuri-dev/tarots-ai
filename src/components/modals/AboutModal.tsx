@@ -5,6 +5,7 @@ import { Linking, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Avatar, Button, Text, useTheme } from 'react-native-paper';
 
+import { PRIVACY_POLICY_URL } from '../../constants';
 import { AppInfoService, ChangelogEntry } from '../../services/appInfo';
 import { GlassyModal } from './GlassyModal';
 
@@ -54,7 +55,7 @@ export const AboutModal = ({ visible, onClose, changelog, isLoading }: Props) =>
 
         <Button
           mode="text"
-          onPress={() => Linking.openURL('https://...')}
+          onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
           textColor={theme.colors.primary}
         >
           {t('common:privacy_policy')}

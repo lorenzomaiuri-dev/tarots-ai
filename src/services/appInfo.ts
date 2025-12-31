@@ -2,14 +2,13 @@ import { Platform } from 'react-native';
 
 import Constants from 'expo-constants';
 
+import { CHANGELOG_URL } from '../constants';
+
 export interface ChangelogEntry {
   version: string;
   date?: string;
   changes: string[];
 }
-
-const CHANGELOG_URL =
-  'https://raw.githubusercontent.com/lorenzomaiuri-dev/tarots-os/main/changelog.json';
 
 // Fallback data if the network fails
 const STATIC_CHANGELOG: ChangelogEntry[] = [

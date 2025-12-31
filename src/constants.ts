@@ -38,3 +38,12 @@ export const AI_PROMPT_KEYS = {
   STATUS_UPRIGHT: 'prompts:status_upright',
   STATUS_REVERSED: 'prompts:status_reversed',
 } as const;
+
+export const PRIVACY_POLICY_URL =
+  'https://raw.githubusercontent.com/lorenzomaiuri-dev/tarots-os/main/privacy.html';
+
+export const TERMS_CONDITIONS_URL =
+  'https://raw.githubusercontent.com/lorenzomaiuri-dev/tarots-os/main/terms.html';
+
+export const CHANGELOG_URL =
+  'https://raw.githubusercontent.com/lorenzomaiuri-dev/tarots-os/main/changelog.json';
