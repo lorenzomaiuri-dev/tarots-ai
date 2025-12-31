@@ -94,7 +94,7 @@ export const SpreadVisualizer: React.FC<Props> = ({ spread, deckId, drawnCards, 
                 {/* CARD AREA */}
                 <TouchableOpacity
                   onPress={() => handlePress(slot.id)}
-                  activeOpacity={0.9}
+                  activeOpacity={drawn ? 1 : 0.9}
                   style={[styles.cardTouchArea, { transform: [{ rotate: `${rotation}deg` }] }]}
                 >
                   {/* GHOST SLOT*/}

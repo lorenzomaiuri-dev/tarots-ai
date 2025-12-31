@@ -50,6 +50,10 @@ const ReadingTableScreen = () => {
   }, [route.params.spreadId]);
 
   const handleDrawCard = (slotId: string) => {
+    if (drawnCards.some((c) => c.positionId === slotId)) {
+      return;
+    }
+
     const deck = getDeck(activeDeckId);
     if (!deck) return;
 
@@ -108,7 +112,7 @@ const ReadingTableScreen = () => {
   };
 
   if (!spread) return null;
-  const isReadingComplete = drawnCards.length === spread.slots.length;
+  const isReadingComplete = drawnCards.length >= spread.slots.length;
 
   return (
     <ScreenContainer style={{ paddingHorizontal: 0 }}>
