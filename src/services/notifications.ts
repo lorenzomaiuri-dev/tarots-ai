@@ -49,7 +49,7 @@ export const NotificationService = {
         } as any,
 
         trigger: {
-          type: 'daily',
+          type: Notifications.SchedulableTriggerInputTypes.DAILY,
           hour: Math.floor(hour),
           minute: Math.floor(minute),
           repeats: true,

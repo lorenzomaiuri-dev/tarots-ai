@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "tarots-os",
+    "name": "Tarots OS",
     "slug": "tarots-os",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,9 +8,9 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0e0616"
     },
     "ios": {
       "supportsTablet": true,
@@ -19,21 +19,16 @@
     "android": {
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#0e0616"
       },
       "package": "com.lorenzomaiuri.tarotsos",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "permissions": [
-        "NOTIFICATIONS",
-        "SCHEDULE_EXACT_ALARM",
-        "USE_EXACT_ALARM",
-        "RECEIVE_BOOT_COMPLETED"
-      ]
+      "permissions": []
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "extra": {
       "eas": {
@@ -41,13 +36,6 @@
       }
     },
     "plugins": [
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/icon.png",
-          "color": "#D0BCFF"
-        }
-      ],
       [
         "expo-build-properties",
         {

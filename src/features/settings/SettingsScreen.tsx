@@ -73,7 +73,7 @@ const SettingsScreen = () => {
               />
             )}
           />
-          <SettingRow
+          {/* <SettingRow
             title={t('common:morning_ritual')}
             leftIcon="bell-ring-outline"
             right={() => (
@@ -82,7 +82,7 @@ const SettingsScreen = () => {
                 onValueChange={handleToggleReminder}
               />
             )}
-          />
+          /> */}
         </SettingSection>
 
         <SettingSection label={t('common:appearance')}>
